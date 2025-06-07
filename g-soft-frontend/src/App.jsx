@@ -1,19 +1,16 @@
-import { useState } from 'react'
-import LoginForm from './features/auth/Components/Login/LoginForm'
-// import AuthFlow from './features/auth/AuthFlow';
-
-import './App.css'
+import Dashboard from './Layouts/Dashboard/Dashboard';
+import LoginForm from './features/auth/Components/Login/LoginForm';
 
 function App() {
- 
-
   return (
     <>
-      <div>
-        <LoginForm/>
-      </div>
+    <Dashboard />
+    <LoginForm />
+    
     </>
-  )
+
+     
+  );
 }
 
-export default App
+export default App;
