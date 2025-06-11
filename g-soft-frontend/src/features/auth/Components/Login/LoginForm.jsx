@@ -37,15 +37,17 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      {showLoginForm && (
+   
+    <div className="flex items-center justify-center min-h-screen ">
+       {showLoginForm && (
+      
         <div className="flex w-[900px] max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
           {/* Left side of the login form: displays a background image */}
           <div className="md:w-1/2 w-full relative">
             <img 
               src="/images/church.jpg" 
               alt="Church building" 
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover "
             />
           </div>
 
@@ -118,7 +120,9 @@ function LoginForm() {
       {showResetSuccess && (
         <ResetSuccess onBackToLoginForm={handleBackToLogin} />
       )}
+      
     </div>
+  
   );
 }
 

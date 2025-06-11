@@ -1,21 +1,28 @@
 import React from 'react';
 import Navbar from './Navbar';
-// import Sidebar from './Sidebar';
+import Sidebar from './Sidebar';
+// import LoginForm from "../../features/auth/Components/Login/LoginForm.jsx";
+import MainDashboard from './MainDashboard';
+
 
 const Dashboard = () => {
   
   
 
   return (
-    <div className="flex  bg-gray-100">
-      {/* Sidebar */}
-      {/* <Sidebar /> */}
+    <div className=" bg-gray-100">
       
       
-        {/* Navbar */}
-        <Navbar />
         
-        {/* Main Content */}
+  
+        <Navbar />
+        <div className='flex'>
+          <Sidebar />
+          {/* <LoginForm /> */}
+          <MainDashboard/>
+        </div>
+        
+        
         
       
     </div>
