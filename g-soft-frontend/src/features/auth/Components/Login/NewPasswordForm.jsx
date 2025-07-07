@@ -33,7 +33,7 @@ function NewPasswordForm({ onBackToLogin }) {
   // Otherwise, render the new password form
   return (
     <div className="flex w-full max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
-      <div className="md:w-1/2 w-full relative">
+      <div className="md:w-1/2 w-full ">
         <img 
           src="/images/church.jpg" 
           alt="Church building" 

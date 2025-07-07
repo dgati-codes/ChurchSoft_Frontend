@@ -1,8 +1,10 @@
 import React from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
-// import LoginForm from "../../features/auth/Components/Login/LoginForm.jsx";
+import LoginForm from "../../features/auth/Components/Login/LoginForm.jsx";
 import MainDashboard from './MainDashboard';
+import Users from '../../users';
+
 
 
 const Dashboard = () => {
@@ -10,19 +12,21 @@ const Dashboard = () => {
   
 
   return (
-    <div className=" bg-gray-100">
+    <div className="">
       
       
         
   
-        <Navbar />
-        <div className='flex'>
-          <Sidebar />
+        {/* <Navbar /> */}
+       
+        <div className='flex'> 
+          {/* <Sidebar /> */}
           {/* <LoginForm /> */}
-          <MainDashboard/>
-        </div>
+          {/* <MainDashboard/> */}
+          
+         </div>
         
-        
+         <Users/>
         
       
     </div>
