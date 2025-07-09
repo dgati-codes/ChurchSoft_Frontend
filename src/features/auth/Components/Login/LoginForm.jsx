@@ -104,7 +104,7 @@ function LoginForm({ onLoginSuccess }) {
                 </button>
               </form>
             </div>
-          </div>
+          </div> 
         </div>
       )}
 
