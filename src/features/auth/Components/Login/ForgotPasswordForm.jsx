@@ -29,6 +29,7 @@ function ForgotPasswordForm({ onBackToLoginForm }) {
   return (
     <>
       {showForgotPasswordForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="flex w-[900px] max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
           {/* Left side of the forgot password form: displays a background image */}
           <div className="md:w-1/2 w-full">
@@ -39,7 +40,7 @@ function ForgotPasswordForm({ onBackToLoginForm }) {
           <div className="w-[300px] mx-auto p-4 flex flex-col border-[1px] border-blue-600 rounded-lg items-center justify-center m-12">
             <div className="text-center mb-8">
               <img src="/images/logo.png" alt="Church logo" className="w-24 h-24 mx-auto mb-4"/>
-              <h1 className="text-3xl font-bold text-gray-800">Forgot Password</h1>
+              <h1 className="text-3xl font-bold text-gray-800">Forgot Password  </h1>
               <p className="text-gray-500 mt-2 pt-8">Please enter your email to send verification link to reset your password</p>
             </div>
 
@@ -73,6 +74,7 @@ function ForgotPasswordForm({ onBackToLoginForm }) {
               </button>
             </form>
           </div>
+        </div>
         </div>
       )}
 

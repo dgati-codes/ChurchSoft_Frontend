@@ -64,6 +64,7 @@ function ResetCodeForm({ onBackToForgotPassword, email }) {
   return (
     <>
       {showCodeVerification && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="flex w-full max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
           <div className="md:w-1/2 w-full">
             <img src="/images/church.jpg" alt="Church building" className="w-full h-full object-cover"/>
@@ -119,6 +120,7 @@ function ResetCodeForm({ onBackToForgotPassword, email }) {
               </div>
             </form>
           </div>
+        </div>
         </div>
       )}
 
