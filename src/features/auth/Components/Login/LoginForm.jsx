@@ -36,7 +36,7 @@ function LoginForm({ onLoginSuccess }) {
   return (
     <>
       {showLoginForm && (
-        <div className="fixed inset-0 bg-black  flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-white  flex items-center justify-center z-50">
           <div className="flex w-[900px] max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
             {/* Left image */}
             <div className="md:w-1/2 w-full">

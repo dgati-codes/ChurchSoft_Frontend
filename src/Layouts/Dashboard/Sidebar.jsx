@@ -1,16 +1,30 @@
 import React from 'react';
 import { useState } from 'react';
+import CreateLeaderForm from './CreateLeaderForm';
+import CreateUsers from './users';
 
-const Sidebar = () => {
+const Sidebar = ({ onLeadersClick, onUserClick }) => {
  
   const [isSubOpen, setIsSubOpen] = useState(false);
+  const [openCreateLeader, setOpenCreateLeader] = useState(false);
   const [openZone, setOpenZone] = useState("");
 
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [openCreateUser, setOpenCreateUser] = useState(false);
+
 
 const toggleDropdown = (key) => {
   setOpenDropdown((prev) => (prev === key ? null : key));
 };
+
+const handleLeadersClick = () => {
+  setOpenCreateLeader(true);
+  
+
+};
+const handleUsersClick = () => {
+  setOpenCreateUser(true);
+}
 
     
 
@@ -40,8 +54,13 @@ const toggleDropdown = (key) => {
                         </li>
                         {openDropdown === "B" && (
                             <ul className=" left-full top-0 bg-white  shadow-md w-48 z-3">
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">1</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">2</li>
+                                <li onClick={onLeadersClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Create Leader</li>
+
+
+
+                                <li onClick={onUserClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Add User</li>
+
+
                                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
                                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
                             </ul>
@@ -157,6 +176,9 @@ const toggleDropdown = (key) => {
                 <p>v1.0.0</p>
             </div>
         </aside>
+
+        
   );};
+  <CreateLeaderForm/>
 
   export default Sidebar;
