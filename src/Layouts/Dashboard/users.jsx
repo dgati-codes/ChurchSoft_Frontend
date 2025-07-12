@@ -32,7 +32,7 @@ function CreateUsers() {
   const newErrors = validate();
 
   if (Object.keys(newErrors).length === 0) {
-    alert("User added successfully");
+    // alert("User added successfully");
     console.log(formData);
 
     // Reset form fields to empty after successful submission
