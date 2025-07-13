@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import CreateLeaderForm from './CreateLeaderForm';
-import CreateUsers from './users';
+
 
 const Sidebar = ({ onLeadersClick, onUserClick }) => {
  
@@ -61,8 +61,8 @@ const handleUsersClick = () => {
                                 <li onClick={onUserClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Add User</li>
 
 
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
+                                {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
+                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li> */}
                             </ul>
                         )}
 
@@ -105,7 +105,7 @@ const handleUsersClick = () => {
                                         Greater Accra Region
                                     </button>
                                     {isSubOpen && (
-                                        <ul className="relative left-full top-0 bg-white   shadow-md w-48 ">
+                                        <ul className=" relative left-20 top-0 bg-white z-30   shadow-md w-48 ">
                                             <li onClick={() => setOpenZone((prev) => (prev === "A" ? null : "A"))} className="relative text-red-500/50 w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer">
                                                 
                                                     ZONE A

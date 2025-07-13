@@ -19,9 +19,9 @@ function CreateUsers() {
     if (!formData.dob) newErrors.dob = "Date of birth is required";
     if (!formData.gender) newErrors.gender = "Gender is required";
     if (!formData.address) newErrors.address = "Address is required";
-    if (!formData.number || !/^\d{10,15}$/.test(formData.number)) newErrors.number = "Valid phone number is required";
-    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Valid email is required";
-    if (!formData.mga || formData.mga === "sym") newErrors.mga = "Select a ministry";
+    if (!formData.number ?? !/^\d{10,15}$/.test(formData.number)) newErrors.number = "Valid phone number is required";
+    if (!formData.email ?? !/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Valid email is required";
+    if (!formData.mga ?? formData.mga === "sym") newErrors.mga = "Select a ministry";
     if (!formData.assembly) newErrors.assembly = "Assembly is required";
     if (!formData.role) newErrors.role = "Role is required";
     return newErrors;
@@ -76,7 +76,7 @@ function CreateUsers() {
                   id="name"
                   placeholder="Name"
                   className="border rounded-sm p-2"
-                  value={formData.name || ""}
+                  value={formData.name ?? ""}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
 
@@ -88,7 +88,7 @@ function CreateUsers() {
               <input
                 type="text"
                 id="lname"
-                value={formData.lname || ""}
+                value={formData.lname ?? ""}
                 onChange={(e) => setFormData({ ...formData, lname: e.target.value })}
                 placeholder="Last Name"
                 className="border rounded-sm p-2"
@@ -103,7 +103,7 @@ function CreateUsers() {
               <input
                 type="date"
                 id="dob"
-                value={formData.dob || ""}
+                value={formData.dob ?? ""}
                 onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                 className="border rounded-sm p-2"
               />
@@ -114,7 +114,7 @@ function CreateUsers() {
               <label htmlFor="gender">Gender</label>
               <select
                 id="gender"
-                value={formData.gender || ""}
+                value={formData.gender ?? ""}
                 onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                 className="border rounded-sm p-2"
               >
@@ -132,7 +132,7 @@ function CreateUsers() {
               <input
                 type="text"
                 id="address"
-                value={formData.address || ""}
+                value={formData.address ?? ""}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 placeholder="Address"
                 className="border rounded-sm p-2"
@@ -145,7 +145,7 @@ function CreateUsers() {
               <input
                 type="text"
                 id="number"
-                value={formData.number || ""}
+                value={formData.number ?? ""}
                 onChange={(e) => setFormData({ ...formData, number: e.target.value })}
                 placeholder="Phone Number"
                 className="border rounded-sm p-2"
@@ -160,7 +160,7 @@ function CreateUsers() {
               <input
                 type="email"
                 id="email"
-                value={formData.email || ""}
+                value={formData.email ?? ""}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="Email"
                 className="border rounded-sm p-2"
@@ -172,7 +172,7 @@ function CreateUsers() {
               <label htmlFor="mga">Ministry Group Association</label>
               <select
                 id="mga"
-                value={formData.mga || ""}
+                value={formData.mga ?? ""}
                 onChange={(e) => setFormData({ ...formData, mga: e.target.value })}
                 className="border rounded-sm p-2"
               >
@@ -190,7 +190,7 @@ function CreateUsers() {
               <input
                 type="text"
                 id="assembly"
-                value={formData.assembly || ""}
+                value={formData.assembly ?? ""}
                 onChange={(e) => setFormData({ ...formData, assembly: e.target.value })}
                 placeholder="Assembly"
                 className="border rounded-sm p-2"
@@ -202,7 +202,7 @@ function CreateUsers() {
               <label htmlFor="role">Role</label>
               <select
                 id="role"
-                value={formData.role || ""}
+                value={formData.role ?? ""}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                 className="border rounded-sm p-2"
               >
