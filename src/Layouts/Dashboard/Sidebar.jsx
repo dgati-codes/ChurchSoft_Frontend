@@ -1,9 +1,11 @@
 import React from 'react';
 import { useState } from 'react';
 import CreateLeaderForm from './CreateLeaderForm';
+import Users from './users';
+import Register from './register';
 
 
-const Sidebar = ({ onLeadersClick, onUserClick }) => {
+const Sidebar = ({ onLeadersClick, onRegisterClick, onUserClick }) => {
  
   const [isSubOpen, setIsSubOpen] = useState(false);
   const [openCreateLeader, setOpenCreateLeader] = useState(false);
@@ -11,6 +13,7 @@ const Sidebar = ({ onLeadersClick, onUserClick }) => {
 
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openCreateUser, setOpenCreateUser] = useState(false);
+  const [openRegister, setOpenRegister] = useState(false);
 
 
 const toggleDropdown = (key) => {
@@ -24,16 +27,24 @@ const handleLeadersClick = () => {
 };
 const handleUsersClick = () => {
   setOpenCreateUser(true);
+};
+
+const handleRegisterClick = () => {
+  setOpenRegister(true);
 }
 
     
 
   return (
-        <aside className="w-64 mt-17 border-r border-gray-100  bg-gray-50 hadow-xl-30 flex flex-col h-screen justify-between">
-            <div className="p-8 border-b font-bold border-gray-300">
+      <aside className="w-64 fixed left-0 top-0 h-screen border-r border-gray-200 bg-blue-900  z-10">
+            <div className="p-4  border-b font-bold border-gray-300">
+                <div className="flex mb-14 items-center space-x-2">
+            <img className="w-10" src="/images/logo.png" alt="logo" />
+            <h1 className="text-xl text-white font-semibold">GCCI</h1>
+          </div>
                 <nav className="space-y-1">  
                     <ul>
-                        <li onClick={() => toggleDropdown("A")}  className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
+                        <li onClick={() => toggleDropdown("A")}  className="w-full flex text-left text-sm text-white hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
                             <img className='pr-4' src="/images/dashboard.svg" alt="dashboard" />
                             Dashboard
                         </li>
@@ -48,7 +59,7 @@ const handleUsersClick = () => {
                         )}
 
 
-                        <li onClick={() => toggleDropdown("B")}  className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
+                        <li onClick={() => toggleDropdown("B")}  className="w-full flex text-left text-sm text-white hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
                             <img className='pr-4' src="/images/users.svg" alt="users" />
                             Members
                         </li>
@@ -61,13 +72,15 @@ const handleUsersClick = () => {
                                 <li onClick={onUserClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Add User</li>
 
 
-                                {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li> */}
+                                <li onClick={onRegisterClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Member Registration</li>
+
+
+                                {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li> */}
                             </ul>
                         )}
 
 
-                        <li onClick={() => toggleDropdown("C")} className="w-full flex text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
+                        <li onClick={() => toggleDropdown("C")} className="w-full flex text-sm text-white hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
                             <img className="pr-4" src="/images/calendar-days.svg" alt="calendar" />
                             Events
                         </li>
@@ -80,7 +93,7 @@ const handleUsersClick = () => {
                             </ul>
                         )}
 
-                        <li onClick={() => toggleDropdown("D")} className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
+                        <li onClick={() => toggleDropdown("D")} className="w-full flex text-left text-sm text-white hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
                             <img className="pr-4" src="/images/donations.svg" alt="donations" />
                             Donations
                         </li>
@@ -94,7 +107,7 @@ const handleUsersClick = () => {
                             </ul> 
                         )}
 
-                        <li onClick={() => toggleDropdown("E")} className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
+                        <li onClick={() => toggleDropdown("E")} className="w-full flex text-left text-sm text-white hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
                             <img className='pr-4' src="/images/church.svg" alt="church" />
                             Ministries
                         </li>
@@ -154,13 +167,13 @@ const handleUsersClick = () => {
                                 
                             </ul>
                         )}
-                        <li onClick={() => toggleDropdown("F")} className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
+                        <li onClick={() => toggleDropdown("F")} className="w-full flex text-left text-sm text-white hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
                             <img className='pr-4' src="/images/clipboard-list.svg" alt="reports" />
                             Reports
                         </li>
                         {openDropdown === "F" && ("")}
 
-                        <li onClick={() => toggleDropdown("G")} className="w-full flex  text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
+                        <li onClick={() => toggleDropdown("G")} className="w-full flex  text-sm text-white hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
                             <img className='pr-4' src="/images/cog.svg" alt="cog" />
                             Settings
                         </li>
@@ -179,6 +192,8 @@ const handleUsersClick = () => {
 
         
   );};
-  <CreateLeaderForm/>
+  <CreateLeaderForm/>;
+  <Users/>;
+  <Register/>
 
   export default Sidebar;

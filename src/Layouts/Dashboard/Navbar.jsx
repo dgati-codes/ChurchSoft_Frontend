@@ -27,12 +27,12 @@ const Navbar = () => {
 
   return (
     <>
-      <header className="bg-blue-600 text-white shadow-sm fixed w-full z-40">
+      <header className=" bg-white  shadow-sm fixed w-full ">
         <div className="flex items-center justify-between px-6 py-4 mx-auto max-w-7xl">
           {/* Logo & Title */}
           <div className="flex items-center space-x-2">
             <img className="w-10" src="/images/logo.png" alt="logo" />
-            <h1 className="text-xl font-semibold">GCCI</h1>
+            <h1 className="text-xl text-white font-semibold">GCCI</h1>
           </div>
 
           {/* Profile & Notifications */}

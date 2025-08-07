@@ -35,7 +35,7 @@ const MainDashboard = () => {
   ];
 
   return (
-    <main className="flex-1 mt-18 p-8 bg-white min-h-screen">
+      <main className="ml-64 flex-1 p-8">
       <h1 className="text-2xl font-bold text-gray-500 mb-12">Dashboard</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((item, idx) => (
