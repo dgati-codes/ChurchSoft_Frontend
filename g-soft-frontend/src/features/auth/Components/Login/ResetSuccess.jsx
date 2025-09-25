@@ -1,6 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
 import LoginForm from './LoginForm';
+import { Check } from 'lucide-react';
+
+
 
 /**
  * ResetSuccess component: displays a success message after a password reset
@@ -23,7 +26,7 @@ function ResetSuccess() {
   return (
     <>
       {showResetSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
         <div className="flex w-full max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
           <div className="md:w-1/2 w-full ">
             <img
@@ -35,11 +38,7 @@ function ResetSuccess() {
 
           <div className="w-[300px] mx-auto p-10 flex flex-col border-[1px] border-blue-600 rounded-lg items-center justify-center m-12">
             <div className="text-center mb-8">
-              <img
-                src="/images/check.png"
-                alt="check"
-                className="w-26 h-26 mx-auto mb-4"
-              />
+              <Check/>
               <h1 className="text-3xl font-bold text-gray-800 mt-4">
                 Reset Successful
               </h1>

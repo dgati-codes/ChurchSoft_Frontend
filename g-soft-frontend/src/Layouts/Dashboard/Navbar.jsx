@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import LoginForm from '../../features/auth/Components/Login/LoginForm';
+import { Bell } from 'lucide-react';
+
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -27,19 +29,17 @@ const Navbar = () => {
 
   return (
     <>
-      <header className="bg-blue-600 text-white shadow-sm fixed w-full z-40">
+      <header className=" bg-white fixed  shadow-sm  w-full ">
         <div className="flex items-center justify-between px-6 py-4 mx-auto max-w-7xl">
           {/* Logo & Title */}
           <div className="flex items-center space-x-2">
             <img className="w-10" src="/images/logo.png" alt="logo" />
-            <h1 className="text-xl font-semibold">GCCI</h1>
+            <h1 className="text-xl text-white font-semibold">GCCI</h1>
           </div>
 
           {/* Profile & Notifications */}
           <div className="flex items-center space-x-6">
-            <button className="p-1 rounded-full hover:bg-blue-500 transition-colors">
-              <img className="w-6" src="/images/notification.svg" alt="notification" />
-            </button>
+            
 
             <div className="relative" ref={dropdownRef}>
               <button
@@ -47,6 +47,7 @@ const Navbar = () => {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <img src="/images/profile.jpg" alt="profile" className='w-10 h-10 rounded-full'/>
+                
                 <span className="font-medium">Gerald Kpelevi</span>
                 <svg
                   className={`h-4 w-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
@@ -60,6 +61,7 @@ const Navbar = () => {
                   />
                 </svg>
               </button>
+              
 
               {/* Dropdown Menu */}
               {isDropdownOpen && (
@@ -95,7 +97,11 @@ const Navbar = () => {
                 </div>
               )}
             </div>
+            <button className="">
+            <Bell />
+            </button>
           </div>
+          
         </div>
       </header>
 

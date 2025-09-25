@@ -29,7 +29,7 @@ function ForgotPasswordForm({ onBackToLoginForm }) {
   return (
     <>
       {showForgotPasswordForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed bg-[url('/images/pexels-valeriya-kobzar-42371713-8358604.jpg')] bg-cover bg-center inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
         <div className="flex w-[900px] max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
           {/* Left side of the forgot password form: displays a background image */}
           <div className="md:w-1/2 w-full">

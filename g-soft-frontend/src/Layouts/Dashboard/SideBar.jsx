@@ -1,32 +1,60 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from "react";
+import CreateLeaderForm from "./CreateLeaderForm";
+// import Users from "./UsersForm";
+import Register from "./register";
+import MemberTable from "./table";
+import AttendanceTracking from "./Attendance";
+import { LayoutDashboard, Users,  Settings, Newspaper, NotepadText, BadgeDollarSign, Church } from "lucide-react";
 
-const Sidebar = () => {
- 
-  const [isSubOpen, setIsSubOpen] = useState(false);
-  const [openZone, setOpenZone] = useState("");
-
+const Sidebar = ({ onLeadersClick, onRegisterClick, onUserClick, onTableClick, onAttendanceClick }) => {
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [activeParent, setActiveParent] = useState(null); // track selected parent
+  const [isSubOpen, setIsSubOpen] = useState(null);
+  const [openZone, setOpenZone] = useState(null);
 
-const toggleDropdown = (key) => {
-  setOpenDropdown((prev) => (prev === key ? null : key));
-};
-
+  const toggleDropdown = (key) => {
+    setOpenDropdown((prev) => (prev === key ? null : key));
+    setActiveParent(key); // set active when clicked
+  };
     
 
   return (
-        <aside className="w-64 mt-17 border-r border-gray-100  bg-gray-50 hadow-xl-30 flex flex-col h-screen justify-between">
-            <div className="p-8 border-b font-bold border-gray-300">
+      <aside className="w-64 fixed left-0 top-0 h-screen border-r border-gray-200 bg-blue-900  z-10">
+                      
+            <div className="p-4  border-b font-bold border-gray-300">
+                <div className="flex mb-14 items-center space-x-2">
+            <img className="w-10" src="/images/logo.png" alt="logo" />
+            <h1 className="text-xl text-white font-semibold">GCCI</h1>
+          </div>
                 <nav className="space-y-1">  
                     <ul>
-                        <li onClick={() => toggleDropdown("A")}  className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
-                            <img className='pr-4' src="/images/dashboard.svg" alt="dashboard" />
-                            Dashboard
-                        </li>
+                        
+                            <li
+                                onClick={() => toggleDropdown("A")}
+                                className={`w-full flex items-center justify-between text-left text-sm p-4  cursor-pointer ${
+                                    activeParent === "A"
+                                    ? "text-yellow-500 border-l-4 border-yellow-500"
+                                    : "text-white hover:text-yellow-400"
+                                }`}
+                                >
+                                {/* Left side: icon + label */}
+                                
+                                <div className="flex items-center gap-3">
+                                    <LayoutDashboard
+                                    
+                                    className="w-5 h-5 "
+                                    />
+                                    <span>Dashboard</span>
+                                </div>
+                              </li>
+
                         {openDropdown === "A" && (
                             <ul className=" left-full top-0 bg-white  shadow-md w-48 z-3">
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">1</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">2</li>
+
+                                <li onClick={onTableClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Table</li>
+
+                                <li onClick={onAttendanceClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Attendance</li>
+
                                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
                                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
                                 
@@ -34,24 +62,53 @@ const toggleDropdown = (key) => {
                         )}
 
 
-                        <li onClick={() => toggleDropdown("B")}  className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
-                            <img className='pr-4' src="/images/users.svg" alt="users" />
-                            Members
-                        </li>
+                          <li
+                                onClick={() => toggleDropdown("B")}
+                                className={`w-full flex items-center justify-between text-left text-sm p-4  cursor-pointer ${
+                                    activeParent === "B"
+                                    ? "text-yellow-500 border-l-4 border-yellow-500"
+                                    : "text-white hover:text-yellow-400"
+                                }`}
+                                >
+                                {/* Left side: icon + label */}
+                                
+                                <div className="flex items-center gap-3">
+                                    <Users className="w-5 h-5 " />                                                                                                           
+                                    <span>Members</span>
+                                </div>
+
+                                
+                                </li>
                         {openDropdown === "B" && (
                             <ul className=" left-full top-0 bg-white  shadow-md w-48 z-3">
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">1</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">2</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
+                                <li onClick={onLeadersClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Create Leader</li>
+
+
+
+                                <li onClick={onUserClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Add User</li>
+
+
+                                <li onClick={onRegisterClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Member Registration</li>
+
+
+                                {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li> */}
                             </ul>
                         )}
 
 
-                        <li onClick={() => toggleDropdown("C")} className="w-full flex text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
-                            <img className="pr-4" src="/images/calendar-days.svg" alt="calendar" />
-                            Events
-                        </li>
+                         <li
+                            onClick={() => toggleDropdown("C")}
+                            className={`w-full flex text-left text-sm p-4  cursor-pointer ${
+                                activeParent === "C"
+                                ? "text-yellow-500 border-l-4 border-yellow-500"
+                                : "text-white hover:text-yellow-400"
+                            }`}
+                            >
+                            <div className="flex items-center gap-3">
+                                <NotepadText/>
+                            <span>Event</span>
+                            </div>
+                            </li>   
                         {openDropdown === "C" && (
                             <ul className=" left-full top-0 bg-white  shadow-md w-48 z-3">
                                 <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">1</li>
@@ -61,10 +118,19 @@ const toggleDropdown = (key) => {
                             </ul>
                         )}
 
-                        <li onClick={() => toggleDropdown("D")} className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
-                            <img className="pr-4" src="/images/donations.svg" alt="donations" />
-                            Donations
-                        </li>
+                         <li
+                            onClick={() => toggleDropdown("D")}
+                            className={`w-full flex text-left text-sm p-4  cursor-pointer ${
+                                activeParent === "D"
+                                ? "text-yellow-500 border-l-4 border-yellow-500"
+                                : "text-white hover:text-yellow-400"
+                            }`}
+                            >
+                            <div className="flex items-center gap-3">
+                                <BadgeDollarSign />
+                            <span>Donation</span>
+                            </div>
+                            </li>
                         {openDropdown === "D" && (
                             <ul className="bg-white hover:cursor-pointer mt-2 rounded-xl w-48 shadow-md">
                                 <li className="px-4 py-2 hover:bg-gray-100">donation1</li>
@@ -75,10 +141,19 @@ const toggleDropdown = (key) => {
                             </ul> 
                         )}
 
-                        <li onClick={() => toggleDropdown("E")} className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
-                            <img className='pr-4' src="/images/church.svg" alt="church" />
-                            Ministries
-                        </li>
+                        <li
+                            onClick={() => toggleDropdown("E")}
+                            className={`w-full flex text-left text-sm p-4  cursor-pointer ${
+                                activeParent === "E"
+                                ? "text-yellow-500 border-l-4 border-yellow-500"
+                                : "text-white hover:text-yellow-400"
+                            }`}
+                            >
+                            <div className="flex items-center gap-3">
+                                <Church />
+                            <span>Ministries</span>
+                            </div>
+                            </li>
                         {openDropdown === "E" && (
                             <ul className=" bg-white hover:cursor-pointer mt-2 w-48 shadow-md">
                                 <li className="px-4 py-2 hover:bg-gray-100">
@@ -86,7 +161,7 @@ const toggleDropdown = (key) => {
                                         Greater Accra Region
                                     </button>
                                     {isSubOpen && (
-                                        <ul className="relative left-full top-0 bg-white   shadow-md w-48 ">
+                                        <ul className=" relative left-20 top-0 bg-white z-30   shadow-md w-48 ">
                                             <li onClick={() => setOpenZone((prev) => (prev === "A" ? null : "A"))} className="relative text-red-500/50 w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer">
                                                 
                                                     ZONE A
@@ -135,16 +210,34 @@ const toggleDropdown = (key) => {
                                 
                             </ul>
                         )}
-                        <li onClick={() => toggleDropdown("F")} className="w-full flex text-left text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
-                            <img className='pr-4' src="/images/clipboard-list.svg" alt="reports" />
-                            Reports
-                        </li>
+                         <li
+                                onClick={() => toggleDropdown("F")}
+                                className={`w-full flex text-left text-sm p-4  cursor-pointer ${
+                                    activeParent === "F"
+                                    ? "text-yellow-500 border-l-4 border-yellow-500"
+                                    : "text-white hover:text-yellow-400"
+                                }`}
+                                >
+                                <div className="flex items-center gap-3">
+                                    <Newspaper />
+                                <span>News</span>
+                                </div>
+                                </li>
                         {openDropdown === "F" && ("")}
 
-                        <li onClick={() => toggleDropdown("G")} className="w-full flex  text-sm text-gray-500 hover:text-blue-600 p-4 rounded-lg hover:bg-white hover:cursor-pointer">
-                            <img className='pr-4' src="/images/cog.svg" alt="cog" />
-                            Settings
-                        </li>
+                         <li
+                                onClick={() => toggleDropdown("G")}
+                                className={`w-full flex text-left text-sm p-4  cursor-pointer ${
+                                    activeParent === "G"
+                                    ? "text-yellow-500 border-l-4 border-yellow-500"
+                                    : "text-white hover:text-yellow-400"
+                                }`}
+                                >
+                                <div className="flex items-center gap-3">
+                                    <Settings />
+                                <span>Settings</span>
+                                </div>
+                                </li>
                         {openDropdown === "G" && ("")}
                     </ul>  
                 </nav>
@@ -153,10 +246,22 @@ const toggleDropdown = (key) => {
             </div>
 
             <div className="p-2 border-t border-gray-200 text-xs text-gray-500">
-                <p>Church Management System</p>
+                © {new Date().toLocaleDateString("en-US", {
+            //   day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}Church Management System. All rights reserved.
+               
                 <p>v1.0.0</p>
             </div>
         </aside>
+
+        
   );};
+  <CreateLeaderForm/>;
+//   <Users/>;
+  <Register/>;
+  <MemberTable/>,
+  <AttendanceTracking/>
 
   export default Sidebar;

@@ -36,16 +36,16 @@ function LoginForm({ onLoginSuccess }) {
   return (
     <>
       {showLoginForm && (
-        <div className="fixed inset-0 bg-black  flex items-center justify-center z-50">
-          <div className="flex w-[900px] max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
+        <div className="fixed bg-[url('/images/pexels-valeriya-kobzar-42371713-8358604.jpg')] bg-cover bg-center  inset-0 flex items-center justify-center z-50">
+          <div className="flex w-[400px] max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
             {/* Left image */}
-            <div className="md:w-1/2 w-full">
+            {/* <div className="md:w-1/2 w-full">
               <img
                 src="/images/church.jpg"
                 alt="Church building"
                 className="w-full h-full object-cover"
               />
-            </div>
+            </div> */}
 
             {/* Right form */}
             <div className="w-[300px] mx-auto p-4 flex flex-col border-[1px] border-blue-600 rounded-lg items-center justify-center m-12">
@@ -104,7 +104,7 @@ function LoginForm({ onLoginSuccess }) {
                 </button>
               </form>
             </div>
-          </div>
+          </div> 
         </div>
       )}
 
