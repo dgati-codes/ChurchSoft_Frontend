@@ -11,6 +11,7 @@ import AttendanceTracking from './Attendance';
 import ParentChildManager from './ParentChild';
 import CountriesOverview from './CountriesOverview';
 import CountryAdministrativeDivisions from './CountryAdministrativeDivisions';
+import DashboardSummary from  './Configuration';
 
 const Dashboard = () => {
   const [showLoginForm, setShowLoginForm] = useState(true);
@@ -76,6 +77,7 @@ const Dashboard = () => {
           <CountriesOverview  />
         <ParentChildManager  />
         <CountryAdministrativeDivisions />
+        <DashboardSummary />
           </div>
         )} 
       </div>
