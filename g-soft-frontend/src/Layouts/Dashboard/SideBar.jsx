@@ -4,36 +4,64 @@ import CreateLeaderForm from "./CreateLeaderForm";
 import Register from "./register";
 import MemberTable from "./table";
 import AttendanceTracking from "./Attendance";
-import { LayoutDashboard, Users,  Settings, Newspaper, NotepadText, BadgeDollarSign, Church } from "lucide-react";
+import ParentChildManager from "./ParentChild";
+import CountriesOverview from "./CountriesOverview";
+import CountryAdministrativeDivisions from "./CountryAdministrativeDivisions";
+import Configuration from  "./Configuration";   
+import { LayoutDashboard, Globe, UserCheck, Users, ChevronDown,  Settings, UserRoundPlus,  } from "lucide-react";
 
-const Sidebar = ({ onLeadersClick, onRegisterClick, onUserClick, onTableClick, onAttendanceClick }) => {
+const Sidebar = ({
+  onLeadersClick,
+  onRegisterClick,
+  onUserClick,
+  onTableClick,
+  onAttendanceClick,
+  onConfigurationClick,
+  onCountriesOverviewClick
+}) => {
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [activeParent, setActiveParent] = useState(null); // track selected parent
-  const [isSubOpen, setIsSubOpen] = useState(null);
-  const [openZone, setOpenZone] = useState(null);
+  const [activeParent, setActiveParent] = useState(null);
+  const [activeChild, setActiveChild] = useState(null);
+  const [showConfiguration, setShowConfiguration] = useState(false);
 
   const toggleDropdown = (key) => {
-    setOpenDropdown((prev) => (prev === key ? null : key));
-    setActiveParent(key); // set active when clicked
+    setOpenDropdown(openDropdown === key ? null : key);
+    setActiveParent(key);
+    setActiveChild(null);
   };
+
+  const handleChildClick = (parent, child, callback) => {
+    setActiveParent(parent);
+    setActiveChild(child);
+    if (callback) callback();
+  };
+
+  const handleConfigurationClick = () => {
+    setShowConfiguration(true);
+  }
+
     
 
   return (
-      <aside className="w-64 fixed left-0 top-0 h-screen border-r border-gray-200 bg-blue-900  z-10">
+<aside className="w-64 fixed left-0 top-0 h-screen border-r border-gray-200 bg-[#001866]  z-10">
                       
             <div className="p-4  border-b font-bold border-gray-300">
-                <div className="flex mb-14 items-center space-x-2">
-            <img className="w-10" src="/images/logo.png" alt="logo" />
+            <div className="flex mb-14 items-center space-x-2">
+            <img className="w-20 ml-10" src="/images/logo.png" alt="logo" />
             <h1 className="text-xl text-white font-semibold">GCCI</h1>
-          </div>
+            </div>
                 <nav className="space-y-1">  
                     <ul>
-                        
-                            <li
-                                onClick={() => toggleDropdown("A")}
-                                className={`w-full flex items-center justify-between text-left text-sm p-4  cursor-pointer ${
+                        <li onClick={() => toggleDropdown("A")} className={`relative  ${
+                            activeParent === "A"
+                            ? "text-yellow-500 border-l-4 border-yellow-500"
+                            : "text-white hover:text-yellow-400"
+                        }`}>
+                            
+                            <button                               
+                             className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4  cursor-pointer ${
                                     activeParent === "A"
-                                    ? "text-yellow-500 border-l-4 border-yellow-500"
+                                    ? "text-blue-900  rounded-lg  bg-amber-300   "
                                     : "text-white hover:text-yellow-400"
                                 }`}
                                 >
@@ -44,81 +72,168 @@ const Sidebar = ({ onLeadersClick, onRegisterClick, onUserClick, onTableClick, o
                                     
                                     className="w-5 h-5 "
                                     />
-                                    <span>Dashboard</span>
+                                    <span className="font-semibold family-DM-Sans">Dashboard</span>
                                 </div>
-                              </li>
-
-                        {openDropdown === "A" && (
-                            <ul className=" left-full top-0 bg-white  shadow-md w-48 z-3">
-
-                                <li onClick={onTableClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Table</li>
-
-                                <li onClick={onAttendanceClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Attendance</li>
-
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
                                 
-                            </ul>
-                        )}
-
-
-                          <li
-                                onClick={() => toggleDropdown("B")}
-                                className={`w-full flex items-center justify-between text-left text-sm p-4  cursor-pointer ${
+                              </button>
+                        </li>
+                        {openDropdown === "A" && ("")}
+                        
+                        <li onClick={() => toggleDropdown("B")} className={`relative  ${
+                            activeParent === "B"
+                            ? "text-yellow-500 border-l-4 border-yellow-500"
+                            : "text-white hover:text-yellow-400"
+                        }`}>
+                            
+                            <button                               
+                             className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4  cursor-pointer ${
                                     activeParent === "B"
-                                    ? "text-yellow-500 border-l-4 border-yellow-500"
+                                    ? "text-blue-900  rounded-lg  bg-amber-300   "
                                     : "text-white hover:text-yellow-400"
                                 }`}
                                 >
                                 {/* Left side: icon + label */}
                                 
                                 <div className="flex items-center gap-3">
-                                    <Users className="w-5 h-5 " />                                                                                                           
-                                    <span>Members</span>
+                                     <UserRoundPlus
+
+                                    
+                                    className="w-5 h-5 "
+                                    />
+                                    <span className="font-semibold family-DM-Sans">Add User</span>
                                 </div>
-
                                 
-                                </li>
-                        {openDropdown === "B" && (
-                            <ul className=" left-full top-0 bg-white  shadow-md w-48 z-3">
-                                <li onClick={onLeadersClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Create Leader</li>
+                              </button>
+                        </li>
+                        {/* {openDropdown === "B" && ("")} */}
 
-
-
-                                <li onClick={onUserClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Add User</li>
-
-
-                                <li onClick={onRegisterClick} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Member Registration</li>
-
-
-                                {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li> */}
-                            </ul>
-                        )}
-
-
-                         <li
-                            onClick={() => toggleDropdown("C")}
-                            className={`w-full flex text-left text-sm p-4  cursor-pointer ${
-                                activeParent === "C"
-                                ? "text-yellow-500 border-l-4 border-yellow-500"
-                                : "text-white hover:text-yellow-400"
-                            }`}
-                            >
-                            <div className="flex items-center gap-3">
-                                <NotepadText/>
-                            <span>Event</span>
-                            </div>
-                            </li>   
+                        <li onClick={() => toggleDropdown("C")} className={`relative  ${
+                            activeParent === "C"
+                            ? "text-yellow-500 border-l-4 border-yellow-500"
+                            : "text-white hover:text-yellow-400"
+                        }`}>
+                            
+                            <button                               
+                             className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4  cursor-pointer ${
+                                    activeParent === "C"
+                                    ? "text-blue-900  rounded-lg  bg-amber-300   "
+                                    : "text-white hover:text-yellow-400"
+                                }`}
+                                >
+                                {/* Left side: icon + label */}
+                                
+                                <div className="flex items-center gap-3">
+                                        <Users                                   
+                                    className="w-5 h-5 "
+                                    />
+                                    <span className="font-semibold family-DM-Sans">Members</span>
+                                </div>
+                               
+                                    <ChevronDown className="w-4 h-4" />             
+                                
+                              </button>
+                        </li>
                         {openDropdown === "C" && (
-                            <ul className=" left-full top-0 bg-white  shadow-md w-48 z-3">
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">1</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">2</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">3</li>
-                                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">4</li>
-                            </ul>
-                        )}
+                                <ul className="relative ml-8 mt-4  text-xs  pl-3 space-y-2">
+                                <span className="absolute -left-[1px] top-1/6 w-5 h-9 border-l border-b border-blue-300/40 rounded-bl-md "></span>
+                                <li className="relative">
+                                    {/* horizontal connector */}
+                                    <span className="absolute -left-[13px] top-1/9 w-5 h-3 border-l border-b border-blue-300/40 rounded-bl-md"></span>
+                                    <button
+                                    onClick={() =>
+                                        handleChildClick("C", "addMember", onRegisterClick)
+                                    }
+                                    className={`block w-full text-left px-2 py-1 rounded ${
+                                        activeChild === "addMember"
+                                        ? "bg-[#FACD18] text-blue-900"
+                                        : "text-white hover:text-blue-900 hover:bg-[#FACD18]"
+                                    }`}
+                                    >
+                                     <span className="font-semibold family-DM-Sans">Add Members</span>
+                                    </button>
+                                </li>
 
-                         <li
+                                <li className="relative">
+                                    <button
+                                    onClick={() =>
+                                        handleChildClick("C", "viewMembers", onTableClick)
+                                    }
+                                    className={`block w-full text-left px-2 py-1 rounded ${
+                                        activeChild === "viewMembers"
+                                        ? "bg-[#FACD18] text-blue-900"
+                                        : "text-white hover:text-blue-900 hover:bg-[#FACD18]"
+                                    }`}
+                                    >
+                                        <span className="font-semibold family-DM-Sans"> View Members</span>
+                                   
+                                    </button>
+                                </li>
+                                </ul>
+                            )}
+
+                        
+
+                          <li onClick={() => toggleDropdown("D")} className={`relative  ${
+                            activeParent === "D"
+                            ? "text-yellow-500 border-l-4 border-yellow-500"
+                            : "text-white hover:text-yellow-400"
+                        }`}>
+                            <button onClick={onAttendanceClick}
+                            className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4  cursor-pointer ${
+                                    activeParent === "D"
+                                    ? "text-blue-900  rounded-lg  bg-amber-300   "
+                                    : "text-white hover:text-yellow-400"
+                                }`}
+                                >
+                            <div className="flex items-center gap-3">
+                            <UserCheck />
+                            <span className="font-semibold family-DM-Sans">Attendance</span>
+                            </div>
+                            </button>
+                            </li>   
+
+                          <li onClick={() => toggleDropdown("E")} className={`relative  ${
+                            activeParent === "E"
+                            ? "text-yellow-500 border-l-4 border-yellow-500"
+                            : "text-white hover:text-yellow-400"
+                        }`}>
+                            <button onClick={onCountriesOverviewClick}
+                            className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4  cursor-pointer ${
+                                    activeParent === "E"
+                                    ? "text-blue-900  rounded-lg  bg-amber-300   "
+                                    : "text-white hover:text-yellow-400"
+                                }`}
+                                >
+                            <div className="flex items-center gap-3">
+                            <Globe />
+                            <span className="font-semibold family-DM-Sans">Country set up</span>
+                            </div>
+                            </button>
+                            </li> 
+
+                          <li onClick={() => toggleDropdown("F")} className={`relative  ${
+                            activeParent === "F"
+                            ? "text-yellow-500 border-l-4 border-yellow-500"
+                            : "text-white hover:text-yellow-400"
+                        }`}>
+                            <button
+                            onClick={onConfigurationClick}
+                            className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4  cursor-pointer ${
+                                    activeParent === "F"
+                                    ? "text-blue-900  rounded-lg  bg-amber-300   "
+                                    : "text-white hover:text-yellow-400"
+                                }`}
+                                >
+                            <div className="flex items-center gap-3">
+                           <Settings />
+                            <span className="font-semibold family-DM-Sans">Configuration</span>
+                            </div>
+                            </button>
+                            {/* {showConfiguration && <Configuration /> } */}
+                            </li>   
+                       
+
+                         {/* <li
                             onClick={() => toggleDropdown("D")}
                             className={`w-full flex text-left text-sm p-4  cursor-pointer ${
                                 activeParent === "D"
@@ -139,9 +254,9 @@ const Sidebar = ({ onLeadersClick, onRegisterClick, onUserClick, onTableClick, o
                                 <li className="px-4 py-2 hover:bg-gray-100">donation4</li>
                                 <li className="px-4 py-2 hover:bg-gray-100">donation5</li>
                             </ul> 
-                        )}
+                        )} */}
 
-                        <li
+                        {/* <li
                             onClick={() => toggleDropdown("E")}
                             className={`w-full flex text-left text-sm p-4  cursor-pointer ${
                                 activeParent === "E"
@@ -150,66 +265,11 @@ const Sidebar = ({ onLeadersClick, onRegisterClick, onUserClick, onTableClick, o
                             }`}
                             >
                             <div className="flex items-center gap-3">
-                                <Church />
-                            <span>Ministries</span>
+                                <Settings />
+                            <span>Configuration</span>
                             </div>
                             </li>
-                        {openDropdown === "E" && (
-                            <ul className=" bg-white hover:cursor-pointer mt-2 w-48 shadow-md">
-                                <li className="px-4 py-2 hover:bg-gray-100">
-                                    <button onClick={() => setIsSubOpen(!isSubOpen)} className="w-full text-left">
-                                        Greater Accra Region
-                                    </button>
-                                    {isSubOpen && (
-                                        <ul className=" relative left-20 top-0 bg-white z-30   shadow-md w-48 ">
-                                            <li onClick={() => setOpenZone((prev) => (prev === "A" ? null : "A"))} className="relative text-red-500/50 w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                                                
-                                                    ZONE A
-                                                
-                                            </li>
-                                            {openZone === "A" && (
-                                                <ul className="absolute rounded-xl left-full top-0 bg-white  shadow-md w-48 z-30">
-                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE A1</li>
-                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE A1</li>
-                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE A1</li>
-                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE A1</li>
-                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE A1</li>
-                                                    <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE A1</li>
-                                                </ul>
-                                            )}
-
-                                            <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-                                               <button onClick={() => setOpenZone((prev) => (prev === "B" ? null : "B"))} className="w-full text-left">
-                                                 ZONE B
-                                               </button>
-                                               {openZone === "B" && (
-                                                    <ul className="absolute left-full top-0 bg-white  shadow-md w-48 z-3">
-                                                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE B1</li>
-                                                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE B1</li>
-                                                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE B1</li>
-                                                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE B1</li>
-                                                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE B1</li>
-                                                        <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">ZONE B1</li>
-                                                    </ul>
-                                               )}
-                                            </li>
-                                        </ul>
-                                    )}
-                                </li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Central Region</li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Eastern Region</li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Bono Region</li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Bono East Region</li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Ashanti Region</li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Ahafo Region</li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Western Region</li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Western North Region</li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Oti Region</li>
-                                <li className="px-4 py-2 hover:bg-gray-100">Upper East Region</li>
-
-                                
-                            </ul>
-                        )}
+                        {openDropdown === "E" && ( "" )}
                          <li
                                 onClick={() => toggleDropdown("F")}
                                 className={`w-full flex text-left text-sm p-4  cursor-pointer ${
@@ -223,9 +283,9 @@ const Sidebar = ({ onLeadersClick, onRegisterClick, onUserClick, onTableClick, o
                                 <span>News</span>
                                 </div>
                                 </li>
-                        {openDropdown === "F" && ("")}
+                        {openDropdown === "F" && ("")} */}
 
-                         <li
+                         {/* <li
                                 onClick={() => toggleDropdown("G")}
                                 className={`w-full flex text-left text-sm p-4  cursor-pointer ${
                                     activeParent === "G"
@@ -238,7 +298,7 @@ const Sidebar = ({ onLeadersClick, onRegisterClick, onUserClick, onTableClick, o
                                 <span>Settings</span>
                                 </div>
                                 </li>
-                        {openDropdown === "G" && ("")}
+                        {openDropdown === "G" && ("")} */}
                     </ul>  
                 </nav>
                 
@@ -259,9 +319,12 @@ const Sidebar = ({ onLeadersClick, onRegisterClick, onUserClick, onTableClick, o
         
   );};
   <CreateLeaderForm/>;
-//   <Users/>;
+  <Configuration/>;
   <Register/>;
   <MemberTable/>,
-  <AttendanceTracking/>
+  <AttendanceTracking/>;
+  <ParentChildManager/>;
+  <CountriesOverview/>;
+  <CountryAdministrativeDivisions/>
 
   export default Sidebar;

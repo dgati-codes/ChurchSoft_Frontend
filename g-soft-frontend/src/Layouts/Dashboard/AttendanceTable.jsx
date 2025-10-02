@@ -85,8 +85,10 @@ export default function AttendanceTable() {
       {/* Label */}
       <span className="text-sm font-medium">Detailed View</span>
     </div>
-            <span className="text-sm text-gray-500">16 Records</span>
-            <span className="text-sm text-gray-500">1130 Total Attendance</span>
+            <div className="flex gap-2 items-center ml-20 p-4 ">
+              <span className="text-sm p-1.5 bg-[#EDEDED] rounded-xl text-black">16 Records</span>
+            <span className="text-sm p-1.5 bg-[#EDEDED] rounded-xl text-black">1130 Total Attendance</span>
+            </div>
           </div>
         {/* </div> */}
 

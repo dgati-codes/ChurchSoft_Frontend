@@ -156,7 +156,8 @@ export default function CountryAdministrativeDivisions() {
           
           <div className="bg-white p-6 rounded-lg shadow border border-gray-200 flex flex-col items-center justify-center">
             <div>
-            <p className="text-lg font-semibold ">Submitted Administrative Divisions (0)</p>
+            <p className="text-lg font-semibold ">Submitted Administrative Divisions ({submittedDivisions.length}
+                  )</p>
             {submittedDivisions.length === 0 ? (
               <div className="text-center ">
                 

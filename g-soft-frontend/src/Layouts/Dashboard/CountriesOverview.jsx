@@ -45,7 +45,7 @@ function CountriesOverview() {
   ]);
 
   return (
-    <div className="p-6 ml-64 bg-gray-50 min-h-screen">
+    <div className="p-2  bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -140,9 +140,9 @@ function CountriesOverview() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white p-20 rounded-lg shadow overflow-hidden">
         <h2 className="p-4 font-medium border-b">Configured Countries Overview</h2>
-        <table className="w-full text-sm border-collapse">
+        <table className="w-full text-sm p-2 border-collapse">
           <thead className="bg-gray-100 text-gray-600">
             <tr>
               <th className="p-3 text-left border">Country Name</th>
