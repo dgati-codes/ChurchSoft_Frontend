@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import LoginForm from '../../features/auth/Components/Login/LoginForm.jsx';
 import MainDashboard from './MainDashboard';
 // import CreateUsers from './UsersForm.jsx';
-import AddUserForm from './AddUserForm.jsx';
+import CreateLeaderForm from './CreateLeaderForm';
 import Register from './register';
 import MemberTable from './table';
 import AttendanceTracking from './Attendance';
@@ -16,8 +16,8 @@ import Configuration from  './Configuration';
 
 const Dashboard = () => {
   const [showLoginForm, setShowLoginForm] = useState(true);
-  const [showAddUserForm, setShowAddUserForm] = useState(false);
-  // const [showCreateUsers, setShowCreateUsers] = useState(false);
+  const [showCreateLeaderForm, setShowCreateLeaderForm] = useState(false);
+  const [showCreateUsers, setShowCreateUsers] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showTable, setShowTable] = useState(false);
   const [showAttendance, setShowAttendance] = useState(false);
@@ -25,17 +25,17 @@ const Dashboard = () => {
   const [showCountriesOverview, setShowCountriesOverview] = useState(false);
   
 
-  const handleAddUserFormClick = () => {
-    setShowAddUserForm(true);
+  const handleLeadersClick = () => {
+    setShowCreateLeaderForm(true);
   };
 
   const handleConfigurationClick = () => {
     setShowConfiguration(true);
   };
 
-  // const handleUsersClick = () => {
-  //   setShowCreateUsers(true);
-  // };
+  const handleUsersClick = () => {
+    setShowCreateUsers(true);
+  };
 
   const handleRegisterClick = () => {
     // Reset the Register form and show it
@@ -62,8 +62,8 @@ const Dashboard = () => {
         {!showLoginForm && (
           <Sidebar
             onRegisterClick={handleRegisterClick}
-            onAddUserClick={handleAddUserFormClick}
-            // onUserClick={handleUsersClick}
+            onLeadersClick={handleLeadersClick}
+            onUserClick={handleUsersClick}
             onTableClick={handleTableClick}
             onAttendanceClick={handleAttendanceClick}
             onLogoutClick={() => setShowLoginForm(true)}
@@ -87,7 +87,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <div >
-        <MainDashboard />
+            <MainDashboard />
         <ParentChildManager  />
         <CountryAdministrativeDivisions />
        
@@ -130,16 +130,16 @@ const Dashboard = () => {
 
 
 
-      {showAddUserForm && (
-        <div className="absolute inset-0 ml-64 top-20 bg-white flex justify-center items-center">
-          <div className="bg-white p-6 rounded-xl  w-full  relative">
+      {showCreateLeaderForm && (
+        <div className="absolute inset-0 ml-64  bg-white flex justify-center items-center">
+          <div className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-2xl relative">
             <button
               className="absolute top-3 right-4 text-xl"
-              onClick={() => setShowAddUserForm(false)}
+              onClick={() => setShowCreateLeaderForm(false)}
             >
                   <X />
             </button>
-            <AddUserForm />
+            <CreateLeaderForm />
           </div>
         </div>
       )}

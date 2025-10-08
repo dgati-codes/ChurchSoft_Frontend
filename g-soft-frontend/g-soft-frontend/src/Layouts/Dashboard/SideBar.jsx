@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AddUserForm from "./AddUserForm";
+import CreateLeaderForm from "./CreateLeaderForm";
 // import Users from "./UsersForm";
 import Register from "./register";
 import MemberTable from "./table";
@@ -11,7 +11,7 @@ import Configuration from  "./Configuration";
 import { LayoutDashboard, Globe, UserCheck, Users, ChevronDown,  Settings, UserRoundPlus,  } from "lucide-react";
 
 const Sidebar = ({
-  onAddUserClick,
+  onLeadersClick,
   onRegisterClick,
   onUserClick,
   onTableClick,
@@ -85,7 +85,7 @@ const Sidebar = ({
                             : "text-white hover:text-yellow-400"
                         }`}>
                             
-                            <button   onClick={onAddUserClick}                            
+                            <button                               
                              className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4  cursor-pointer ${
                                     activeParent === "B"
                                     ? "text-blue-900  rounded-lg  bg-amber-300   "
@@ -318,7 +318,7 @@ const Sidebar = ({
 
         
   );};
-  <AddUserForm/>;
+  <CreateLeaderForm/>;
   <Configuration/>;
   <Register/>;
   <MemberTable/>,
