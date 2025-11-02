@@ -10,19 +10,18 @@ import {
   Star,
   Save,
   X,
-  CheckCircle,
 } from "lucide-react";
 
 const Step7ReviewSubmit = () => {
   const { formData, updateForm } = useRegistration();
   const [editingSection, setEditingSection] = useState(null);
   const [localData, setLocalData] = useState(formData);
-  const [savedSection, setSavedSection] = useState(null);
 
   const sections = [
     {
       title: "Personal & Identity Information",
       icon: <User className="text-white w-5 h-5" />,
+      step: 1,
       fields: [
         "fullName",
         "dob",
@@ -41,24 +40,24 @@ const Step7ReviewSubmit = () => {
     {
       title: "Contact & Location Details",
       icon: <MapPin className="text-white w-5 h-5" />,
+      step: 2,
       fields: [
         "phoneNumber",
         "email",
         "whatsapp",
-        "digitalAddress",
         "residentialAddress",
-        "gpsLocation",
       ],
       subTitle: "Next of Kin Details",
       subFields: [
-        "emergencyContactName",
-        "relationshipToEmergency",
-        "emergencyContactPhone",
+        "nextOfKinName",
+        "nextOfKinRelationship",
+        "nextOfKinContact",
       ],
     },
     {
       title: "Spiritual Journey & Church Membership",
       icon: <Church className="text-white w-5 h-5" />,
+      step: 3,
       fields: [
         "membershipStatus",
         "membershipDate",
@@ -73,30 +72,28 @@ const Step7ReviewSubmit = () => {
     {
       title: "Education & Career Details",
       icon: <Book className="text-white w-5 h-5" />,
+      step: 4,
       fields: [
         "educationLevel",
-        "courseOfStudy",
-        "institution",
-        "graduationYear",
-        "professionalQualification",
-        "occupation",
-        "employer",
-        "position",
+        "Profession",
+        "EmploymentSector",
+        "EmploymentType",
+        
       ],
     },
     {
-      title: "Talents & Ministry Service",
+      title: "Ministry Involvement & Skills",
       icon: <Star className="text-white w-5 h-5" />,
-      fields: ["skills", "talents", "willingToServe", "areaOfService"],
+      step: 5,
+      fields: ["ministries", "reason",   "leadershipRole", "skills"],
     },
     {
       title: "Emergency & Health Information",
       icon: <HeartPulse className="text-white w-5 h-5" />,
+      step: 6,
       fields: [
         "healthCondition",
-        "allergies",
-        "disabilityStatus",
-        "healthInsuranceProvider",
+        "specialNeeds",
       ],
     },
   ];
@@ -107,11 +104,7 @@ const Step7ReviewSubmit = () => {
 
   const handleSave = (section) => {
     updateForm(localData);
-    setSavedSection(section.title);
     setEditingSection(null);
-
-    // show "Saved!" message for 2 seconds
-    setTimeout(() => setSavedSection(null), 2000);
   };
 
   const handleFinalSubmit = (e) => {
@@ -128,15 +121,17 @@ const Step7ReviewSubmit = () => {
       <p className="text-center text-gray-600 mb-8">
         Review all information carefully before submission.
       </p>
-
+      
       <form onSubmit={handleFinalSubmit} className="space-y-8">
+        
         {sections.map((section, i) => (
           <div
             key={i}
-            className="rounded-xl border shadow bg-white overflow-hidden relative"
+            className="rounded-xl border shadow bg-white overflow-hidden"
           >
             {/* Section Header */}
             <div className="flex justify-between items-center bg-blue-600 px-4 py-3">
+              
               <div className="flex items-center gap-2 text-white font-medium">
                 <span className="bg-blue-500 p-1 rounded">{section.icon}</span>
                 {section.title}
@@ -166,7 +161,7 @@ const Step7ReviewSubmit = () => {
               {section.fields.map((field) => (
                 <div
                   key={field}
-                  className="bg-gray-50 rounded-lg p-3 border-l-6 border-blue-400 border"
+                  className="bg-gray-50 rounded-lg p-3 border-l-4 border-blue-400 border"
                 >
                   <p className="text-xs text-gray-500 capitalize mb-1">
                     {field.replace(/([A-Z])/g, " $1")}
@@ -189,7 +184,7 @@ const Step7ReviewSubmit = () => {
               ))}
             </div>
 
-            {/* Sub-section (e.g. Next of Kin) */}
+            {/* Sub-section (Next of Kin, etc.) */}
             {section.subTitle && (
               <div className="px-6 pb-6">
                 <h4 className="text-center font-semibold mb-4 mt-2">
@@ -199,7 +194,7 @@ const Step7ReviewSubmit = () => {
                   {section.subFields.map((sub) => (
                     <div
                       key={sub}
-                      className="bg-gray-50 rounded-lg p-3 border-l-6 border-blue-400 border"
+                      className="bg-gray-50 rounded-lg p-3 border-l-4 border-blue-400 border"
                     >
                       <p className="text-xs text-gray-500 capitalize mb-1">
                         {sub.replace(/([A-Z])/g, " $1")}
@@ -226,29 +221,22 @@ const Step7ReviewSubmit = () => {
               </div>
             )}
 
-            {/* Save Button + Animated Confirmation */}
+            {/* Save button (visible in edit mode) */}
             {editingSection === section.title && (
               <div className="flex justify-end px-6 pb-6">
                 <button
                   type="button"
                   onClick={() => handleSave(section)}
-                  className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-500 transition"
+                  className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-500"
                 >
-                  <Save className="w-4 h-4" /> Save changes
+                  <Save className="w-4 h-4" /> Save Section
                 </button>
-              </div>
-            )}
-
-            {savedSection === section.title && (
-              <div className="absolute top-3 right-4 flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full shadow animate-fade-in">
-                <CheckCircle className="w-4 h-4" />
-                <span className="text-sm font-medium">Saved!</span>
               </div>
             )}
           </div>
         ))}
 
-        {/* Submit Buttons */}
+        {/* Submit */}
         <div className="flex justify-between pt-6">
           <button
             type="reset"

@@ -80,7 +80,6 @@ const Step2ContactInfo = () => {
               type="text"
               name="whatsapp"
              value={localData.whatsapp}
-              checked={localData.whatsapp}
               onChange={handleChange}
               className="input bg-gray-100 rounded px-4 py-2"
             />

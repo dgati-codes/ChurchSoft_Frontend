@@ -14,7 +14,7 @@ import {
     AreaChart,
   Area,
 } from "recharts";
-import { UsersRound,  ChartLine, Baby, ChartColumnIncreasing } from 'lucide-react';
+import { UsersRound,  ChartLine, Baby, ArrowLeft, ChartColumnIncreasing } from 'lucide-react';
 
 const data = [
   { name: "Group A", value: 400 },
@@ -93,9 +93,23 @@ const barData = [
 // const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 // ✅ Dashboard Component
-export default function MainDashboard() {
+export default function MemberFullView({ onBack }) {
+  
+
   return (
-    <div className="pt-10 mt-16 p-6 space-y-6 ml-64 bg-gray-100 min-h-screen">
+    <div className="  p-6 space-y-6  bg-gray-100 min-h-screen">
+        <div
+        className="flex items-center gap-2 cursor-pointer w-fit text-blue-600 hover:text-blue-800"
+        onClick={onBack} // ✅ use the passed prop
+      >
+        <ArrowLeft className="w-5 h-5" />
+        <button className="font-medium">Back</button>
+      </div>
+
+      {/* Your MemberFullView content here */}
+      <div className="mt-6">
+        {/* Member details content */}
+      </div>
       {/* Header */}
       <h1 className="text-2xl font-bold">Member Registration Dashboard</h1>
       <p className="text-gray-600">

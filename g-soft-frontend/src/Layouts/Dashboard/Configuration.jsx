@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { RefreshCw, Download } from "lucide-react";
+import { RefreshCw, Search, Download } from "lucide-react";
 
-export default function DashboardSummary() {
+export default function Configuration() {
   const [search, setSearch] = useState("");
 
   const countries = [
@@ -55,7 +55,7 @@ export default function DashboardSummary() {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-2  bg-gray-50 min-h-screen ">
       {/* Header */}
       <h2 className="text-center text-xl font-bold">Dashboard Summary</h2>
       <p className="text-center text-gray-600">
@@ -64,46 +64,55 @@ export default function DashboardSummary() {
 
       {/* Summary Boxes */}
       <div className="grid grid-cols-5 gap-4 mt-6">
-        <SummaryCard label="Countries" value="5" color="bg-pink-200" />
-        <SummaryCard label="Dropdowns" value="4" color="bg-green-200" />
-        <SummaryCard label="Free Input" value="1" color="bg-yellow-200" />
+        <SummaryCard label="Countries" value="5" color="bg-gradient-to-tl from-yellow-100 to-pink-200" />
+        <SummaryCard label="Dropdowns" value="4" color="bg-gradient-to-bl from-white to-blue-200" />
+        <SummaryCard label="Free Input" value="1" color="bg-gradient-to-bl from-red-100 to-yellow-200"  />
         <SummaryCard label="Parent Levels" value="167" color="bg-blue-200" />
-        <SummaryCard label="Child Levels" value="486" color="bg-purple-200" />
+        <SummaryCard label="Child Levels" value="486" color="bg-gradient-to-br from-pink-100 to-purple-200"  />
       </div>
 
       {/* Countries List */}
-      <div className="mt-8 bg-white rounded-xl shadow p-4">
+      <div className="mt-8 bg-white border border-gray-100 rounded-xl  p-10">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold">
             Configured Countries ({filteredCountries.length})
           </h3>
           <div className="flex gap-2">
-            <button className="p-2 rounded-lg border hover:bg-gray-100">
+            <button className="p-2 flex items-center gap-2 rounded-lg  border hover:bg-gray-100">
+                <span>Refresh</span>
               <RefreshCw size={16} />
             </button>
-            <button className="p-2 rounded-lg border hover:bg-gray-100">
+            <button className="p-2 rounded-lg flex items-center gap-2 border hover:bg-gray-100">
+                <span>Export </span>
               <Download size={16} />
             </button>
           </div>
         </div>
 
         {/* Search */}
-        <input
-          type="text"
-          placeholder="Search Countries"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full border rounded-lg p-2 mb-4"
-        />
+        
+         <div className="relative w-1/2 mb-8">
+      {/* Search Icon */}
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+
+      {/* Input field */}
+      <input
+        type="text"
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search Countries.."
+         value={search}
+        className=" w-full pl-10 pr-4 py-2 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200"
+      />
+    </div>
 
         <div className="space-y-3 max-h-80 overflow-y-auto">
           {filteredCountries.length > 0 ? (
             filteredCountries.map((c, idx) => (
               <div
                 key={idx}
-                className="flex justify-between items-center border rounded-lg p-3"
+                className="flex justify-between items-center border border-gray-100 rounded-lg p-3"
               >
-                <div>
+                <div className="flex justify-between gap-4">
                   <span
                     className={`px-2 py-1 rounded text-xs font-medium ${
                       c.type === "Dropdown"
@@ -113,11 +122,13 @@ export default function DashboardSummary() {
                   >
                     {c.type}
                   </span>
-                  <p className="font-semibold mt-1">
+                 
+                    <p className="font-semibold mt-1">
                     {c.name}{" "}
-                    <span className="text-gray-500 text-sm">({c.code})</span>
+                    <p className="text-gray-500 text-sm">({c.code})</p>
                   </p>
-                  <p className="text-sm text-gray-600">
+                  
+                  <p className="text-sm ml-30 text-gray-600">
                     {c.parent} Parent • {c.child} Child
                   </p>
                 </div>
@@ -142,7 +153,7 @@ export default function DashboardSummary() {
 function SummaryCard({ label, value, color }) {
   return (
     <div
-      className={`${color} p-4 rounded-xl flex flex-col justify-center items-center shadow`}
+      className={`${color} p-4 rounded-xl flex flex-col justify-center items-center `}
     >
       <span className="text-2xl font-bold">{value}</span>
       <span className="text-gray-600">{label}</span>

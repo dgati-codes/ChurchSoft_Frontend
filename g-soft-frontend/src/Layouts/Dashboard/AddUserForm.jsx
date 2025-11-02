@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { CheckCircle } from "lucide-react";
 
 const AddUserForm = () => {
+    const [showSuccess, setShowSuccess] = useState(false);
+  
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -22,11 +25,12 @@ const AddUserForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("User Added:", formData);
-    alert("User added successfully!");
+    // alert("User added successfully!");
+    setShowSuccess(true); 
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-gray-50   flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-4xl bg-white  rounded-xl p-10 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-8">
@@ -176,6 +180,27 @@ const AddUserForm = () => {
           </button>
         </div>
       </div>
+
+      {showSuccess && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 bg-opacity-10  bg-opacity-40 z-50">
+          <div className="bg-white rounded-2xl shadow-lg p-8 w-96 text-center animate-fade-in">
+            <div className="flex justify-center mb-4">
+              <div className="bg-green-100 rounded-full p-4">
+                <CheckCircle className="w-10 h-10 text-green-600" />
+              </div>
+            </div>
+            <h2 className="text-lg font-semibold text-gray-800">
+              You have successfully added Mike Tyson as a new user.
+            </h2>
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

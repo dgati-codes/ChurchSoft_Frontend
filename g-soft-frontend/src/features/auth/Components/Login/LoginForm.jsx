@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
+import axios from "../../../../api/axios";
 import "../../../../App.css";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import ResetSuccess from './ResetSuccess';
-import ResetCodeForm from './ResetCodeForm';
+// import ResetCodeForm from './ResetCodeForm';
 
 
 /**
@@ -13,7 +15,52 @@ function LoginForm({ onLoginSuccess }) {
   const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
   const [showResetSuccess, setShowResetSuccess] = useState(false);
 
-  const handleToggle = () => {
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate(); // React Router hook
+
+  const handleLogin = async (e) => {
+    // e.preventDefault();
+    // setError("");
+    // setLoading(true);
+    
+    // if (onLoginSuccess) onLoginSuccess();
+
+    // try {
+    //   const response = await axios.post("/users/login", { username, password });
+    //   console.log("Login Response:", response.data);
+
+    //   // Adjust according to your backend response
+    //   const token =
+    //     response.data.token ||
+    //     response.data.accessToken ||
+    //     response.data.data?.token;
+
+    //   if (token) {
+    //     localStorage.setItem("token", token); // store token
+    //     navigate("/dashboard"); // redirect to dashboard
+    //   } else {
+    //     setError("No token received from server.");
+    //     console.log("Response data:", response.data);
+    //   }
+    // } catch (err) {
+    //   const message =
+    //     err.response?.data?.message || "Invalid username or password.";
+    //   setError(message);
+    // } finally {
+    //   setLoading(false);
+    // }
+     e.preventDefault();
+
+  // Optional: store a dummy token so PrivateRoute still works
+  localStorage.setItem("token", "demo-token");
+
+  // Redirect to dashboard
+  navigate("/dashboard");
+  };  const handleToggle = () => {
     setShowLoginForm(false);
     setShowForgotPasswordForm(true);
   };
@@ -28,10 +75,10 @@ function LoginForm({ onLoginSuccess }) {
     setShowResetSuccess(false);
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (onLoginSuccess) onLoginSuccess(); // inform parent to hide login and show dashboard
-  };
+  // const handleLogin = (e) => {
+  //   e.preventDefault();
+  //   if (onLoginSuccess) onLoginSuccess(); // inform parent to hide login and show dashboard
+  // };
 
   return (
     <>
@@ -60,13 +107,20 @@ function LoginForm({ onLoginSuccess }) {
                   Kindly enter your credentials to login.
                 </p>
               </div>
-
+               {error && (
+                <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center text-sm">
+                  {error}
+                </div>
+              )}
               {/* Login form */}
-              <form className="w-full max-w-xs">
+              <form  onSubmit={handleLogin} className="w-full max-w-xs">
                 <div className="mb-2.5">
                   <input
                     type="text"
-                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter username"
+                    required
                     id="username"
                     className="w-full px-3.5 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -74,7 +128,10 @@ function LoginForm({ onLoginSuccess }) {
                 <div className="mb-3">
                   <input
                     type="password"
-                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    required
                     id="password"
                     className="w-full mt-2 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -95,13 +152,17 @@ function LoginForm({ onLoginSuccess }) {
                 </div>
 
                 {/* Login button */}
-                <button
-                  type="button"
-                  onClick={handleLogin}
-                  className="w-full bg-blue-600 hover:bg-blue-900 cursor-pointer text-white font-bold py-2 px-3 rounded-lg transition duration-200"
-                >
-                  Login
-                </button>
+                 <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-2 rounded-lg text-white font-semibold transition ${
+            loading
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
               </form>
             </div>
           </div> 
