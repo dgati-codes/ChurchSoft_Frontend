@@ -1,66 +1,53 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../../../../api/axios";
+import { loginUser } from "../../../../api/userService";
 import "../../../../App.css";
 import ForgotPasswordForm from "./ForgotPasswordForm";
-import ResetSuccess from './ResetSuccess';
-// import ResetCodeForm from './ResetCodeForm';
+import ResetSuccess from "./ResetSuccess";
 
-
-/**
- * LoginForm component: handles the login form and forgot password functionality.
- */
 function LoginForm({ onLoginSuccess }) {
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
   const [showResetSuccess, setShowResetSuccess] = useState(false);
 
-
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // React Router hook
+  const navigate = useNavigate();
 
+  // ✅ Backend login integration
   const handleLogin = async (e) => {
-    // e.preventDefault();
-    // setError("");
-    // setLoading(true);
-    
-    // if (onLoginSuccess) onLoginSuccess();
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    // try {
-    //   const response = await axios.post("/users/login", { username, password });
-    //   console.log("Login Response:", response.data);
+    try {
+      const { success, token, user, message } = await loginUser({
+        username,
+        password,
+      });
 
-    //   // Adjust according to your backend response
-    //   const token =
-    //     response.data.token ||
-    //     response.data.accessToken ||
-    //     response.data.data?.token;
+      if (success && token) {
+        // ✅ Save user + token to localStorage
+        localStorage.setItem("accessToken", token);
+        localStorage.setItem("user", JSON.stringify(user));
 
-    //   if (token) {
-    //     localStorage.setItem("token", token); // store token
-    //     navigate("/dashboard"); // redirect to dashboard
-    //   } else {
-    //     setError("No token received from server.");
-    //     console.log("Response data:", response.data);
-    //   }
-    // } catch (err) {
-    //   const message =
-    //     err.response?.data?.message || "Invalid username or password.";
-    //   setError(message);
-    // } finally {
-    //   setLoading(false);
-    // }
-     e.preventDefault();
+        if (onLoginSuccess) onLoginSuccess({ user, token });
 
-  // Optional: store a dummy token so PrivateRoute still works
-  localStorage.setItem("token", "demo-token");
+        // ✅ Redirect to dashboard
+        navigate("/dashboard");
+      } else {
+        setError(message || "Invalid credentials.");
+      }
+    } catch (err) {
+      setError(err.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Redirect to dashboard
-  navigate("/dashboard");
-  };  const handleToggle = () => {
+  const handleToggle = () => {
     setShowLoginForm(false);
     setShowForgotPasswordForm(true);
   };
@@ -75,26 +62,11 @@ function LoginForm({ onLoginSuccess }) {
     setShowResetSuccess(false);
   };
 
-  // const handleLogin = (e) => {
-  //   e.preventDefault();
-  //   if (onLoginSuccess) onLoginSuccess(); // inform parent to hide login and show dashboard
-  // };
-
   return (
     <>
       {showLoginForm && (
-        <div className="fixed bg-[url('/images/pexels-valeriya-kobzar-42371713-8358604.jpg')] bg-cover bg-center  inset-0 flex items-center justify-center z-50">
+        <div className="fixed bg-[url('/images/pexels-valeriya-kobzar-42371713-8358604.jpg')] bg-cover bg-center inset-0 flex items-center justify-center z-50">
           <div className="flex w-[400px] max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
-            {/* Left image */}
-            {/* <div className="md:w-1/2 w-full">
-              <img
-                src="/images/church.jpg"
-                alt="Church building"
-                className="w-full h-full object-cover"
-              />
-            </div> */}
-
-            {/* Right form */}
             <div className="w-[300px] mx-auto p-4 flex flex-col border-[1px] border-blue-600 rounded-lg items-center justify-center m-12">
               <div className="text-center mb-6">
                 <img
@@ -107,13 +79,14 @@ function LoginForm({ onLoginSuccess }) {
                   Kindly enter your credentials to login.
                 </p>
               </div>
-               {error && (
+
+              {error && (
                 <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center text-sm">
                   {error}
                 </div>
               )}
-              {/* Login form */}
-              <form  onSubmit={handleLogin} className="w-full max-w-xs">
+
+              <form onSubmit={handleLogin} className="w-full max-w-xs">
                 <div className="mb-2.5">
                   <input
                     type="text"
@@ -137,7 +110,6 @@ function LoginForm({ onLoginSuccess }) {
                   />
                 </div>
 
-                {/* Forgot password */}
                 <div className="flex justify-between items-center mb-6">
                   <div></div>
                   <div>
@@ -151,21 +123,20 @@ function LoginForm({ onLoginSuccess }) {
                   </div>
                 </div>
 
-                {/* Login button */}
-                 <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-2 rounded-lg text-white font-semibold transition ${
-            loading
-              ? "bg-blue-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-          }`}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full py-2 rounded-lg text-white font-semibold transition ${
+                    loading
+                      ? "bg-blue-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700"
+                  }`}
+                >
+                  {loading ? "Logging in..." : "Login"}
+                </button>
               </form>
             </div>
-          </div> 
+          </div>
         </div>
       )}
 
@@ -179,6 +150,5 @@ function LoginForm({ onLoginSuccess }) {
     </>
   );
 }
-
 
 export default LoginForm;

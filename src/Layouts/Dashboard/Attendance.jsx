@@ -24,7 +24,7 @@ export default function AttendanceTracking() {
 
 
   return (
-    <div className="min-h-screen -ml-64 p-10 bg-[#F9FAFB] ">
+    <div className="min-h-screen p-10 bg-[#F9FAFB] ">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div className="mb-4">
@@ -34,14 +34,21 @@ export default function AttendanceTracking() {
           </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowAddAttendanceRecord(true)} className="bg-[#0063D4] text-white px-4 py-2 rounded-lg">
+          <button
+            onClick={() => setShowAddAttendanceRecord(true)}
+            className="bg-[#0063D4] text-white px-4 py-2 rounded-lg"
+          >
             + Add Record
           </button>
           <button className="bg-[#0063D4] text-white px-4 py-2 rounded-lg">
             + Add Notes
           </button>
-          <button className="border border-gray-300 px-4 py-2 rounded-lg">Export PDF</button>
-          <button className="border border-gray-300 px-4 py-2 rounded-lg">Print</button>
+          <button className="border border-gray-300 px-4 py-2 rounded-lg">
+            Export PDF
+          </button>
+          <button className="border border-gray-300 px-4 py-2 rounded-lg">
+            Print
+          </button>
         </div>
       </div>
 
@@ -52,34 +59,51 @@ export default function AttendanceTracking() {
           <button className="text-sm text-blue-600">Clear All</button>
         </div>
         <div className="flex gap-4">
-          
           <div>
             <label className="family-Helvetica">Service Dates</label>
-            <input type="text"
-            className="input " 
-            placeholder="login date"/>
+            <input type="text" className="input " placeholder="login date" />
           </div>
           <div>
             <label className="family-Helvetica">Service Type</label>
             <select className="input">
-            <option>Service Type</option>
-          </select>
+              <option>Service Type</option>
+            </select>
           </div>
           <div>
             <label className="family-Helvetica">Assembly</label>
             <select className="input">
-            <option>Assembly</option>
-          </select>
+              <option>Assembly</option>
+            </select>
           </div>
         </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 m-4 md:grid-cols-4 gap-4">
-        <StatCard title="Total Attendance" value="1550" subtitle="Across 1 service"  icon={<Users className="text-[#F49200] p-1 bg-[#FFF1DC]" />}/>
-        <StatCard title="Average Attendance" value="189" subtitle="Per Service" icon={<TrendingUp className="bg-[#F8FFDC] p-1 text-[#99C000]"  />} />
-        <StatCard title="Active Locations" value="16" subtitle="16 regions" icon={<MapPin className="bg-[#DEFFDC] p-1 text-[#09B700]"/>}/>
-        <StatCard title="Service Records" value="32" subtitle="Total entries" icon={<BookOpen className="bg-[#DCFAFF] p-1 text-[#007588]" />} />
+        <StatCard
+          title="Total Attendance"
+          value="1550"
+          subtitle="Across 1 service"
+          icon={<Users className="text-[#F49200] p-1 bg-[#FFF1DC]" />}
+        />
+        <StatCard
+          title="Average Attendance"
+          value="189"
+          subtitle="Per Service"
+          icon={<TrendingUp className="bg-[#F8FFDC] p-1 text-[#99C000]" />}
+        />
+        <StatCard
+          title="Active Locations"
+          value="16"
+          subtitle="16 regions"
+          icon={<MapPin className="bg-[#DEFFDC] p-1 text-[#09B700]" />}
+        />
+        <StatCard
+          title="Service Records"
+          value="32"
+          subtitle="Total entries"
+          icon={<BookOpen className="bg-[#DCFAFF] p-1 text-[#007588]" />}
+        />
       </div>
 
       {/* Demographics Breakdown */}
@@ -120,12 +144,13 @@ export default function AttendanceTracking() {
       </div>
 
       {/* Detailed View */}
-     
-      <AttendanceTable/>
-      <AddAttendanceRecord 
-      className=" inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50"
+
+      <AttendanceTable />
+      <AddAttendanceRecord
+        className=" inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50"
         isOpen={showAddAttendanceRecord}
-        onClose={() => setShowAddAttendanceRecord(false)}/>
+        onClose={() => setShowAddAttendanceRecord(false)}
+      />
     </div>
   );
 }
