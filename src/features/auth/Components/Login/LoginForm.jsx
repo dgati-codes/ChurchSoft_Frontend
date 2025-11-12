@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../../../api/userService";
+
 import "../../../../App.css";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import ResetSuccess from "./ResetSuccess";
@@ -10,38 +11,42 @@ function LoginForm({ onLoginSuccess }) {
   const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
   const [showResetSuccess, setShowResetSuccess] = useState(false);
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [credentials, setCredentials] = useState({
+    username: "",
+    password: "",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
-  // ✅ Backend login integration
+  // ✅ Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const { success, token, user, message } = await loginUser({
-        username,
-        password,
-      });
+      // ✅ Destructure token too
+      const { success, token, user, message } = await loginUser(credentials);
 
       if (success && token) {
-        // ✅ Save user + token to localStorage
+        // ✅ Clear any stale token and store the new one
+        localStorage.removeItem("accessToken");
         localStorage.setItem("accessToken", token);
-        localStorage.setItem("user", JSON.stringify(user));
 
-        if (onLoginSuccess) onLoginSuccess({ user, token });
+        // ✅ Optional: If tokenHelper has a setter, use it instead
+        // import { setAccessToken } from "../../../../utils/tokenHelper";
+        // setAccessToken(token);
 
-        // ✅ Redirect to dashboard
+        if (onLoginSuccess) onLoginSuccess({ ...user, token }); // Pass token if parent needs it
         navigate("/dashboard");
       } else {
-        setError(message || "Invalid credentials.");
+        setError(message || "Invalid credentials. Please try again.");
       }
     } catch (err) {
-      setError(err.message || "Login failed. Please try again.");
+      console.error("Login error:", err);
+      setError("Login failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -62,12 +67,17 @@ function LoginForm({ onLoginSuccess }) {
     setShowResetSuccess(false);
   };
 
+  const handleChange = (e) => {
+    setCredentials({ ...credentials, [e.target.id]: e.target.value });
+    if (error) setError(""); // Clear error on user typing
+  };
+
   return (
     <>
       {showLoginForm && (
-        <div className="fixed bg-[url('/images/pexels-valeriya-kobzar-42371713-8358604.jpg')] bg-cover bg-center inset-0 flex items-center justify-center z-50">
-          <div className="flex w-[400px] max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
-            <div className="w-[300px] mx-auto p-4 flex flex-col border-[1px] border-blue-600 rounded-lg items-center justify-center m-12">
+        <div className="fixed inset-0 bg-[url('/images/pexels-valeriya-kobzar-42371713-8358604.jpg')] bg-cover bg-center flex items-center justify-center z-50">
+          <div className="flex w-[400px] bg-white rounded-xl overflow-hidden shadow-2xl">
+            <div className="w-[300px] mx-auto p-4 flex flex-col border border-blue-600 rounded-lg items-center justify-center m-12">
               <div className="text-center mb-6">
                 <img
                   src="/images/logo.png"
@@ -75,9 +85,6 @@ function LoginForm({ onLoginSuccess }) {
                   className="w-24 h-24 mx-auto mb-4"
                 />
                 <h1 className="text-3xl font-bold text-gray-800">GCCI</h1>
-                <p className="text-gray-500 mt-3.5 pt-3.5">
-                  Kindly enter your credentials to login.
-                </p>
               </div>
 
               {error && (
@@ -90,37 +97,36 @@ function LoginForm({ onLoginSuccess }) {
                 <div className="mb-2.5">
                   <input
                     type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    id="username"
+                    value={credentials.username}
+                    onChange={handleChange}
                     placeholder="Enter username"
                     required
-                    id="username"
                     className="w-full px-3.5 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
+
                 <div className="mb-3">
                   <input
                     type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    id="password"
+                    value={credentials.password}
+                    onChange={handleChange}
                     placeholder="Enter password"
                     required
-                    id="password"
                     className="w-full mt-2 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 <div className="flex justify-between items-center mb-6">
                   <div></div>
-                  <div>
-                    <button
-                      type="button"
-                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline hover:cursor-pointer"
-                      onClick={handleToggle}
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                    onClick={handleToggle}
+                  >
+                    Forgot password?
+                  </button>
                 </div>
 
                 <button
