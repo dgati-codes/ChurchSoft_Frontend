@@ -1,38 +1,46 @@
 import axios from "axios";
 import { getAccessToken } from "../utils/tokenHelper";
 
-// ✅ Load backend URL from .env file
-const BASE_URL ="https://churchsoft-backend.onrender.com/church-soft/v1.0";
+const BASE_URL = "https://churchsoft-backend.onrender.com/church-soft/v1.0";
 
-console.log("✅ API Base URL:", BASE_URL); // Debug log
-
-// ✅ Create reusable axios instance
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000, // 10s timeout
+  timeout: 10000,
 });
 
-// ✅ Automatically attach Authorization header for all requests
+// ✅ Attach token to all requests except login/register
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = getAccessToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (
+      !config.url.includes("/users/login") &&
+      !config.url.includes("/users/register")
+    ) {
+      const token = getAccessToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
-// ✅ Handle errors globally
+// ✅ Global error handling - now includes 403
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      console.warn("⚠️ Unauthorized - possible expired or invalid token");
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      console.warn(
+        "⚠️ Unauthorized or Forbidden - clearing token and redirecting to login"
+      );
+      localStorage.removeItem("accessToken"); // Clear expired/invalid token
+      // Redirect to login (adjust path if needed)
+      if (typeof window !== "undefined" && window.location) {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
