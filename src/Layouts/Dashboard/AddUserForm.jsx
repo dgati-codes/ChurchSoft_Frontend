@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, Upload, XCircle } from "lucide-react";
 import { registerUser } from "../../api/userService";
 
 const AddUserForm = () => {
@@ -16,6 +16,7 @@ const AddUserForm = () => {
     phoneNumber: "",
     localAssemblyName: "",
     roleName: "",
+    image: null,
   });
 
   const handleChange = (e) => {
@@ -25,10 +26,16 @@ const AddUserForm = () => {
     });
   };
 
+  const handleImageChange = (e) => {
+    setFormData({
+      ...formData,
+      image: e.target.files[0],
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // basic validation
     if (!formData.username || !formData.email || !formData.password) {
       setMessage("Please fill all required fields.");
       setShowError(true);
@@ -36,7 +43,13 @@ const AddUserForm = () => {
     }
 
     try {
-      const result = await registerUser(formData);
+      // ✅ convert to multipart/form-data
+      const formDataToSend = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value) formDataToSend.append(key, value);
+      });
+
+      const result = await registerUser(formDataToSend);
 
       if (result.success) {
         setMessage(
@@ -52,6 +65,7 @@ const AddUserForm = () => {
           phoneNumber: "",
           localAssemblyName: "",
           roleName: "",
+          image: null,
         });
       } else {
         setMessage(result.message);
@@ -75,28 +89,56 @@ const AddUserForm = () => {
           </p>
         </div>
 
+        {/* Image Upload */}
+        <div className="flex justify-center mb-6">
+          <div className="relative">
+            <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-200 shadow-md bg-gray-100">
+              {formData.image ? (
+                <img
+                  src={URL.createObjectURL(formData.image)}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+                  <div>
+                    <p>upload profile</p>
+                  <Upload  className="ml-8 mt-2"/>
+                  </div>
+                </div>
+                
+              )}
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="absolute inset-0 opacity-0 cursor-pointer"
+            />
+          </div>
+        </div>
+
         {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
-          {/* First Name */}
           <InputField
+            required
             label="First Name"
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
           />
 
-          {/* Last Name */}
           <InputField
+            required
             label="Last Name"
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
           />
 
-          {/* Username */}
           <InputField
             label="Username"
             name="username"
@@ -105,7 +147,6 @@ const AddUserForm = () => {
             required
           />
 
-          {/* Email */}
           <InputField
             label="Email"
             name="email"
@@ -115,7 +156,6 @@ const AddUserForm = () => {
             required
           />
 
-          {/* Password */}
           <InputField
             label="Password"
             name="password"
@@ -125,7 +165,6 @@ const AddUserForm = () => {
             required
           />
 
-          {/* Phone */}
           <InputField
             label="Phone Number"
             name="phoneNumber"
@@ -133,7 +172,6 @@ const AddUserForm = () => {
             onChange={handleChange}
           />
 
-          {/* Local Assembly */}
           <InputField
             label="Local Assembly"
             name="localAssemblyName"
@@ -154,20 +192,18 @@ const AddUserForm = () => {
               required
             >
               <option value="">Select role</option>
-              <option value="FINANCE">FINANCE</option>
-              <option value="ADMIN">ADMIN</option>
-              <option value="PASTOR">PASTOR</option>
-              <option value="LEADER">LEADER</option>
-              <option value="MEMBER">MEMBER</option>
-              <option value="GUEST">GUEST</option>
-              <option value="REP">REP</option>
-              <option value="ELDER">ELDER</option>
+              <option value="ADMIN">Admin</option>
+              <option value="FINANCE">Finance</option>
+              <option value="PASTOR">Pastor</option>
+              <option value="ELDER">Elder</option>
+              <option value="MEMBER">Member</option>
             </select>
           </div>
         </form>
 
         {/* Submit Button */}
-        <div className="flex justify-end mt-8">
+        <div className="flex justify-between mt-8">
+          <div></div>
           <button
             onClick={handleSubmit}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-500 transition"
