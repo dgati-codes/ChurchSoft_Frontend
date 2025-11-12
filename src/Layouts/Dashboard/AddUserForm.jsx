@@ -154,11 +154,14 @@ const AddUserForm = () => {
               required
             >
               <option value="">Select role</option>
-              <option value="ADMIN">Admin</option>
-              <option value="FINANCE">Finance</option>
-              <option value="PASTOR">Pastor</option>
-              <option value="ELDER">Elder</option>
-              <option value="MEMBER">Member</option>
+              <option value="FINANCE">FINANCE</option>
+              <option value="ADMIN">ADMIN</option>
+              <option value="PASTOR">PASTOR</option>
+              <option value="LEADER">LEADER</option>
+              <option value="MEMBER">MEMBER</option>
+              <option value="GUEST">GUEST</option>
+              <option value="REP">REP</option>
+              <option value="ELDER">ELDER</option>
             </select>
           </div>
         </form>
