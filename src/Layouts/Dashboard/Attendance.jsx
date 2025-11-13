@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Users, TrendingUp, MapPin, BookOpen } from "lucide-react";
+import { Users, Trash2, TrendingUp, MapPin, BookOpen } from "lucide-react";
 
 import AttendanceTable from "./AttendanceTable";
 import AddAttendanceRecord from "./AddAttendanceRecord";
