@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Trash2, Edit } from 'lucide-react';
+import LoadingSpinner from "./LoadingSpinner";
+
 
 const UsersTable = () => {
   const [users, setUsers] = useState([]);
@@ -131,10 +134,10 @@ const UsersTable = () => {
 
   if (loading)
     return (
-      <div className="p-4 text-center text-blue-500 font-semibold">
-        Loading users...
-      </div>
-    );
+  <div className="h-screen flex items-center justify-center bg-gray-100">
+    <LoadingSpinner text="users loading  wait..." />
+  </div>
+);
 
   if (error)
     return (
@@ -207,13 +210,14 @@ const UsersTable = () => {
                       onClick={() => handleEditClick(user)}
                       className="bg-blue-500 text-white m-1 px-1 py-1 rounded hover:bg-blue-600"
                     >
-                      Edit
+                          <Edit className="w-5 h-5"/> 
                     </button>
                     <button
                       onClick={() => handleDelete(user)}
                       className="bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600"
                     >
-                      Delete
+                          <Trash2 className="w-5 h-5"/>
+
                     </button>
                   </td>
                 </tr>

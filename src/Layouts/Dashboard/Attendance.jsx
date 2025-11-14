@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Users, Trash2, TrendingUp, MapPin, BookOpen } from "lucide-react";
+import LoadingSpinner from "./LoadingSpinner";
 
 import AttendanceTable from "./AttendanceTable";
 import AddAttendanceRecord from "./AddAttendanceRecord";
@@ -135,11 +136,12 @@ export default function AttendanceTracking() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen p-10 bg-[#F9FAFB] flex items-center justify-center">
-        <p className="text-lg">Loading attendance records...</p>
-      </div>
-    );
+   return (
+  <div className="h-screen flex items-center justify-center bg-gray-100">
+    <LoadingSpinner text="Please wait..." />
+  </div>
+);
+
   }
 
   if (error) {
