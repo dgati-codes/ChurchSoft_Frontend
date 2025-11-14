@@ -1,43 +1,42 @@
-// components/registration/Step6HealthWelfareInfo.jsx
 import React, { useState } from "react";
 import { useRegistration } from "../context/RegistrationContext";
 import { Shield } from "lucide-react";
 
+// 🔹 Constant options
+const yesNoOptions = ["YES", "NO"];
+
 const Step6HealthWelfareInfo = () => {
   const { formData, updateForm, nextStep, prevStep } = useRegistration();
 
-  // Local form state initialized from global formData
   const [localData, setLocalData] = useState({
-    healthCondition: formData.healthCondition || "",
-    specialNeeds: formData.specialNeeds || "",
+    hasHealthIssues: formData.hasHealthIssues || false,
+    specialNeedsOrMedicalConditions: formData.specialNeedsOrMedicalConditions || "",
+    leadershipRole: formData.leadershipRole || "",
   });
 
-  // Handle input changes
+  // Handle text input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setLocalData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Toggle checkbox-like yes/no state
-  const handleHealthCondition = (value) => {
+  // Handle yes/no toggle for health issues
+  const handleHealthToggle = (value) => {
     setLocalData((prev) => ({
       ...prev,
-      healthCondition: prev.healthCondition === value ? "" : value,
+      hasHealthIssues: value === "YES",
     }));
   };
 
-  // Save & Continue
   const handleSubmit = (e) => {
     e.preventDefault();
     updateForm(localData);
     nextStep();
   };
 
-  // Save & Exit
   const handleSaveExit = (e) => {
     e.preventDefault();
     updateForm(localData);
-    // Could add exit logic (redirect, toast, etc.)
   };
 
   return (
@@ -61,56 +60,60 @@ const Step6HealthWelfareInfo = () => {
           <span className="text-sm text-gray-400 ml-2">• 6/7</span>
         </div>
         <p className="text-sm text-gray-500 mb-6">
-          Supports pastoral care, welfare interventions, and emergency
-          preparedness.
+          Supports pastoral care, welfare interventions, and emergency preparedness.
         </p>
 
         {/* Health Condition */}
         <div className="space-y-2">
-          <label className="font-medium text-gray-800">
-            Any health condition(s)?
-          </label>
+          <label className="font-medium text-gray-800">Any health condition(s)?</label>
           <div className="flex gap-6 mt-1">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={localData.healthCondition === "yes"}
-                onChange={() => handleHealthCondition("yes")}
-                className="w-4 h-4 border-gray-300 rounded"
-              />
-              Yes
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={localData.healthCondition === "no"}
-                onChange={() => handleHealthCondition("no")}
-                className="w-4 h-4 border-gray-300 rounded"
-              />
-              No
-            </label>
+            {yesNoOptions.map((option) => (
+              <label key={option} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="hasHealthIssues"
+                  checked={localData.hasHealthIssues === (option === "YES")}
+                  onChange={() => handleHealthToggle(option)}
+                  className="w-4 h-4 border-gray-300 rounded"
+                />
+                {option}
+              </label>
+            ))}
           </div>
         </div>
 
-        {/* Special Needs */}
+        {/* Special Needs / Medical Conditions */}
         <div className="space-y-2 mt-4">
           <label className="font-medium text-gray-800">
-            Any special needs or medical conditions
+            Special Needs or Medical Conditions
           </label>
           <p className="text-xs text-orange-500 flex items-center gap-1">
             <Shield className="w-3 h-3" /> Optional and Confidential
           </p>
           <textarea
-            name="specialNeeds"
+            name="specialNeedsOrMedicalConditions"
             placeholder="Please describe any special needs or medical conditions"
-            value={localData.specialNeeds}
+            value={localData.specialNeedsOrMedicalConditions}
             onChange={handleChange}
             className="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             rows={3}
           />
         </div>
 
-        {/* Buttons */}
+        {/* Leadership Role */}
+        <div className="space-y-2 mt-4">
+          <label className="font-medium text-gray-800">Leadership Role (optional)</label>
+          <input
+            type="text"
+            name="leadershipRole"
+            value={localData.leadershipRole}
+            onChange={handleChange}
+            placeholder="Please type here"
+            className="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Navigation Buttons */}
         <div className="mt-6 flex justify-between">
           <button
             type="button"
@@ -119,21 +122,19 @@ const Step6HealthWelfareInfo = () => {
           >
             Back
           </button>
-         
-            <button
-              type="button"
-              onClick={handleSaveExit}
-              className="px-6 py-2 bg-white text-blue-500 rounded border border-blue-500"
-            >
-              Save and Exit
-            </button>
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-            >
-              Save and Continue
-            </button>
-          
+          <button
+            type="button"
+            onClick={handleSaveExit}
+            className="px-6 py-2 bg-white text-blue-500 rounded border border-blue-500"
+          >
+            Save and Exit
+          </button>
+          <button
+            type="submit"
+            className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+          >
+            Save and Continue
+          </button>
         </div>
       </form>
     </>

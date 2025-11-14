@@ -1,13 +1,14 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useRegistration } from "../context/RegistrationContext";
 import {
-  Pencil,
   User,
   MapPin,
   Church,
   Book,
-  HeartPulse,
   Star,
+  HeartPulse,
+  Pencil,
   Save,
   X,
 } from "lucide-react";
@@ -16,122 +17,157 @@ const Step7ReviewSubmit = () => {
   const { formData, updateForm } = useRegistration();
   const [editingSection, setEditingSection] = useState(null);
   const [localData, setLocalData] = useState(formData);
+  const [loading, setLoading] = useState(false);
 
-  const sections = [
-    {
-      title: "Personal & Identity Information",
-      icon: <User className="text-white w-5 h-5" />,
-      step: 1,
-      fields: [
-        "fullName",
-        "dob",
-        "gender",
-        "maritalStatus",
-        "hometown",
-        "nationality",
-        "ethnicity",
-        "idType",
-        "idNumber",
-        "fatherName",
-        "motherName",
-        "genderMinistry",
-      ],
-    },
-    {
-      title: "Contact & Location Details",
-      icon: <MapPin className="text-white w-5 h-5" />,
-      step: 2,
-      fields: [
-        "phoneNumber",
-        "email",
-        "whatsapp",
-        "residentialAddress",
-      ],
-      subTitle: "Next of Kin Details",
-      subFields: [
-        "nextOfKinName",
-        "nextOfKinRelationship",
-        "nextOfKinContact",
-      ],
-    },
-    {
-      title: "Spiritual Journey & Church Membership",
-      icon: <Church className="text-white w-5 h-5" />,
-      step: 3,
-      fields: [
-        "membershipStatus",
-        "membershipDate",
-        "firstVisitDate",
-        "invitedBy",
-        "baptismStatus",
-        "baptismDate",
-        "membershipType",
-        "fellowshipGroup",
-      ],
-    },
-    {
-      title: "Education & Career Details",
-      icon: <Book className="text-white w-5 h-5" />,
-      step: 4,
-      fields: [
-        "educationLevel",
-        "Profession",
-        "EmploymentSector",
-        "EmploymentType",
-        
-      ],
-    },
-    {
-      title: "Ministry Involvement & Skills",
-      icon: <Star className="text-white w-5 h-5" />,
-      step: 5,
-      fields: ["ministries", "reason",   "leadershipRole", "skills"],
-    },
-    {
-      title: "Emergency & Health Information",
-      icon: <HeartPulse className="text-white w-5 h-5" />,
-      step: 6,
-      fields: [
-        "healthCondition",
-        "specialNeeds",
-      ],
-    },
-  ];
+  // 🔹 Handle field changes (including arrays)
+  const handleFieldChange = (key, value, subObject = null) => {
+    const isArrayField =
+      ["skillsTalents", "spiritualGifts", "ministries", "preferredLanguages"].includes(key);
 
-  const handleFieldChange = (key, value) => {
-    setLocalData((prev) => ({ ...prev, [key]: value }));
+    const finalValue = isArrayField
+      ? value.split(",").map((v) => v.trim()).filter(Boolean)
+      : value;
+
+    if (subObject) {
+      setLocalData((prev) => ({
+        ...prev,
+        [subObject]: { ...prev[subObject], [key]: finalValue },
+      }));
+    } else {
+      setLocalData((prev) => ({ ...prev, [key]: finalValue }));
+    }
   };
 
-  const handleSave = (section) => {
+  // 🔹 Save section edits
+  const handleSave = () => {
     updateForm(localData);
     setEditingSection(null);
   };
 
-  const handleFinalSubmit = (e) => {
+  // 🔹 Final submit
+  const handleFinalSubmit = async (e) => {
     e.preventDefault();
-    console.log("✅ Final Submitted Data:", formData);
-    alert("Registration complete!");
+    setLoading(true);
+
+    try {
+      // Normalize booleans
+      localData.hasHealthIssues =
+        localData.hasHealthIssues === "YES" || localData.hasHealthIssues === true;
+
+      localData.healthCondition =
+        localData.healthCondition === "YES" || localData.healthCondition === true;
+
+      // Ensure arrays exist
+      ["skillsTalents", "spiritualGifts", "ministries", "preferredLanguages"].forEach((field) => {
+        if (!Array.isArray(localData[field])) localData[field] = [];
+      });
+
+      // Remove empty strings
+      Object.keys(localData).forEach(
+        (key) => localData[key] === "" && (localData[key] = null)
+      );
+
+      await axios.post(
+        "https://churchsoft-backend.onrender.com/church-soft/v1.0/members",
+        localData
+      );
+
+      alert("Registration successful!");
+    } catch (error) {
+      console.error("Submission error:", error.response?.data || error);
+      alert("Submission failed. Check console for details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 🔹 Sections
+  const sections = [
+    {
+      title: "Personal & Identity Information",
+      icon: <User className="w-5 h-5 text-white" />,
+      fields: [
+        "fullName",
+        "dateOfBirth",
+        "gender",
+        "maritalStatus",
+        "hometown",
+        "jurisdiction",
+        "district",
+        "assembly",
+        "nationality",
+        "ethnicity",
+        "profilePicture",
+        "identificationType",
+        "identificationNumber",
+        "fathersName",
+        "mothersName",
+        "ministryAffiliation",
+        "consentForCommunication",
+        "preferredLanguages",
+      ],
+    },
+    {
+      title: "Contact & Location Details",
+      icon: <MapPin className="w-5 h-5 text-white" />,
+      fields: ["phoneNumber", "email", "whatsappAvailable", "residentialAddress"],
+      subTitle: "Next of Kin Details",
+      subFields: ["name", "relationship", "contactInformation"],
+      subObject: "nextOfKin",
+    },
+    {
+      title: "Spiritual Journey & Church Membership",
+      icon: <Church className="w-5 h-5 text-white" />,
+      fields: [
+        "status",
+        "baptismStatus",
+        "baptismDate",
+        "baptismLocation",
+        "baptismType",
+        "dateJoinedChurch",
+        "firstVisitDate",
+        "invitedBy",
+        "fellowshipGroup",
+        "salvationStatus",
+        "churchExperienceRating",
+      ],
+    },
+    {
+      title: "Education & Career Details",
+      icon: <Book className="w-5 h-5 text-white" />,
+      fields: ["educationLevel", "occupation", "employmentSector", "employmentType"],
+    },
+    {
+      title: "Ministry Involvement & Skills",
+      icon: <Star className="w-5 h-5 text-white" />,
+      fields: ["ministries", "reason", "leadershipRole", "skillsTalents", "spiritualGifts"],
+    },
+    {
+      title: "Health & Welfare Information",
+      icon: <HeartPulse className="w-5 h-5 text-white" />,
+      fields: ["hasHealthIssues", "specialNeedsOrMedicalConditions", "leadershipRole"],
+    },
+  ];
+
+  // 🔹 Display helper
+  const displayValue = (value) => {
+    if (Array.isArray(value)) return value.length ? value.join(", ") : "None";
+    if (typeof value === "boolean") return value ? "Yes" : "No";
+    return value || <em className="text-gray-400">Not Provided</em>;
   };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-semibold text-center mb-2">
-        Church Member Registration
-      </h1>
+      <h1 className="text-3xl font-semibold text-center mb-2">Church Member Registration</h1>
       <p className="text-center text-gray-600 mb-8">
         Review all information carefully before submission.
       </p>
-      
+
       <form onSubmit={handleFinalSubmit} className="space-y-8">
-        
         {sections.map((section, i) => (
-          <div
-            key={i}
-            className="rounded-xl border shadow bg-white overflow-hidden"
-          >
-            {/* Section Header */}
+          <div key={i} className="rounded-xl border shadow bg-white overflow-hidden">
+            {/* Header */}
             <div className="flex justify-between items-center bg-blue-600 px-4 py-3">
-              
               <div className="flex items-center gap-2 text-white font-medium">
                 <span className="bg-blue-500 p-1 rounded">{section.icon}</span>
                 {section.title}
@@ -156,63 +192,56 @@ const Step7ReviewSubmit = () => {
               )}
             </div>
 
-            {/* Section Content */}
+            {/* Fields */}
             <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-              {section.fields.map((field) => (
-                <div
-                  key={field}
-                  className="bg-gray-50 rounded-lg p-3 border-l-4 border-blue-400 border"
-                >
-                  <p className="text-xs text-gray-500 capitalize mb-1">
-                    {field.replace(/([A-Z])/g, " $1")}
-                  </p>
-                  {editingSection === section.title ? (
-                    <input
-                      type="text"
-                      value={localData[field] || ""}
-                      onChange={(e) => handleFieldChange(field, e.target.value)}
-                      className="w-full border rounded px-2 py-1 text-sm"
-                    />
-                  ) : (
-                    <p className="font-medium text-gray-800">
-                      {formData[field] || (
-                        <em className="text-gray-400">Not Provided</em>
-                      )}
+              {section.fields.map((field) => {
+                const isArray = Array.isArray(localData[field]);
+                const value = localData[field];
+
+                return (
+                  <div key={field} className="bg-gray-50 rounded-lg p-3 border-l-4 border-blue-400 border">
+                    <p className="text-xs text-gray-500 capitalize mb-1">
+                      {field.replace(/([A-Z])/g, " $1")}
                     </p>
-                  )}
-                </div>
-              ))}
+
+                    {editingSection === section.title ? (
+                      <input
+                        type="text"
+                        value={isArray ? value.join(", ") : value || ""}
+                        onChange={(e) => handleFieldChange(field, e.target.value)}
+                        className="w-full border rounded px-2 py-1 text-sm"
+                      />
+                    ) : (
+                      <p className="font-medium text-gray-800">{displayValue(value)}</p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Sub-section (Next of Kin, etc.) */}
-            {section.subTitle && (
+            {/* Sub-fields */}
+            {section.subTitle && section.subFields && section.subObject && (
               <div className="px-6 pb-6">
-                <h4 className="text-center font-semibold mb-4 mt-2">
-                  {section.subTitle}
-                </h4>
+                <h4 className="text-center font-semibold mb-4 mt-2">{section.subTitle}</h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {section.subFields.map((sub) => (
-                    <div
-                      key={sub}
-                      className="bg-gray-50 rounded-lg p-3 border-l-4 border-blue-400 border"
-                    >
+                    <div key={sub} className="bg-gray-50 rounded-lg p-3 border-l-4 border-blue-400 border">
                       <p className="text-xs text-gray-500 capitalize mb-1">
                         {sub.replace(/([A-Z])/g, " $1")}
                       </p>
+
                       {editingSection === section.title ? (
                         <input
                           type="text"
-                          value={localData[sub] || ""}
+                          value={localData[section.subObject]?.[sub] || ""}
                           onChange={(e) =>
-                            handleFieldChange(sub, e.target.value)
+                            handleFieldChange(sub, e.target.value, section.subObject)
                           }
                           className="w-full border rounded px-2 py-1 text-sm"
                         />
                       ) : (
                         <p className="font-medium text-gray-800">
-                          {formData[sub] || (
-                            <em className="text-gray-400">Not Provided</em>
-                          )}
+                          {displayValue(localData[section.subObject]?.[sub])}
                         </p>
                       )}
                     </div>
@@ -221,12 +250,11 @@ const Step7ReviewSubmit = () => {
               </div>
             )}
 
-            {/* Save button (visible in edit mode) */}
             {editingSection === section.title && (
               <div className="flex justify-end px-6 pb-6">
                 <button
                   type="button"
-                  onClick={() => handleSave(section)}
+                  onClick={handleSave}
                   className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-500"
                 >
                   <Save className="w-4 h-4" /> Save Section
@@ -238,17 +266,18 @@ const Step7ReviewSubmit = () => {
 
         {/* Submit */}
         <div className="flex justify-between pt-6">
-          <button
-            type="reset"
-            className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-400"
-          >
+          <button type="reset" className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-400">
             Start Over
           </button>
+
           <button
             type="submit"
-            className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-500"
+            disabled={loading}
+            className={`px-6 py-2 text-white rounded ${
+              loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-500"
+            }`}
           >
-            Submit Registration
+            {loading ? "Submitting..." : "Submit Registration"}
           </button>
         </div>
       </form>
