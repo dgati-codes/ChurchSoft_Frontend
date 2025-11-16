@@ -3,13 +3,19 @@ import { Trash2, Edit } from "lucide-react";
 import MemberFullView from "./MemberFullView";
 import LoadingSpinner from "./LoadingSpinner";
 import memberService from "../../api/memberService";
+import EditMemberModal from "./EditMemberModal";
+import DeleteConfirmModal from "./DeleteConfirmModal";
 
 export default function MemberTable() {
   const [members, setMembers] = useState([]);
   const [filtered, setFiltered] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [successModal, setSuccessModal] = useState(null);
+
   const [showDashboard, setShowDashboard] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [deletingMember, setDeletingMember] = useState(null);
 
   const [filter, setFilter] = useState({
     ethnicity: "All",
@@ -30,7 +36,7 @@ export default function MemberTable() {
         const data = await memberService.getAllMembers();
         setMembers(data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching members:", err);
         setIsError(true);
       } finally {
         setIsLoading(false);
@@ -59,72 +65,84 @@ export default function MemberTable() {
     setFiltered(filteredData);
   }, [members, filter]);
 
-  // inside your MemberTable component
-const handleDelete = async (memberId) => {
-  if (!confirm("Are you sure you want to delete this member?")) return;
+  // DELETE
+  const confirmDelete = async (member) => {
+    if (!member) return;
 
-  try {
-    await memberService.deleteMember(memberId);
-    setMembers((prev) => prev.filter((m) => m.memberId !== memberId));
-    alert("Member deleted successfully!");
-  } catch (err) {
-    console.error("Delete error:", err);
-    alert("Failed to delete member. Try again.");
-  }
-};
+    try {
+      await memberService.deleteMember(member.id); // backend expects numeric id
+      setMembers((prev) => prev.filter((m) => m.id !== member.id));
+      setDeletingMember(null);
+       setSuccessModal({
+      fullName: member.fullName,
+    });
+    } catch (err) {
+      console.error("Delete failed:", err.response || err);
+      alert("Delete failed. Check console for details.");
+    }
+  };
 
-const handleEdit = async (member) => {
-  const updatedData = { ...member };
-  // Here you can open a modal or a prompt to update data
-  // Example: prompt for name
-  const newName = prompt("Edit full name:", member.fullName);
-  if (!newName) return;
+  // EDIT SAVE
+  const saveEdit = async (member) => {
+    try {
+      const payload = {
+        id: member.id,
+        memberId: member.memberId,
+        fullName: member.fullName,
+        dateOfBirth: member.dateOfBirth,
+        gender: member.gender,
+        maritalStatus: member.maritalStatus,
+        hometown: member.hometown,
+        nationality: member.nationality,
+        assembly: member.assembly,
+        district: member.district,
+        ethnicity: member.ethnicity,
+        phoneNumber: member.phoneNumber,
+        status: member.status,
+      };
 
-  updatedData.fullName = newName;
+      await memberService.updateMember(member.id, payload);
+      setMembers((prev) => prev.map((m) => (m.id === member.id ? payload : m)));
+      setEditingMember(null);
+        setSuccessModal({
+      fullName: member.fullName,
+      action: "updated",
+    });
+    } catch (err) {
+      console.error("Update failed:", err.response || err);
+      alert("Update failed. Check console for details.");
+    }
+  };
 
-  try {
-    await memberService.updateMember(member.memberId, updatedData);
-    setMembers((prev) =>
-      prev.map((m) => (m.memberId === member.memberId ? updatedData : m))
-    );
-    alert("Member updated successfully!");
-  } catch (err) {
-    console.error("Update error:", err);
-    alert("Failed to update member. Try again.");
-  }
-};
-
+  // Handlers
+  const handleEdit = (member) => setEditingMember(member);
+  const handleDelete = (member) => setDeletingMember(member);
 
   // Loading UI
   if (isLoading)
     return (
       <div className="h-screen flex items-center justify-center bg-gray-100">
-        <LoadingSpinner text="Members loading... " />
+        <LoadingSpinner text="Members loading..." />
       </div>
     );
 
   // Error UI
-  if (isError) {
+  if (isError)
     return (
       <div className="min-h-screen flex justify-center items-center text-red-500">
         Failed to load members.
       </div>
     );
-  }
 
   // Dashboard view
-  if (showDashboard) {
-    return <MemberFullView onBack={() => setShowDashboard(false)} />;
-  }
+  if (showDashboard) return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
-  // 🟢 TABLE VIEW
+  // TABLE VIEW
   return (
     <div className="min-h-screen bg-gray-100 px-4">
       {/* Header */}
       <div className="mb-6 ml-60">
-        <h2 className="text-xl font-semibold ml-20">
-          Member Registration - Table View
-        </h2>
+        <h2 className="text-xl font-semibold ml-20">Member Registration - Table View</h2>
         <p className="text-gray-600">
           Manage and view member registrations with advanced filtering and search
         </p>
@@ -132,9 +150,9 @@ const handleEdit = async (member) => {
 
       {/* Filters */}
       <div className="bg-white border border-gray-300 shadow-md rounded-xl p-6 mb-10 grid grid-cols-2 md:grid-cols-6 gap-4">
-        {/* ethnicity */}
+        {/* Ethnicity */}
         <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">ethnicity</label>
+          <label className="text-sm font-medium mb-1">Ethnicity</label>
           <select
             className="input"
             value={filter.ethnicity}
@@ -197,7 +215,9 @@ const handleEdit = async (member) => {
           <select
             className="input"
             value={filter.maritalStatus}
-            onChange={(e) => setFilter({ ...filter, maritalStatus: e.target.value })}
+            onChange={(e) =>
+              setFilter({ ...filter, maritalStatus: e.target.value })
+            }
           >
             <option>All</option>
             <option>SINGLE</option>
@@ -240,14 +260,14 @@ const handleEdit = async (member) => {
               <th className="p-2 border">District</th>
               <th className="p-2 border">Ethnicity</th>
               <th className="p-2 border">Contact Info</th>
-              <th className="p-2 border">status</th>
+              <th className="p-2 border">Status</th>
               <th className="p-2 border">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            {filtered.map((m, idx) => (
-              <tr key={idx} className="text-sm text-gray-700 hover:bg-gray-50">
+            {filtered.map((m) => (
+              <tr key={m.memberId} className="text-sm text-gray-700 hover:bg-gray-50">
                 <td className="p-2 border">{m.fullName}</td>
                 <td className="p-2 border">{m.gender}</td>
                 <td className="p-2 border">{m.dateOfBirth}</td>
@@ -257,6 +277,7 @@ const handleEdit = async (member) => {
                 <td className="p-2 border">{m.district}</td>
                 <td className="p-2 border">{m.ethnicity}</td>
                 <td className="p-2 border">{m.phoneNumber}</td>
+
                 <td className="p-2 border">
                   <span
                     className={`px-1 py-1 rounded text-white text-xs ${
@@ -266,31 +287,72 @@ const handleEdit = async (member) => {
                         ? "bg-blue-600"
                         : m.status === "INACTIVE"
                         ? "bg-red-400"
+                        : m.status === "SUSPENDED"
+                        ? "bg-yellow-500"
                         : "bg-gray-500"
                     }`}
                   >
                     {m.status}
                   </span>
                 </td>
-                <td className="px-2 py-2 border border-gray-400 text-center space-x-2">
+
+                <td className="px-1 py-3 border flex space-x-2">
                   <button
                     onClick={() => handleEdit(m)}
                     className="bg-blue-500 text-white m-1 px-1 py-1 rounded hover:bg-blue-600"
                   >
                     <Edit className="w-5 h-5" />
                   </button>
+
                   <button
-                    onClick={() => handleDelete(m.memberId)}
+                    onClick={() => handleDelete(m)}
                     className="bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </td>
-
               </tr>
             ))}
           </tbody>
         </table>
+
+        {/* MODALS */}
+        {editingMember && (
+          <EditMemberModal
+            member={editingMember}
+            onClose={() => setEditingMember(null)}
+            onSave={saveEdit}
+          />
+        )}
+
+        {deletingMember && (
+          <DeleteConfirmModal
+            member={deletingMember}
+            onClose={() => setDeletingMember(null)}
+            onConfirm={() => confirmDelete(deletingMember)}
+          />
+        )}
+
+   {successModal && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-6 w-96 text-center">
+      <h2 className="text-xl font-semibold mb-4">
+        Member {successModal.action === "updated" ? "Updated" : "Deleted"}
+      </h2>
+      <p className="mb-6">
+       <span className="font-semibold text-green-600"> {successModal.fullName}</span> has been successfully {successModal.action}.
+      </p>
+      <button
+        onClick={() => setSuccessModal(null)}
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+
       </div>
     </div>
   );

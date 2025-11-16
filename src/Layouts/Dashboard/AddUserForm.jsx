@@ -83,8 +83,8 @@ const AddUserForm = () => {
       <div className="w-full max-w-4xl bg-white rounded-xl p-10 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold text-gray-800">Add User</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-semibold font-heading  text-gray-800">Add User</h1>
+          <p className="font-body text-sm text-gray-500 mt-1">
             Please fill out all sections to complete the addition of a new user
           </p>
         </div>
@@ -92,7 +92,7 @@ const AddUserForm = () => {
         {/* Image Upload */}
         <div className="flex justify-center mb-6">
           <div className="relative">
-            <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-200 shadow-md bg-gray-100">
+            {/* <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-200 shadow-md bg-gray-100">
               {formData.image ? (
                 <img
                   src={URL.createObjectURL(formData.image)}
@@ -108,7 +108,7 @@ const AddUserForm = () => {
                 </div>
                 
               )}
-            </div>
+            </div> */}
             <input
               type="file"
               accept="image/*"

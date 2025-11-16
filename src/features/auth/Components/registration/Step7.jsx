@@ -1,20 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useRegistration } from "../context/RegistrationContext";
-import {
-  User,
-  MapPin,
-  Church,
-  Book,
-  Star,
-  HeartPulse,
-  Pencil,
-  Save,
-  X,
-} from "lucide-react";
+import { User, MapPin, Church, Book, Star, HeartPulse, Pencil, Save, X } from "lucide-react";
+import memberService from "../../../../api/memberService";
+// ✅ use service instead of axios
 
 const Step7ReviewSubmit = () => {
-  const { formData, updateForm } = useRegistration();
+  const { formData, updateForm, resetForm } = useRegistration();
   const [editingSection, setEditingSection] = useState(null);
   const [localData, setLocalData] = useState(formData);
   const [loading, setLoading] = useState(false);
@@ -44,7 +35,7 @@ const Step7ReviewSubmit = () => {
     setEditingSection(null);
   };
 
-  // 🔹 Final submit
+  // 🔹 Final submit using memberService
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -58,19 +49,19 @@ const Step7ReviewSubmit = () => {
         localData.healthCondition === "YES" || localData.healthCondition === true;
 
       // Ensure arrays exist
-      ["skillsTalents", "spiritualGifts", "ministries", "preferredLanguages"].forEach((field) => {
-        if (!Array.isArray(localData[field])) localData[field] = [];
-      });
+      ["skillsTalents", "spiritualGifts", "ministries", "preferredLanguages"].forEach(
+        (field) => {
+          if (!Array.isArray(localData[field])) localData[field] = [];
+        }
+      );
 
       // Remove empty strings
       Object.keys(localData).forEach(
         (key) => localData[key] === "" && (localData[key] = null)
       );
 
-      await axios.post(
-        "https://churchsoft-backend.onrender.com/church-soft/v1.0/members",
-        localData
-      );
+      // ✅ Send data via memberService
+      await memberService.createMember(localData);
 
       alert("Registration successful!");
     } catch (error) {
@@ -81,7 +72,7 @@ const Step7ReviewSubmit = () => {
     }
   };
 
-  // 🔹 Sections
+  // 🔹 Sections definition (unchanged)
   const sections = [
     {
       title: "Personal & Identity Information",
@@ -149,7 +140,6 @@ const Step7ReviewSubmit = () => {
     },
   ];
 
-  // 🔹 Display helper
   const displayValue = (value) => {
     if (Array.isArray(value)) return value.length ? value.join(", ") : "None";
     if (typeof value === "boolean") return value ? "Yes" : "No";
@@ -166,7 +156,6 @@ const Step7ReviewSubmit = () => {
       <form onSubmit={handleFinalSubmit} className="space-y-8">
         {sections.map((section, i) => (
           <div key={i} className="rounded-xl border shadow bg-white overflow-hidden">
-            {/* Header */}
             <div className="flex justify-between items-center bg-blue-600 px-4 py-3">
               <div className="flex items-center gap-2 text-white font-medium">
                 <span className="bg-blue-500 p-1 rounded">{section.icon}</span>
@@ -192,7 +181,6 @@ const Step7ReviewSubmit = () => {
               )}
             </div>
 
-            {/* Fields */}
             <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               {section.fields.map((field) => {
                 const isArray = Array.isArray(localData[field]);
@@ -219,7 +207,6 @@ const Step7ReviewSubmit = () => {
               })}
             </div>
 
-            {/* Sub-fields */}
             {section.subTitle && section.subFields && section.subObject && (
               <div className="px-6 pb-6">
                 <h4 className="text-center font-semibold mb-4 mt-2">{section.subTitle}</h4>
@@ -264,9 +251,13 @@ const Step7ReviewSubmit = () => {
           </div>
         ))}
 
-        {/* Submit */}
+        {/* Submit / Reset */}
         <div className="flex justify-between pt-6">
-          <button type="reset" className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-400">
+          <button
+            type="button"
+            onClick={resetForm} // ✅ reset to Step 1
+            className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-400"
+          >
             Start Over
           </button>
 

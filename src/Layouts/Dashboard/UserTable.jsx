@@ -46,11 +46,7 @@ const UsersTable = () => {
       // ✅ Ensure full image URL if only filename/path is returned
       const formattedUsers = usersData.map((u) => ({
         ...u,
-        profileImage: u.profileImage
-          ? u.profileImage.startsWith("http")
-            ? u.profileImage
-            : `https://churchsoft-backend.onrender.com/church-soft/v1.0/files/${u.profileImage}`
-          : null,
+        
       }));
 
       setUsers(formattedUsers);
@@ -145,13 +141,13 @@ const UsersTable = () => {
     );
 
   return (
-    <div className="p-4 -m-8 mt-3 min-w-full ">
+    <div className="p-4 -m-8 mt-3 font-Helvetica min-w-full ">
       <h2 className="text-2xl font-bold mb-4 text-center">Users Table</h2>
       <div className="overflow-x-auto shadow-lg rounded-lg">
         <table className="min-w-full border border-gray-200 text-sm">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-4 py-2 border border-gray-400">Profile</th>
+              {/* <th className="px-4 py-2 border border-gray-400">Profile</th> */}
               <th className="px-2 py-2 border border-gray-400">First Name</th>
               <th className="px-4 py-2 border border-gray-400">Last Name</th>
               <th className="px-4 py-2 border border-gray-400">Username</th>
@@ -175,8 +171,8 @@ const UsersTable = () => {
               </tr>
             ) : (
               users.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border border-gray-400 text-center">
+                <tr key={user.id} className="font-body text-sm hover:bg-gray-50">
+                  {/* <td className="px-4 py-2 border border-gray-400 text-center">
                     {user.profileImage ? (
                       <img
                         src={user.profileImage}
@@ -186,13 +182,13 @@ const UsersTable = () => {
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-gray-300 mx-auto" />
                     )}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-400">{user.firstName}</td>
-                  <td className="px-4 py-2 border border-gray-400">{user.lastName}</td>
-                  <td className="px-4 py-2 border border-gray-400">{user.username}</td>
-                  <td className="px-1 py-2 border border-gray-400">{user.email}</td>
-                  <td className="px-4 py-2 border border-gray-400">{user.phoneNumber}</td>
-                  <td className="px-4 py-2 border border-gray-400">
+                  </td> */}
+                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">{user.firstName}</td>
+                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">{user.lastName}</td>
+                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">{user.username}</td>
+                  <td className="px-1 py-2 border font-body Helvetica  text-sm border-gray-400">{user.email}</td>
+                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">{user.phoneNumber}</td>
+                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">
                     {user.localAssemblyName}
                   </td>
                   <td className="px-2 py-2 border border-gray-400">              
@@ -271,14 +267,7 @@ const UsersTable = () => {
                 placeholder="Email"
                 className="w-full border border-gray-100 p-2 rounded"
               />
-              <input
-                type="text"
-                name="profileImage"
-                value={formData.profileImage}
-                onChange={handleFormChange}
-                placeholder="Profile Image URL"
-                className="w-full border border-gray-100 p-2 rounded"
-              />
+             
               <input
                 type="text"
                 name="phoneNumber"

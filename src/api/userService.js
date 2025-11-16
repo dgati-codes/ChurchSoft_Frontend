@@ -48,3 +48,13 @@ export const registerUser = async (userData) => {
     return { success: false, message };
   }
 };
+export const getAllUsers = async () => {
+    try {
+      const response = await axiosInstance.get('/Users/All');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching all attendance records:', error);
+      throw error;
+    }
+  };
+

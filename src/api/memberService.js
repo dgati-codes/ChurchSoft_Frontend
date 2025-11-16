@@ -11,15 +11,25 @@ const memberService = {
     return [];
   },
 
-  deleteMember: async (memberId) => {
-    const res = await axiosInstance.delete(`/members/${memberId}`);
+   deleteMember: async (id) => {
+    // Use the backend memberId
+    const res = await axiosInstance.delete(`/members/${id}`);
     return res.data;
   },
 
-  updateMember: async (memberId, updatedData) => {
-    const res = await axiosInstance.put(`/members/${memberId}`, updatedData);
+  updateMember: async (id, updatedData) => {
+    // Backend expects memberId and the updated data in the body
+    const payload = { id, ...updatedData };
+    const res = await axiosInstance.put("/members/update", payload);
+    return res.data;
+  },
+
+   createMember: async (memberData) => {
+    // POST to create a new member
+    const res = await axiosInstance.post("/members", memberData);
     return res.data;
   },
 };
+
 
 export default memberService;

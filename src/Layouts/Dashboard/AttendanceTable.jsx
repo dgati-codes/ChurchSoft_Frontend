@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit } from 'lucide-react';
 
 import {
   BarChart,
@@ -358,13 +358,13 @@ export default function AttendanceTable({
                         </button>
                         <button
                           onClick={() => handleEditClick(row.id)}
-                          className="text-green-500 hover:text-green-700"
+                            className="bg-blue-500 text-white m-1 px-1 py-1 rounded hover:bg-blue-600"
                         >
-                          ✏️
+                          <Edit/>
                         </button>
                         <button
                           onClick={() => handleDeleteClick(row.id)}
-                          className="text-red-500 hover:text-red-700"
+                            className="bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
