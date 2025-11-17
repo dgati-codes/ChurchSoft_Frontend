@@ -26,7 +26,7 @@ export default function AddCountryModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-<div className="fixed inset-0 flex items-center justify-center bg-black/60 rounded-lg z-50">
+<div className="fixed inset-0 font-[Poppins] flex items-center justify-center bg-black/60 rounded-lg z-50">
 
       <div className="bg-white w-full    max-w-xl rounded-xl shadow-lg p-6">
         {/* Header */}

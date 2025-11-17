@@ -52,7 +52,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+    <div className="fixed font-[Poppins] inset-0 flex items-center justify-center bg-black/60 z-50">
       <div className="bg-white rounded-lg w-96 p-6 overflow-y-auto max-h-[90vh]">
         <h2 className="text-xl font-semibold mb-4">Edit Member</h2>
 

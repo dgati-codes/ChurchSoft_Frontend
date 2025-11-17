@@ -153,7 +153,7 @@ export default function AttendanceTracking() {
   }
 
   return (
-    <div className="min-h-screen -ml-12 p-10 bg-[#F9FAFB] ">
+    <div className="min-h-screen font-[Poppins] -ml-12 p-10 bg-[#F9FAFB] ">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div className="mb-4">

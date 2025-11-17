@@ -141,7 +141,7 @@ const UsersTable = () => {
     );
 
   return (
-    <div className="p-4 -m-8 mt-3 font-Helvetica min-w-full ">
+    <div className="p-4 -m-8 mt-3 font-Helvetica font-[Poppins] min-w-full ">
       <h2 className="text-2xl font-bold mb-4 text-center">Users Table</h2>
       <div className="overflow-x-auto shadow-lg rounded-lg">
         <table className="min-w-full border border-gray-200 text-sm">

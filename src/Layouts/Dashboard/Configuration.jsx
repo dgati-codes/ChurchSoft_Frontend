@@ -55,7 +55,7 @@ export default function Configuration() {
   );
 
   return (
-    <div className="p-2  bg-gray-50 min-h-screen ">
+    <div className="p-2 font-[Poppins] bg-gray-50 min-h-screen ">
       {/* Header */}
       <h2 className="text-center text-xl font-bold">Dashboard Summary</h2>
       <p className="text-center text-gray-600">

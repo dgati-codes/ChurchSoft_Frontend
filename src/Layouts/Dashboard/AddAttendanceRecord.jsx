@@ -130,7 +130,7 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
   if (!isOpen) return null;
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg z-50">
+    <div className="absolute font-[Poppins] inset-0 flex items-center justify-center bg-black/40 rounded-lg z-50">
       <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl p-6 max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <div className="flex justify-between items-center mb-4">

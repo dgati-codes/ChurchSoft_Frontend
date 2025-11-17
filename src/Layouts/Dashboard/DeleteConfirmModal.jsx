@@ -2,7 +2,7 @@ export default function DeleteConfirmModal({ member, onCancel, onConfirm }) {
   if (!member) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
+    <div className="fixed font-[Poppins] inset-0 bg-black/60 flex justify-center items-center z-50">
       <div className="bg-white w-80 p-6 rounded-lg text-center">
         <h2 className="text-lg font-semibold">Delete Member</h2>
         <p className="mt-2 text-gray-600">

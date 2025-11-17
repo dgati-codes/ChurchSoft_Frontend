@@ -97,7 +97,7 @@ export default function MemberFullView({ onBack }) {
   
 
   return (
-    <div className="  p-6 space-y-6  bg-gray-100 min-h-screen">
+    <div className=" font-[Poppins] p-6 space-y-6  bg-gray-100 min-h-screen">
         <div
         className="flex items-center gap-2 cursor-pointer w-fit text-blue-600 hover:text-blue-800"
         onClick={onBack} // ✅ use the passed prop

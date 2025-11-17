@@ -234,7 +234,7 @@ export default function AttendanceTable({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-[Poppins]">
       <div className="bg-white rounded-lg shadow border p-4">
         <div className="flex justify-between mb-2">
           <div className="flex gap-2 items-center">

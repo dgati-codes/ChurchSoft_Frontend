@@ -45,7 +45,7 @@ function CountriesOverview() {
   ]);
 
   return (
-    <div className="p-2  bg-gray-50 min-h-screen">
+    <div className="p-2 font-[Poppins] bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>

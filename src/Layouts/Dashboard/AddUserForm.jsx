@@ -79,7 +79,7 @@ const AddUserForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen font-[Poppins] bg-gray-50 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-4xl bg-white rounded-xl p-10 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-8">

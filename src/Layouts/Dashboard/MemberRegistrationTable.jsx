@@ -139,7 +139,7 @@ export default function MemberTable() {
 
   // TABLE VIEW
   return (
-    <div className="min-h-screen bg-gray-100 px-4">
+    <div className="min-h-screen font-[Poppins] bg-gray-100 px-4">
       {/* Header */}
       <div className="mb-6 ml-60">
         <h2 className="text-xl font-semibold ml-20">Member Registration - Table View</h2>

@@ -75,76 +75,141 @@ function LoginForm({ onLoginSuccess }) {
   return (
     <>
       {showLoginForm && (
-        <div className="fixed inset-0 bg-[url('/images/pexels-valeriya-kobzar-42371713-8358604.jpg')] bg-cover bg-center flex items-center justify-center z-50">
-          <div className="flex w-[400px] bg-white rounded-xl overflow-hidden shadow-2xl">
-            <div className="w-[300px] mx-auto p-4 flex flex-col border border-blue-600 rounded-lg items-center justify-center m-12">
-              <div className="text-center mb-6">
-                <img
-                  src="/images/logo.png"
-                  alt="Church logo"
-                  className="w-24 h-24 mx-auto mb-4"
-                />
-                <h1 className="text-3xl font-bold text-gray-800">GCCI</h1>
-              </div>
+        
+  <div className="flex w-full h-screen font-[Poppins]">
 
-              {error && (
-                <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center text-sm">
-                  {error}
-                </div>
-              )}
+  {/* LEFT SIDE */}
+  <div className="relative w-1/2 h-full overflow-hidden">
 
-              <form onSubmit={handleLogin} className="w-full max-w-xs">
-                <div className="mb-2.5">
-                  <input
-                    type="text"
-                    id="username"
-                    value={credentials.username}
-                    onChange={handleChange}
-                    placeholder="Enter username"
-                    required
-                    className="w-full px-3.5 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+    {/* BG IMAGE */}
+    <img
+      src="/images/login_bg.jpg"
+      alt="Church building"
+      className="absolute inset-0 w-full h-full object-cover"
+    />
 
-                <div className="mb-3">
-                  <input
-                    type="password"
-                    id="password"
-                    value={credentials.password}
-                    onChange={handleChange}
-                    placeholder="Enter password"
-                    required
-                    className="w-full mt-2 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+    {/* BLUE OVERLAY */}
+    <div className="absolute inset-0 bg-[#32A9FF]/60"></div>
 
-                <div className="flex justify-between items-center mb-6">
-                  <div></div>
-                  <button
-                    type="button"
-                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                    onClick={handleToggle}
-                  >
-                    Forgot password?
-                  </button>
-                </div>
+    {/* GRADIENT OVERLAY */}
+    <div className="absolute inset-0 bg-linear-to-b from-[#32A9FF]/40 to-[#577EFFE0]"></div>
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`w-full py-2 rounded-lg text-white font-semibold transition ${
-                    loading
-                      ? "bg-blue-400 cursor-not-allowed"
-                      : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                >
-                  {loading ? "Logging in..." : "Login"}
-                </button>
-              </form>
-            </div>
-          </div>
+    {/* HEX PATTERN OVERLAY */}
+    <div
+      className="absolute inset-0 opacity-20"
+      style={{
+        backgroundImage: "url('/images/pattern.png')",
+        backgroundSize: "300px",
+        backgroundRepeat: "repeat",
+      }}
+    ></div>
+
+    {/* CENTERED TEXT */}
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-10 text-center text-white tracking-wide">
+      <img
+        src="/images/logo.png"
+        alt="Church logo"
+        className="w-24 h-24 mb-5"
+      />
+
+      <h2 className="text-[20px] font-semibold leading-relaxed">
+        Welcome To The Great Commission Church <br />
+        International Management Portal
+      </h2>
+
+      <p className="mt-6 text-sm opacity-90">Kindly Sign In To Proceed</p>
+    </div>
+  </div>
+
+  {/* RIGHT SIDE */}
+  <div className="w-1/2 bg-white flex items-center justify-center relative">
+
+    {/* RIGHT BG SHAPES (from screenshot) */}
+    <div
+      className="absolute bottom-0 right-0 opacity-20"
+      style={{
+        backgroundImage: "url('/images/login_right_shapes.png')",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "380px",
+        width: "380px",
+        height: "380px",
+      }}
+    ></div>
+
+    {/* LOGIN CARD */}
+    <div className="w-[350px] mx-auto flex flex-col items-center justify-center">
+
+      <div className="text-center mb-10">
+        {/* <img
+          src="/images/logo.png"
+          alt="Church logo"
+          className="w-24 h-24 mx-auto mb-4"
+        /> */}
+        <h1 className="text-[22px] font-semibold text-gray-800">Welcome Back</h1>
+      </div>
+
+      {error && (
+        <div className="bg-red-100 text-red-700 p-2 rounded mb-4 text-center text-sm w-full">
+          {error}
         </div>
       )}
+
+      {/* FORM (UNCHANGED LOGIC) */}
+      <form onSubmit={handleLogin} className="w-full">
+        <label htmlFor="username" className="text-[12px] font-medium text-gray-700">User Name </label>
+        <div className="mb-4 mt-1">
+          <input
+            type="text"
+            id="username"
+            value={credentials.username}
+            onChange={handleChange}
+            placeholder="Enter your user ID"
+            required
+            className="input"
+          />
+        </div>
+
+        <label htmlFor="password" className="text-[12px] font-medium text-gray-700">Password</label>
+        <div className="mb-5 mt-1">
+          <input
+            type="password"
+            id="password"
+            value={credentials.password}
+            onChange={handleChange}
+            placeholder="Enter your password"
+            required
+            className="input"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-2.5 rounded-lg font-semibold text-white transition text-sm ${
+            loading
+              ? "bg-blue-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
+
+        
+          <button
+            type="button"
+            onClick={handleToggle}
+            className="text-sm text-blue-600 mt-6  hover:underline"
+          >
+            Forgot Password?
+          </button>
+        
+      </form>
+    </div>
+  </div>
+</div>
+
+)}
+
 
       {showForgotPasswordForm && (
         <ForgotPasswordForm onBackToLoginForm={handleBackToLoginForm} />

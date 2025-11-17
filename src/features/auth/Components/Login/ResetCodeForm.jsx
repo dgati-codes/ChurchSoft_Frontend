@@ -70,7 +70,7 @@ function ResetCodeForm({ onBackToForgotPassword, email }) {
             <img src="/images/church.jpg" alt="Church building" className="w-full h-full object-cover"/>
           </div>
           
-          <div className="w-[300px] mx-auto p-4 flex flex-col border-[1px] border-blue-600 rounded-lg items-center justify-center m-12">
+          <div className="w-[300px] mx-auto p-4 flex flex-col border border-blue-600 rounded-lg items-center justify-center m-12">
             <div className="text-center mb-8">
               <img src="/images/logo.png" alt="Church logo" className="w-24 h-24 mx-auto mb-4"/>
               <h1 className="text-3xl font-bold text-gray-800">Verification Code</h1>
