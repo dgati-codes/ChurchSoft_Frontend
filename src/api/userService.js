@@ -1,5 +1,6 @@
 // src/api/userService.js
 import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 const BASE_URL = "https://churchsoft-backend.onrender.com/church-soft/v1.0";
 
@@ -48,13 +49,47 @@ export const registerUser = async (userData) => {
     return { success: false, message };
   }
 };
-export const getAllUsers = async () => {
+
+const UserService = {
+  // Fetch all users (standardized)
+  getAllUsers: async () => {
     try {
-      const response = await axiosInstance.get('/Users/All');
-      return response.data;
+      const res = await axiosInstance.get("/users/all?page=0&size=10");
+
+      const payload = res?.data;
+
+      if (Array.isArray(payload)) return payload;
+      if (Array.isArray(payload?.data?.content)) return payload.data.content;
+      if (Array.isArray(payload?.data)) return payload.data;
+      if (Array.isArray(payload?.content)) return payload.content;
+
+      return [];
     } catch (error) {
-      console.error('Error fetching all attendance records:', error);
+      console.error("Error fetching users:", error);
       throw error;
     }
-  };
+  },
+
+  // Delete a user by ID
+  deleteUser: async (id) => {
+    try {
+      return await axiosInstance.delete(`/users/${id}`);
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
+  },
+
+  // Update a user 
+  updateUser: async (data) => {
+    try {
+      return await axiosInstance.put(`/users`, data);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      throw error;
+    }
+  },
+};
+
+export default UserService;
 

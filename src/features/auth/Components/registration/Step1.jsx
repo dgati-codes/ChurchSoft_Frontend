@@ -34,6 +34,7 @@ const Step1PersonalInfo = () => {
     maritalStatus: formData.maritalStatus || "",
     hometown: formData.hometown || "",
     district: formData.district || "",
+    jurisdiction: formData.jurisdiction || "",
     assembly: formData.assembly || "",
     nationality: formData.nationality || "",
     ethnicity: formData.ethnicity || "",
@@ -85,7 +86,7 @@ const Step1PersonalInfo = () => {
 
   return (
     <>
-      <h1 className="text-3xl flex justify-center font-semibold mb-1">
+      <h1 className="text-xl font-[Poppins] flex justify-center font-semibold mb-1">
         Church Member Registration
       </h1>
       <p className="flex justify-center pb-6">
@@ -94,7 +95,7 @@ const Step1PersonalInfo = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto px-6 py-10 bg-white shadow-md rounded-lg"
+        className="max-w-6xl font-[Poppins] mx-auto px-6 py-10 bg-white shadow-md rounded-lg"
       >
         <div className="mb-6 flex gap-3">
           <User className="w-8 h-8 text-fuchsia-500" />
@@ -210,6 +211,17 @@ const Step1PersonalInfo = () => {
               onChange={handleChange}
               className="input"
               placeholder="District"
+            />
+          </div>
+            {/* jurisdiction */}
+          <div>
+            <label className="text-gray-600 font-bold">Region</label>
+            <input
+              name="jurisdiction"
+              value={localData.jurisdiction}
+              onChange={handleChange}
+              className="input"
+              placeholder="Region"
             />
           </div>
 
@@ -335,30 +347,25 @@ const Step1PersonalInfo = () => {
           </div>
 
           {/* PREFERRED LANGUAGES */}
-          <div>
-            <label className="text-gray-600 font-bold">Preferred Languages</label>
-            <TagInput
-              name="preferredLanguages"
-              items={localData.preferredLanguages}
-              onAdd={(val) =>
-                val.trim() &&
-                !localData.preferredLanguages.includes(val.trim()) &&
-                setLocalData((prev) => ({
-                  ...prev,
-                  preferredLanguages: [...prev.preferredLanguages, val.trim()],
-                }))
-              }
-              onRemove={(item) =>
-                setLocalData((prev) => ({
-                  ...prev,
-                  preferredLanguages: prev.preferredLanguages.filter(
-                    (i) => i !== item
-                  ),
-                }))
-              }
-              placeholder="Type a language and press Enter"
-            />
-          </div>
+           <div>
+              <label className="text-gray-600 font-bold">Prefer Languages</label>
+              <input
+                type="text"
+                placeholder="Enter languages separated by commas"
+                value={localData.preferredLanguages.join(", ")}
+                onChange={(e) =>
+                  setLocalData((prev) => ({
+                    ...prev,
+                    preferredLanguages: e.target.value
+                      .split(",")
+                      .map((l) => l.trim())
+                      .filter(Boolean),
+                  }))
+                }
+                className="input"
+              />
+            </div>
+
         </div>
 
         <div className="mt-6 text-right">

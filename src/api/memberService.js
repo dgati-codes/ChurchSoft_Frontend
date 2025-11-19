@@ -2,14 +2,31 @@
 import axiosInstance from "./axiosInstance";
 
 const memberService = {
-  getAllMembers: async () => {
-    const res = await axiosInstance.get("/members");
+  // Fetch ALL members by looping through all pages
+getAllMembers: async () => {
+  let allMembers = [];
+  let page = 0;
+  const size = 10; // backend default
+
+  while (true) {
+    const res = await axiosInstance.get(`/members?page=${page}&size=${size}`);
+
     const payload = res?.data;
-    if (Array.isArray(payload)) return payload;
-    if (Array.isArray(payload?.data)) return payload.data;
-    if (Array.isArray(payload?.content)) return payload.content;
-    return [];
-  },
+
+    const currentPageData =
+      Array.isArray(payload?.content) ? payload.content : [];
+
+    allMembers = [...allMembers, ...currentPageData];
+
+    // stop when last page is reached
+    if (page >= payload?.totalPages - 1) break;
+
+    page++;
+  }
+
+  return allMembers;
+},
+
 
    deleteMember: async (id) => {
     // Use the backend memberId
@@ -24,7 +41,7 @@ const memberService = {
     return res.data;
   },
 
-   createMember: async (memberData) => {
+   createMember: async (memberData, payload) => {
     // POST to create a new member
     const res = await axiosInstance.post("/members", memberData);
     return res.data;

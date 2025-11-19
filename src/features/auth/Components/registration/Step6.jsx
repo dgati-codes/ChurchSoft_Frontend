@@ -11,7 +11,6 @@ const Step6HealthWelfareInfo = () => {
   const [localData, setLocalData] = useState({
     hasHealthIssues: formData.hasHealthIssues || false,
     specialNeedsOrMedicalConditions: formData.specialNeedsOrMedicalConditions || "",
-    leadershipRole: formData.leadershipRole || "",
   });
 
   // Handle text input changes
@@ -100,19 +99,7 @@ const Step6HealthWelfareInfo = () => {
           />
         </div>
 
-        {/* Leadership Role */}
-        <div className="space-y-2 mt-4">
-          <label className="font-medium text-gray-800">Leadership Role (optional)</label>
-          <input
-            type="text"
-            name="leadershipRole"
-            value={localData.leadershipRole}
-            onChange={handleChange}
-            placeholder="Please type here"
-            className="w-full p-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-
+        
         {/* Navigation Buttons */}
         <div className="mt-6 flex justify-between">
           <button
