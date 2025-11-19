@@ -7,35 +7,23 @@
 .button {
   @apply bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500;
 }
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
-}
-
-/* 🔹 Hide scrollbar but keep scroll functionality */
+/* Scrollbar Track */
 ::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
+  height: 8px; /* thickness of horizontal bar */
 }
 
+/* Scrollbar Background */
+::-webkit-scrollbar-track {
+  background: #e5e7eb; /* gray-200 */
+}
+
+/* Scrollbar Thumb (the draggable part) */
 ::-webkit-scrollbar-thumb {
-  background: transparent;
+  background: #2563eb; /* blue-600 */
+  border-radius: 6px;
 }
 
-body {
-  -ms-overflow-style: none; /* IE and Edge */
-  /* scrollbar-width: none; Firefox */
-  overflow-y: scroll; /* keeps scroll functionality */
+/* Thumb hover color */
+::-webkit-scrollbar-thumb:hover {
+  background: #1e40af; /* blue-800 */
 }
-

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Trash2, Edit } from 'lucide-react';
+import { Trash2, Edit } from "lucide-react";
 import LoadingSpinner from "./LoadingSpinner";
-
+import UserService from "../../api/userService";   // import service
 
 const UsersTable = () => {
   const [users, setUsers] = useState([]);
@@ -26,30 +25,22 @@ const UsersTable = () => {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [editSuccess, setEditSuccess] = useState(false);
 
-  // Fetch all users
+  // Load cache
+  const loadCachedUsers = () => {
+    const cached = localStorage.getItem("users_cache");
+    if (cached) return JSON.parse(cached);
+    return null;
+  };
+
+  // Fetch via UserService
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(
-        "https://churchsoft-backend.onrender.com/church-soft/v1.0/users/all?page=0&size=10"
-      );
+      const usersData = await UserService.getAllUsers();
 
-      const usersData = Array.isArray(res.data)
-        ? res.data
-        : Array.isArray(res.data?.data?.content)
-        ? res.data.data.content
-        : Array.isArray(res.data?.data)
-        ? res.data.data
-        : Array.isArray(res.data?.content)
-        ? res.data.content
-        : [];
+      setUsers(usersData);
 
-      // ✅ Ensure full image URL if only filename/path is returned
-      const formattedUsers = usersData.map((u) => ({
-        ...u,
-        
-      }));
-
-      setUsers(formattedUsers);
+      localStorage.setItem("users_cache", JSON.stringify(usersData));
+      localStorage.setItem("users_cache_time", Date.now());
     } catch (err) {
       console.error("Error fetching users:", err);
       setError("Failed to load user details.");
@@ -59,29 +50,35 @@ const UsersTable = () => {
   };
 
   useEffect(() => {
+    const cachedUsers = loadCachedUsers();
+    const cacheTime = localStorage.getItem("users_cache_time");
+
+    if (cachedUsers && cacheTime) {
+      const age = Date.now() - Number(cacheTime);
+      if (age < 900000) {
+        setUsers(cachedUsers);
+        setLoading(false);
+        return;
+      }
+    }
+
     fetchUsers();
-
-    // ✅ Auto refresh every 10 seconds
-    const interval = setInterval(() => {
-      fetchUsers();
-    }, 10000);
-
+    const interval = setInterval(fetchUsers, 900000);
     return () => clearInterval(interval);
   }, []);
 
-  // Handle Delete
+  // DELETE (uses service)
   const handleDelete = (user) => {
-    setDeleteModal(user);
-  };
-
+  setDeleteModal(user);
+};
   const confirmDelete = async (id) => {
     try {
-      await axios.delete(
-        `https://churchsoft-backend.onrender.com/church-soft/v1.0/users/${id}`
-      );
+      await UserService.deleteUser(id);
+
       setUsers((prev) => prev.filter((u) => u.id !== id));
       setDeleteModal(null);
       setDeleteSuccess(true);
+
       setTimeout(() => setDeleteSuccess(false), 2000);
     } catch (err) {
       console.error("Error deleting user:", err);
@@ -89,38 +86,21 @@ const UsersTable = () => {
     }
   };
 
-  // Handle Edit Click
+  // EDIT modal open
   const handleEditClick = (user) => {
     setEditingUser(user.id);
-    setFormData({
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      username: user.username,
-      email: user.email,
-      profileImage: user.profileImage,
-      phoneNumber: user.phoneNumber,
-      localAssemblyName: user.localAssemblyName,
-      status: user.status,
-      roleName: user.roleName,
-    });
+    setFormData({ ...user });
   };
 
-  // Handle Form Change
-  const handleFormChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // Handle Update
+  // UPDATE (uses service)
   const handleUpdate = async () => {
     try {
-      await axios.put(
-        `https://churchsoft-backend.onrender.com/church-soft/v1.0/users`,
-        formData
-      );
+      await UserService.updateUser(formData);
+
       setEditingUser(null);
       fetchUsers();
       setEditSuccess(true);
+
       setTimeout(() => setEditSuccess(false), 2000);
     } catch (err) {
       console.error("Error updating user:", err);
@@ -128,35 +108,39 @@ const UsersTable = () => {
     }
   };
 
+  const handleFormChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+
   if (loading)
     return (
-  <div className="h-screen flex items-center justify-center bg-gray-100">
-    <LoadingSpinner text="Users loading  wait..." />
-  </div>
-);
+      <div className="h-screen flex items-center justify-center bg-gray-100">
+        <LoadingSpinner text="Users loading  wait..." />
+      </div>
+    );
 
   if (error)
     return (
-      <div className="p-4 text-center text-red-500 font-semibold">{error}</div>
+      <div className="p-4 text-center text-red-500 font-semibold">
+        {error}
+      </div>
     );
-
   return (
-    <div className="p-4 -m-8 mt-3 font-Helvetica font-[Poppins] min-w-full ">
+    <div className="p-4 -m-8 mt-3  font-[Poppins] min-w-full ">
       <h2 className="text-2xl font-bold mb-4 text-center">Users Table</h2>
       <div className="overflow-x-auto shadow-lg rounded-lg">
-        <table className="min-w-full border border-gray-200 text-sm">
-          <thead className="bg-gray-100">
+        <table className="w-full border-collapse">
+          <thead className="bg-gray-100 text-sm text-gray-700">
             <tr>
               {/* <th className="px-4 py-2 border border-gray-400">Profile</th> */}
-              <th className="px-2 py-2 border border-gray-400">First Name</th>
-              <th className="px-4 py-2 border border-gray-400">Last Name</th>
-              <th className="px-4 py-2 border border-gray-400">Username</th>
-              <th className="border border-gray-400">Email</th>
-              <th className="px-4 py-2 border border-gray-400">Phone</th>
-              <th className="px-4 py-2 border border-gray-400">Local Assembly</th>
-              <th className="px-2 py-2 border border-gray-400">Status</th>
-              <th className="px-2 py-2 border border-gray-400">Role</th>
-              <th className="px-4 py-2 border border-gray-400 text-center">Actions</th>
+              <th className=" border border-gray-400">First Name</th>
+              <th className=" border border-gray-400">Last Name</th>
+              <th className=" border border-gray-400">Username</th>
+              <th className=" border border-gray-400">Email</th>
+              <th className=" border border-gray-400">Phone</th>
+              <th className=" border border-gray-400">Local Assembly</th>
+              <th className=" border border-gray-400">Status</th>
+              <th className=" border border-gray-400">Role</th>
+              <th className=" border border-gray-400 ">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -164,36 +148,26 @@ const UsersTable = () => {
               <tr>
                 <td
                   colSpan="11"
-                  className="px-4 py-3 text-center text-gray-500 border border-gray-400"
+                  className=" text-center text-gray-500 border border-gray-400"
                 >
                   No users found.
                 </td>
               </tr>
             ) : (
               users.map((user) => (
-                <tr key={user.id} className="font-body text-sm hover:bg-gray-50">
-                  {/* <td className="px-4 py-2 border border-gray-400 text-center">
-                    {user.profileImage ? (
-                      <img
-                        src={user.profileImage}
-                        alt="profile"
-                        className="w-10 h-10 rounded-full mx-auto object-cover"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-gray-300 mx-auto" />
-                    )}
-                  </td> */}
-                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">{user.firstName}</td>
-                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">{user.lastName}</td>
-                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">{user.username}</td>
-                  <td className="px-1 py-2 border font-body Helvetica  text-sm border-gray-400">{user.email}</td>
-                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">{user.phoneNumber}</td>
-                  <td className="px-4 py-2 border font-body Helvetica  text-sm border-gray-400">
+                <tr key={user.id} className="text-[13px] text-gray-700 hover:bg-gray-50">
+                  <td className=" p-2 border  border-gray-400">{user.firstName}</td>
+                  <td className=" p-2 border  border-gray-400">{user.lastName}</td>
+                  <td className=" p-2 border  border-gray-400">{user.username}</td>
+                  <td className=" p-2 border  border-gray-400">{user.email}</td>
+                  <td className=" p-2 border  border-gray-400">{user.phoneNumber}</td>
+                  <td className=" p-2 border  border-gray-400">
                     {user.localAssemblyName}
                   </td>
-                  <td className="px-2 py-2 border border-gray-400">              
+                  <td className=" p-2 border border-gray-400">{user.roleName}</td>
+                  <td className=" p-2 border border-gray-400">              
                     <span
-                    className={`px-1 py-1 rounded text-white text-xs ${
+                    className={`px-1 py-1 rounded text-white  ${
                       user.status === "ACTIVE"
                         ? "bg-green-600"                     
                         : user.status === "INACTIVE"
@@ -204,17 +178,17 @@ const UsersTable = () => {
                     {user.status}
                   </span>
                   </td>
-                  <td className="px-2 py-2 border border-gray-400">{user.roleName}</td>
-                  <td className="px-2 py-2 border border-gray-400 text-center space-x-2">
+                  
+                  <td className="p-4 border border-gray-400 text-center space-x-2">
                     <button
                       onClick={() => handleEditClick(user)}
-                      className="bg-blue-500 text-white m-1 px-1 py-1 rounded hover:bg-blue-600"
+                      className="text-blue-500  rounded hover:cursor-pointer"
                     >
                           <Edit className="w-5 h-5"/> 
                     </button>
                     <button
                       onClick={() => handleDelete(user)}
-                      className="bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600"
+                      className=" text-red-500  rounded hover:cursor-pointer "
                     >
                           <Trash2 className="w-5 h-5"/>
 
@@ -357,10 +331,24 @@ const UsersTable = () => {
 
       {/* Edit Success Modal */}
       {editSuccess && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md">
-          You have successfully edited a user
-        </div>
-      )}
+  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/30">
+    <div className="bg-white rounded-lg p-6 w-96 text-center shadow-lg">
+      <h2 className="text-xl font-semibold mb-2 text-green-600">Update Successful</h2>
+      <p className="mb-4">
+        <span className="font-medium">{editSuccess.fullName}</span> has been successfully updated.
+      </p>
+      <button
+        onClick={() => setEditSuccess(null)}
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
+
+      
     </div>
   );
 };

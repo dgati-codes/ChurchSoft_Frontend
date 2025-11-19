@@ -14,6 +14,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
     maritalStatus: member.maritalStatus || "SINGLE",
     hometown: member.hometown || "",
     nationality: member.nationality || "",
+    jurisdiction: member.jurisdiction || "",
     assembly: member.assembly || "",
     district: member.district || "",
     ethnicity: member.ethnicity || "",
@@ -33,6 +34,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
         maritalStatus: member.maritalStatus || "SINGLE",
         hometown: member.hometown || "",
         nationality: member.nationality || "",
+        jurisdiction: member.jurisdiction || "",
         assembly: member.assembly || "",
         district: member.district || "",
         ethnicity: member.ethnicity || "",
@@ -142,6 +144,15 @@ export default function EditMemberModal({ member, onClose, onSave }) {
         </div>
 
         {/* District */}
+        <div className="mb-3">
+          <label className="text-sm font-medium">Region</label>
+          <input
+            className="input w-full"
+            name="jurisdiction"
+            value={form.jurisdiction}
+            onChange={handleChange}
+          />
+        </div>
         <div className="mb-3">
           <label className="text-sm font-medium">District</label>
           <input

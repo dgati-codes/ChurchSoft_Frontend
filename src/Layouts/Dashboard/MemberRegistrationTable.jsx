@@ -1,24 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import memberService from "../../api/memberService";
 import { Trash2, Edit } from "lucide-react";
 import MemberFullView from "./MemberFullView";
 import LoadingSpinner from "./LoadingSpinner";
-import memberService from "../../api/memberService";
 import EditMemberModal from "./EditMemberModal";
 import DeleteConfirmModal from "./DeleteConfirmModal";
 
 export default function MemberTable() {
-  const [members, setMembers] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const [successModal, setSuccessModal] = useState(null);
-
-  const [showDashboard, setShowDashboard] = useState(false);
-  const [editingMember, setEditingMember] = useState(null);
-  const [deletingMember, setDeletingMember] = useState(null);
+  const queryClient = useQueryClient();
 
   const [filter, setFilter] = useState({
-    ethnicity: "All",
+    jurisdiction: "All",
     district: "All",
     maritalStatus: "All",
     assembly: "All",
@@ -27,30 +20,29 @@ export default function MemberTable() {
     search: "",
   });
 
-  // Fetch members
-  useEffect(() => {
-    const fetchMembers = async () => {
-      setIsLoading(true);
-      setIsError(false);
-      try {
-        const data = await memberService.getAllMembers();
-        setMembers(data);
-      } catch (err) {
-        console.error("Error fetching members:", err);
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [deletingMember, setDeletingMember] = useState(null);
+  const [successModal, setSuccessModal] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
-    fetchMembers();
-  }, []);
+  const pageSize = 10;
 
-  // Apply filters
-  useEffect(() => {
-    const filteredData = members.filter((m) => {
+  const { data: members = [], isLoading, isError } = useQuery({
+    queryKey: ["members"],
+    queryFn: memberService.getAllMembers,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+  });
+
+  const sortedMembers = useMemo(() => [...members].sort((a, b) => b.id - a.id), [members]);
+
+  const filteredMembers = useMemo(() => {
+    return sortedMembers.filter((m) => {
       return (
-        (filter.ethnicity === "All" || m.ethnicity === filter.ethnicity) &&
+        (filter.jurisdiction === "All" || m.jurisdiction === filter.jurisdiction) &&
         (filter.maritalStatus === "All" || m.maritalStatus === filter.maritalStatus) &&
         (filter.district === "All" || m.district === filter.district) &&
         (filter.assembly === "All" || m.assembly === filter.assembly) &&
@@ -61,64 +53,60 @@ export default function MemberTable() {
           m.memberId?.toLowerCase().includes(filter.search.toLowerCase()))
       );
     });
+  }, [filter, sortedMembers]);
 
-    setFiltered(filteredData);
-  }, [members, filter]);
+  const totalPages = Math.ceil(filteredMembers.length / pageSize);
+  const paginatedMembers = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredMembers.slice(start, start + pageSize);
+  }, [currentPage, filteredMembers]);
 
-  // DELETE
-  const confirmDelete = async (member) => {
-    if (!member) return;
-
-    try {
-      await memberService.deleteMember(member.id); // backend expects numeric id
-      setMembers((prev) => prev.filter((m) => m.id !== member.id));
+  const deleteMutation = useMutation({
+    mutationFn: memberService.deleteMember,
+    onSuccess: (_, id) => {
+      queryClient.setQueryData(["members"], (old) => old.filter((m) => m.id !== id));
+      const deleted = members.find((m) => m.id === id);
+      setSuccessModal({ fullName: deleted?.fullName, action: "deleted" });
       setDeletingMember(null);
-       setSuccessModal({
-      fullName: member.fullName,
-    });
-    } catch (err) {
-      console.error("Delete failed:", err.response || err);
-      alert("Delete failed. Check console for details.");
-    }
+    },
+  });
+
+  const confirmDelete = (member) => {
+    if (!member) return;
+    deleteMutation.mutate(member.id);
   };
 
-  // EDIT SAVE
-  const saveEdit = async (member) => {
-    try {
-      const payload = {
-        id: member.id,
-        memberId: member.memberId,
-        fullName: member.fullName,
-        dateOfBirth: member.dateOfBirth,
-        gender: member.gender,
-        maritalStatus: member.maritalStatus,
-        hometown: member.hometown,
-        nationality: member.nationality,
-        assembly: member.assembly,
-        district: member.district,
-        ethnicity: member.ethnicity,
-        phoneNumber: member.phoneNumber,
-        status: member.status,
-      };
-
-      await memberService.updateMember(member.id, payload);
-      setMembers((prev) => prev.map((m) => (m.id === member.id ? payload : m)));
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }) => memberService.updateMember(id, payload),
+    onSuccess: (_, { id, payload }) => {
+      queryClient.setQueryData(["members"], (old) =>
+        old.map((m) => (m.id === id ? { ...m, ...payload } : m))
+      );
+      setSuccessModal({ fullName: payload.fullName, action: "updated" });
       setEditingMember(null);
-        setSuccessModal({
+    },
+  });
+
+  const saveEdit = (member) => {
+    const payload = {
+      id: member.id,
+      memberId: member.memberId,
       fullName: member.fullName,
-      action: "updated",
-    });
-    } catch (err) {
-      console.error("Update failed:", err.response || err);
-      alert("Update failed. Check console for details.");
-    }
+      dateOfBirth: member.dateOfBirth,
+      gender: member.gender,
+      maritalStatus: member.maritalStatus,
+      hometown: member.hometown,
+      nationality: member.nationality,
+      assembly: member.assembly,
+      jurisdiction: member.jurisdiction,
+      district: member.district,
+      ethnicity: member.ethnicity,
+      phoneNumber: member.phoneNumber,
+      status: member.status,
+    };
+    updateMutation.mutate({ id: member.id, payload });
   };
 
-  // Handlers
-  const handleEdit = (member) => setEditingMember(member);
-  const handleDelete = (member) => setDeletingMember(member);
-
-  // Loading UI
   if (isLoading)
     return (
       <div className="h-screen flex items-center justify-center bg-gray-100">
@@ -126,7 +114,6 @@ export default function MemberTable() {
       </div>
     );
 
-  // Error UI
   if (isError)
     return (
       <div className="min-h-screen flex justify-center items-center text-red-500">
@@ -134,99 +121,44 @@ export default function MemberTable() {
       </div>
     );
 
-  // Dashboard view
   if (showDashboard) return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
-  // TABLE VIEW
   return (
-    <div className="min-h-screen font-[Poppins] bg-gray-100 px-4">
+    <div className="w-[960px] font-[Poppins] bg-gray-100 py-10 ">
       {/* Header */}
-      <div className="mb-6 ml-60">
-        <h2 className="text-xl font-semibold ml-20">Member Registration - Table View</h2>
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold">Member Registration - Table View</h2>
         <p className="text-gray-600">
           Manage and view member registrations with advanced filtering and search
         </p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-gray-300 shadow-md rounded-xl p-6 mb-10 grid grid-cols-2 md:grid-cols-6 gap-4">
-        {/* Ethnicity */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Ethnicity</label>
-          <select
-            className="input"
-            value={filter.ethnicity}
-            onChange={(e) => setFilter({ ...filter, ethnicity: e.target.value })}
-          >
-            <option>All</option>
-            <option>Northern Reg.</option>
-            <option>Greater Accra</option>
-            <option>Volta Reg.</option>
-          </select>
-        </div>
+      <div className="bg-white border border-gray-300 shadow-md rounded-xl p-6 mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
+        {[
+          { label: "Region", key: "jurisdiction", options: ["All", "NORTHERN", "EST", "CENTRAL", "WEST", "SOUTH", "GREATER_ACCRA", "VOLTA"] },
+          { label: "District", key: "district", options: ["All", "North District", "Ga District", "Volta1 District"] },
+          { label: "Assembly", key: "assembly", options: ["All", "Breakthrough Assembly", "Legon Assembly", "Marranatha Assembly"] },
+          { label: "Gender", key: "gender", options: ["All", "MALE", "FEMALE"] },
+          { label: "Marital Status", key: "maritalStatus", options: ["All", "SINGLE", "MARRIED", "DIVORCED"] },
+        ].map((f) => (
+          <div key={f.key} className="flex flex-col">
+            <label className="text-sm font-medium mb-1">{f.label}</label>
+            <select
+              className="input"
+              value={filter[f.key]}
+              onChange={(e) => {
+                setCurrentPage(1);
+                setFilter({ ...filter, [f.key]: e.target.value });
+              }}
+            >
+              {f.options.map((opt) => (
+                <option key={opt}>{opt}</option>
+              ))}
+            </select>
+          </div>
+        ))}
 
-        {/* District */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">District</label>
-          <select
-            className="input"
-            value={filter.district}
-            onChange={(e) => setFilter({ ...filter, district: e.target.value })}
-          >
-            <option>All</option>
-            <option>North District</option>
-            <option>Ga District</option>
-            <option>Volta1 District</option>
-          </select>
-        </div>
-
-        {/* Assembly */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Assembly</label>
-          <select
-            className="input"
-            value={filter.assembly}
-            onChange={(e) => setFilter({ ...filter, assembly: e.target.value })}
-          >
-            <option>All</option>
-            <option>Breakthrough Assembly</option>
-            <option>Legon Assembly</option>
-            <option>Marranatha Assembly</option>
-          </select>
-        </div>
-
-        {/* Gender */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Gender</label>
-          <select
-            className="input"
-            value={filter.gender}
-            onChange={(e) => setFilter({ ...filter, gender: e.target.value })}
-          >
-            <option>All</option>
-            <option>MALE</option>
-            <option>FEMALE</option>
-          </select>
-        </div>
-
-        {/* Marital Status */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Marital Status</label>
-          <select
-            className="input"
-            value={filter.maritalStatus}
-            onChange={(e) =>
-              setFilter({ ...filter, maritalStatus: e.target.value })
-            }
-          >
-            <option>All</option>
-            <option>SINGLE</option>
-            <option>MARRIED</option>
-            <option>DIVORCED</option>
-          </select>
-        </div>
-
-        {/* Search */}
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Search</label>
           <input
@@ -234,126 +166,155 @@ export default function MemberTable() {
             placeholder="Search by name or ID"
             className="input"
             value={filter.search}
-            onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+            onChange={(e) => {
+              setCurrentPage(1);
+              setFilter({ ...filter, search: e.target.value });
+            }}
           />
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto bg-white shadow rounded-xl">
+      {/* Table */}
+<div className="p-4 bg-white mt-3 font-[Poppins] min-w-full">
+  <button
+    onClick={() => setShowDashboard(true)}
+    className="text-blue-500 cursor-pointer underline hover:text-blue-600 font-medium text-2xl  mb-4 text-center"
+  >
+    View Details
+  </button>
+
+  {/* Horizontal scroll container */}
+  <div className="overflow-x-auto shadow-lg rounded-lg">
+    <table className="w-full min-w-[400px] border-collapse">
+      <thead className="bg-gray-100 text-md text-gray-700">
+        <tr>
+          <th className="border px-2 py-2">Full_Name</th>
+          <th className="border px-2 py-2">Gender</th>
+          <th className="border px-2 py-2">Date of Birth</th>
+          <th className="border px-2 py-2">Marital Status</th>
+          <th className="border px-2 py-2">Nationality</th>
+          <th className="border px-2 py-2">Region</th>
+          <th className="border px-2 py-2">District</th>
+          <th className="border px-2 py-2">Local / Assembly</th>
+          <th className="border px-2 py-2">Ethnicity</th>
+          <th className="border px-2 py-2">Contact Info</th>
+          <th className="border px-2 py-2">Status</th>
+          <th className="border px-2 py-2">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {paginatedMembers.map((m) => (
+          <tr
+            key={m.id}
+            className="text-[13px] text-gray-700 hover:bg-gray-50"
+          >
+            <td className="p-2 font-semibold border">{m.fullName}</td>
+            <td className="p-2 border">{m.gender}</td>
+            <td className="p-2 border">{m.dateOfBirth}</td>
+            <td className="p-2 border">{m.maritalStatus}</td>
+            <td className="p-2 border">{m.nationality}</td>
+            <td className="p-2 border">{m.jurisdiction}</td>
+            <td className="p-2 border">{m.district}</td>
+            <td className="p-2 border">{m.assembly}</td>
+            <td className="p-2 border">{m.ethnicity}</td>
+            <td className="p-2 border">{m.phoneNumber}</td>
+
+            <td className="p-2 border">
+              <span
+                className={`px-1 py-1 rounded text-white ${
+                  m.status === "ACTIVE"
+                    ? "bg-green-600"
+                    : m.status === "VISITOR"
+                    ? "bg-blue-600"
+                    : m.status === "INACTIVE"
+                    ? "bg-red-400"
+                    : m.status === "SUSPENDED"
+                    ? "bg-yellow-500"
+                    : "bg-gray-500"
+                }`}
+              >
+                {m.status}
+              </span>
+            </td>
+
+            <td className="p-2 border whitespace-nowrap">
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setEditingMember(m)}
+                  className="text-blue-500 hover:cursor-pointer"
+                >
+                  <Edit className="w-5 h-5" />
+                </button>
+
+                <button
+                  onClick={() => setDeletingMember(m)}
+                  className="text-red-500 hover:cursor-pointer"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </div>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+      {/* Pagination */}
+      <div className="flex justify-center gap-2 p-4">
         <button
-          onClick={() => setShowDashboard(true)}
-          className="text-blue-500 ml-200 cursor-pointer underline hover:text-blue-600 font-medium"
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
         >
-          View Details
+          Prev
         </button>
 
-        <table className="w-full border-collapse">
-          <thead className="bg-gray-100 text-sm text-gray-700">
-            <tr>
-              <th className="p-2 border">Full_Name</th>
-              <th className="p-2 border">Gender</th>
-              <th className="p-2 border">Date of Birth</th>
-              <th className="p-2 border">Marital Status</th>
-              <th className="p-2 border">Nationality</th>
-              <th className="p-2 border">Local / Assembly</th>
-              <th className="p-2 border">District</th>
-              <th className="p-2 border">Ethnicity</th>
-              <th className="p-2 border">Contact Info</th>
-              <th className="p-2 border">Status</th>
-              <th className="p-2 border">Action</th>
-            </tr>
-          </thead>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i + 1}
+            onClick={() => setCurrentPage(i + 1)}
+            className={`px-3 py-1 rounded hover:bg-gray-300 ${
+              currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
 
-          <tbody>
-            {filtered.map((m) => (
-              <tr key={m.memberId} className="text-sm text-gray-700 hover:bg-gray-50">
-                <td className="p-2 border">{m.fullName}</td>
-                <td className="p-2 border">{m.gender}</td>
-                <td className="p-2 border">{m.dateOfBirth}</td>
-                <td className="p-2 border">{m.maritalStatus}</td>
-                <td className="p-2 border">{m.nationality}</td>
-                <td className="p-2 border">{m.assembly}</td>
-                <td className="p-2 border">{m.district}</td>
-                <td className="p-2 border">{m.ethnicity}</td>
-                <td className="p-2 border">{m.phoneNumber}</td>
-
-                <td className="p-2 border">
-                  <span
-                    className={`px-1 py-1 rounded text-white text-xs ${
-                      m.status === "ACTIVE"
-                        ? "bg-green-600"
-                        : m.status === "VISITOR"
-                        ? "bg-blue-600"
-                        : m.status === "INACTIVE"
-                        ? "bg-red-400"
-                        : m.status === "SUSPENDED"
-                        ? "bg-yellow-500"
-                        : "bg-gray-500"
-                    }`}
-                  >
-                    {m.status}
-                  </span>
-                </td>
-
-                <td className="px-1 py-3 border flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(m)}
-                    className="bg-blue-500 text-white m-1 px-1 py-1 rounded hover:bg-blue-600"
-                  >
-                    <Edit className="w-5 h-5" />
-                  </button>
-
-                  <button
-                    onClick={() => handleDelete(m)}
-                    className="bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* MODALS */}
-        {editingMember && (
-          <EditMemberModal
-            member={editingMember}
-            onClose={() => setEditingMember(null)}
-            onSave={saveEdit}
-          />
-        )}
-
-        {deletingMember && (
-          <DeleteConfirmModal
-            member={deletingMember}
-            onClose={() => setDeletingMember(null)}
-            onConfirm={() => confirmDelete(deletingMember)}
-          />
-        )}
-
-   {successModal && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-lg p-6 w-96 text-center">
-      <h2 className="text-xl font-semibold mb-4">
-        Member {successModal.action === "updated" ? "Updated" : "Deleted"}
-      </h2>
-      <p className="mb-6">
-       <span className="font-semibold text-green-600"> {successModal.fullName}</span> has been successfully {successModal.action}.
-      </p>
-      <button
-        onClick={() => setSuccessModal(null)}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)}
-
-
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          Next
+        </button>
       </div>
+
+      {editingMember && <EditMemberModal member={editingMember} onClose={() => setEditingMember(null)} onSave={saveEdit} />}
+      {deletingMember && (
+        <DeleteConfirmModal member={deletingMember} onClose={() => setDeletingMember(null)} onConfirm={() => confirmDelete(deletingMember)} />
+      )}
+
+      {successModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 text-center">
+            <h2 className="text-xl font-semibold mb-4">
+              Member {successModal.action === "updated" ? "Updated" : "Deleted"}
+            </h2>
+            <p className="mb-6">
+              <span className="font-semibold text-green-600">{successModal.fullName}</span> has been successfully {successModal.action}.
+            </p>
+            <button onClick={() => setSuccessModal(null)} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

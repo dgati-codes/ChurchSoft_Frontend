@@ -22,7 +22,7 @@ const Step5SkillsInfo = () => {
 
   const [localData, setLocalData] = useState({
     ministries: formData.ministries || [],
-    reason: formData.reason || "",
+    reasonForNonParticipation: formData.reasonForNonParticipation || "",
     leadershipRole: formData.leadershipRole || "",
     skillsTalents: formData.skillsTalents || [],
     spiritualGifts: formData.spiritualGifts || [],
@@ -123,15 +123,15 @@ const Step5SkillsInfo = () => {
             Reason for Non-Participation
           </label>
           <textarea
-            name="reason"
-            value={localData.reason}
+            name="reasonForNonParticipation"
+            value={localData.reasonForNonParticipation}
             onChange={handleChange}
             placeholder="Please type here"
             maxLength={150}
             className="w-full bg-gray-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows={3}
           />
-          <p className="text-sm text-gray-400 text-right">{localData.reason.length}/150</p>
+          <p className="text-sm text-gray-400 text-right">{localData.reasonForNonParticipation.length}/150</p>
         </div>
 
         {/* Leadership Role */}

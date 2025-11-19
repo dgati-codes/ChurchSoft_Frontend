@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useRegistration } from "../context/RegistrationContext";
 import { User, MapPin, Church, Book, Star, HeartPulse, Pencil, Save, X } from "lucide-react";
 import memberService from "../../../../api/memberService";
+import { useQueryClient } from "@tanstack/react-query";
+
 // ✅ use service instead of axios
 
 const Step7ReviewSubmit = () => {
@@ -11,23 +13,28 @@ const Step7ReviewSubmit = () => {
   const [loading, setLoading] = useState(false);
 
   // 🔹 Handle field changes (including arrays)
-  const handleFieldChange = (key, value, subObject = null) => {
-    const isArrayField =
-      ["skillsTalents", "spiritualGifts", "ministries", "preferredLanguages"].includes(key);
+ const handleFieldChange = (key, value, subObject = null) => {
+  const isArrayField =
+    ["skillsTalents", "spiritualGifts", "ministries", "preferredLanguages"].includes(key);
 
-    const finalValue = isArrayField
+  const finalValue = isArrayField
+    ? typeof value === "string"
       ? value.split(",").map((v) => v.trim()).filter(Boolean)
-      : value;
+      : Array.isArray(value)
+      ? value
+      : []
+    : value;
 
-    if (subObject) {
-      setLocalData((prev) => ({
-        ...prev,
-        [subObject]: { ...prev[subObject], [key]: finalValue },
-      }));
-    } else {
-      setLocalData((prev) => ({ ...prev, [key]: finalValue }));
-    }
-  };
+  if (subObject) {
+    setLocalData((prev) => ({
+      ...prev,
+      [subObject]: { ...prev[subObject], [key]: finalValue },
+    }));
+  } else {
+    setLocalData((prev) => ({ ...prev, [key]: finalValue }));
+  }
+};
+
 
   // 🔹 Save section edits
   const handleSave = () => {
@@ -36,41 +43,48 @@ const Step7ReviewSubmit = () => {
   };
 
   // 🔹 Final submit using memberService
+  const queryClient = useQueryClient();
+
   const handleFinalSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      // Normalize booleans
-      localData.hasHealthIssues =
-        localData.hasHealthIssues === "YES" || localData.hasHealthIssues === true;
+  try {
+    // Normalize booleans
+    localData.hasHealthIssues =
+      localData.hasHealthIssues === "YES" || localData.hasHealthIssues === true;
 
-      localData.healthCondition =
-        localData.healthCondition === "YES" || localData.healthCondition === true;
+    localData.healthCondition =
+      localData.healthCondition === "YES" || localData.healthCondition === true;
 
-      // Ensure arrays exist
-      ["skillsTalents", "spiritualGifts", "ministries", "preferredLanguages"].forEach(
-        (field) => {
-          if (!Array.isArray(localData[field])) localData[field] = [];
-        }
-      );
+    // Ensure arrays exist
+    ["skillsTalents", "spiritualGifts", "ministries", "preferredLanguages"].forEach(
+      (field) => {
+        if (!Array.isArray(localData[field])) localData[field] = [];
+      }
+    );
 
-      // Remove empty strings
-      Object.keys(localData).forEach(
-        (key) => localData[key] === "" && (localData[key] = null)
-      );
+    // Remove empty strings
+    Object.keys(localData).forEach(
+      (key) => localData[key] === "" && (localData[key] = null)
+    );
 
-      // ✅ Send data via memberService
-      await memberService.createMember(localData);
+    // ✅ Create member via API
+    const newMember = await memberService.createMember(localData);
 
-      alert("Registration successful!");
-    } catch (error) {
-      console.error("Submission error:", error.response?.data || error);
-      alert("Submission failed. Check console for details.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    // ✅ Update React Query cache so new member appears on top
+    queryClient.setQueryData(["members"], (old = []) => [newMember, ...old]);
+
+    alert("Registration successful!");
+    resetForm(); // optional: reset registration form
+  } catch (error) {
+    console.error(error);
+    alert("Submission failed. Check console for details.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // 🔹 Sections definition (unchanged)
   const sections = [
@@ -88,7 +102,6 @@ const Step7ReviewSubmit = () => {
         "assembly",
         "nationality",
         "ethnicity",
-        "profilePicture",
         "identificationType",
         "identificationNumber",
         "fathersName",
@@ -96,6 +109,7 @@ const Step7ReviewSubmit = () => {
         "ministryAffiliation",
         "consentForCommunication",
         "preferredLanguages",
+       
       ],
     },
     {
@@ -126,12 +140,12 @@ const Step7ReviewSubmit = () => {
     {
       title: "Education & Career Details",
       icon: <Book className="w-5 h-5 text-white" />,
-      fields: ["educationLevel", "occupation", "employmentSector", "employmentType"],
+      fields: ["educationalLevel", "occupation", "employmentSector", "employmentType"],
     },
     {
       title: "Ministry Involvement & Skills",
       icon: <Star className="w-5 h-5 text-white" />,
-      fields: ["ministries", "reason", "leadershipRole", "skillsTalents", "spiritualGifts"],
+      fields: ["ministries", "reasonForNonParticipation", "leadershipRole", "skillsTalents", "spiritualGifts"],
     },
     {
       title: "Health & Welfare Information",
@@ -195,7 +209,8 @@ const Step7ReviewSubmit = () => {
                     {editingSection === section.title ? (
                       <input
                         type="text"
-                        value={isArray ? value.join(", ") : value || ""}
+                       value={Array.isArray(value) ? value.join(", ") : value || ""}
+
                         onChange={(e) => handleFieldChange(field, e.target.value)}
                         className="w-full border rounded px-2 py-1 text-sm"
                       />
@@ -253,18 +268,12 @@ const Step7ReviewSubmit = () => {
 
         {/* Submit / Reset */}
         <div className="flex justify-between pt-6">
-          <button
-            type="button"
-            onClick={resetForm} // ✅ reset to Step 1
-            className="px-6 py-2 bg-red-500 text-white rounded hover:bg-red-400"
-          >
-            Start Over
-          </button>
+          
 
           <button
             type="submit"
             disabled={loading}
-            className={`px-6 py-2 text-white rounded ${
+            className={`px-6 py-2 ml-100 text-white rounded ${
               loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-500"
             }`}
           >
