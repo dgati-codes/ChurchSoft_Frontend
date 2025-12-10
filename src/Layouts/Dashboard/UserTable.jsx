@@ -127,9 +127,9 @@ const UsersTable = () => {
   return (
     <div className="p-4 -m-8 mt-3  font-[Poppins] min-w-full ">
       <h2 className="text-2xl font-bold mb-4 text-center">Users Table</h2>
-      <div className="overflow-x-auto shadow-lg rounded-lg">
+      <div className="overflow-x-auto whitespace-nowrap shadow-lg rounded-lg">
         <table className="w-full border-collapse">
-          <thead className="bg-gray-100 text-sm text-gray-700">
+          <thead className="bg-gray-100 whitespace-nowrap text-sm text-gray-700">
             <tr>
               {/* <th className="px-4 py-2 border border-gray-400">Profile</th> */}
               <th className=" border border-gray-400">First Name</th>

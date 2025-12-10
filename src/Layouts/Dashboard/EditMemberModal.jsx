@@ -18,6 +18,8 @@ export default function EditMemberModal({ member, onClose, onSave }) {
     assembly: member.assembly || "",
     district: member.district || "",
     ethnicity: member.ethnicity || "",
+    preferredLanguages: member.preferredLanguages || "",
+    email: member.email || "",
     phoneNumber: member.phoneNumber || "",
     status: member.status || "ACTIVE",
   });
@@ -38,6 +40,8 @@ export default function EditMemberModal({ member, onClose, onSave }) {
         assembly: member.assembly || "",
         district: member.district || "",
         ethnicity: member.ethnicity || "",
+        preferredLanguages: member.preferredLanguages || "",
+        email: member.email || "",
         phoneNumber: member.phoneNumber || "",
         status: member.status || "ACTIVE",
       });
@@ -173,6 +177,16 @@ export default function EditMemberModal({ member, onClose, onSave }) {
             onChange={handleChange}
           />
         </div>
+          {/* Languages */}
+        <div className="mb-3">
+          <label className="text-sm font-medium">Languages</label>
+          <input
+            className="input w-full"
+            name="preferredLanguages"
+            value={form.preferredLanguages}
+            onChange={handleChange}
+          />
+        </div>
 
         {/* Phone Number */}
         <div className="mb-3">
@@ -181,6 +195,16 @@ export default function EditMemberModal({ member, onClose, onSave }) {
             className="input w-full"
             name="phoneNumber"
             value={form.phoneNumber}
+            onChange={handleChange}
+          />
+        </div>
+        {/*email */}
+        <div className="mb-3">
+          <label className="text-sm font-medium">Email</label>
+          <input
+            className="input w-full"
+            name="email"
+            value={form.email}
             onChange={handleChange}
           />
         </div>

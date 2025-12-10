@@ -243,6 +243,7 @@ const Step1PersonalInfo = () => {
               Nationality<span className="text-red-600">*</span>
             </label>
             <input
+              placeholder="Your Nationality"
               name="nationality"
               value={localData.nationality}
               onChange={handleChange}
@@ -257,6 +258,7 @@ const Step1PersonalInfo = () => {
               Ethnicity<span className="text-red-600">*</span>
             </label>
             <input
+              placeholder="Your Ethnicity"
               name="ethnicity"
               value={localData.ethnicity}
               onChange={handleChange}
@@ -296,6 +298,7 @@ const Step1PersonalInfo = () => {
               Identification Number<span className="text-red-600">*</span>
             </label>
             <input
+              placeholder="Your ID Number"
               name="identificationNumber"
               value={localData.identificationNumber}
               onChange={handleChange}
@@ -308,6 +311,7 @@ const Step1PersonalInfo = () => {
           <div>
             <label className="text-gray-600 font-bold">Father's Name</label>
             <input
+              placeholder="Father's Name"
               name="fathersName"
               value={localData.fathersName}
               onChange={handleChange}
@@ -319,6 +323,7 @@ const Step1PersonalInfo = () => {
           <div>
             <label className="text-gray-600 font-bold">Mother's Name</label>
             <input
+              placeholder="Mother's Name"
               name="mothersName"
               value={localData.mothersName}
               onChange={handleChange}
@@ -351,13 +356,13 @@ const Step1PersonalInfo = () => {
               <label className="text-gray-600 font-bold">Prefer Languages</label>
               <input
                 type="text"
-                placeholder="Enter languages separated by commas"
+                placeholder="Enter language"
                 value={localData.preferredLanguages.join(", ")}
                 onChange={(e) =>
                   setLocalData((prev) => ({
                     ...prev,
                     preferredLanguages: e.target.value
-                      .split(",")
+                      .split(" , ")
                       .map((l) => l.trim())
                       .filter(Boolean),
                   }))

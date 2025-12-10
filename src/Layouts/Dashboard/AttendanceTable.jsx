@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Trash2, Edit } from 'lucide-react';
-
 import {
   BarChart,
   Bar,
@@ -99,6 +98,45 @@ const ViewModal = ({ record, isOpen, onClose }) => {
           <p>
             <strong>Total Attendance:</strong> {total}
           </p>
+          <div className="mt-2">
+            <strong>Detailed Split:</strong>
+            <table className="w-full mt-2 text-sm border-collapse border">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border p-2">Category</th>
+                  <th className="border p-2">Male</th>
+                  <th className="border p-2">Female</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border p-2">Children</td>
+                  <td className="border p-2">{record.boys}</td>
+                  <td className="border p-2">{record.girls}</td>
+                </tr>
+                <tr>
+                  <td className="border p-2">Junior Youth</td>
+                  <td className="border p-2">{record.juniorYouthMale}</td>
+                  <td className="border p-2">{record.juniorYouthFemale}</td>
+                </tr>
+                <tr>
+                  <td className="border p-2">Senior Youth</td>
+                  <td className="border p-2">{record.seniorYouthMale}</td>
+                  <td className="border p-2">{record.seniorYouthFemale}</td>
+                </tr>
+                <tr>
+                  <td className="border p-2">Adults</td>
+                  <td className="border p-2">{record.adultMen}</td>
+                  <td className="border p-2">{record.adultWomen}</td>
+                </tr>
+                <tr>
+                  <td className="border p-2">Visitors</td>
+                  <td className="border p-2">{record.visitorMale}</td>
+                  <td className="border p-2">{record.visitorFemale}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
           <p>
             <strong>Notes:</strong>
           </p>
@@ -137,46 +175,28 @@ export default function AttendanceTable({
   onView,
   onEdit,
 }) {
-  const [open, setOpen] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+   const [showDetails, setShowDetails] = useState(false);
 
-  // Total attendance across all records
+
   const totalAttendance = records.reduce((sum, record) => {
     return (
       sum +
-      (record.boys +
-        record.girls +
-        record.juniorYouthMale +
-        record.juniorYouthFemale +
-        record.seniorYouthMale +
-        record.seniorYouthFemale +
-        record.adultMen +
-        record.adultWomen +
-        record.visitorMale +
-        record.visitorFemale)
+      record.boys +
+      record.girls +
+      record.juniorYouthMale +
+      record.juniorYouthFemale +
+      record.seniorYouthMale +
+      record.seniorYouthFemale +
+      record.adultMen +
+      record.adultWomen +
+      record.visitorMale +
+      record.visitorFemale
     );
   }, 0);
 
-  // Pagination helpers
-  const goToPrevious = () => currentPage > 0 && onPageChange(currentPage - 1);
-  const goToNext = () =>
-    currentPage < totalPages - 1 && onPageChange(currentPage + 1);
-  const goToPage = (page) =>
-    page >= 0 && page < totalPages && onPageChange(page);
-
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisible = 5;
-    let start = Math.max(0, currentPage - Math.floor(maxVisible / 2));
-    let end = Math.min(totalPages, start + maxVisible);
-    if (end - start < maxVisible) start = Math.max(0, end - maxVisible);
-    for (let i = start; i < end; i++) pages.push(i);
-    return pages;
-  };
-
-  // Handlers
   const handleViewClick = async (id) => {
     const record = await onView(id);
     if (record) {
@@ -188,7 +208,6 @@ export default function AttendanceTable({
   const handleEditClick = (id) => onEdit(id);
   const handleDeleteClick = (id) => onDelete(id);
 
-  // Chart data (for each row)
   const getChartData = (record) => {
     const total =
       record.boys +
@@ -203,56 +222,34 @@ export default function AttendanceTable({
       record.visitorFemale;
     if (total === 0) return [];
     return [
-      {
-        name: "Children",
-        value: ((record.boys + record.girls) / total) * 100,
-        fill: "#f87171",
-      }, // red-400
-      {
-        name: "Jr Youth",
-        value:
-          ((record.juniorYouthMale + record.juniorYouthFemale) / total) * 100,
-        fill: "#84cc16",
-      }, // lime-400
-      {
-        name: "Sr Youth",
-        value:
-          ((record.seniorYouthMale + record.seniorYouthFemale) / total) * 100,
-        fill: "#3b82f6",
-      }, // blue-400
-      {
-        name: "Adults",
-        value: ((record.adultMen + record.adultWomen) / total) * 100,
-        fill: "#a855f7",
-      }, // purple-500
-      {
-        name: "Visitors",
-        value: ((record.visitorMale + record.visitorFemale) / total) * 100,
-        fill: "#fb923c",
-      }, // orange-400
+      { name: "Children", value: record.boys + record.girls, fill: "#f87171" },
+      { name: "Jr Youth", value: record.juniorYouthMale + record.juniorYouthFemale, fill: "#84cc16" },
+      { name: "Sr Youth", value: record.seniorYouthMale + record.seniorYouthFemale, fill: "#3b82f6" },
+      { name: "Adults", value: record.adultMen + record.adultWomen, fill: "#a855f7" },
+      { name: "Visitors", value: record.visitorMale + record.visitorFemale, fill: "#fb923c" },
     ];
   };
 
   return (
-    <div className="space-y-6 font-[Poppins]">
+    <div className="space-y-6 w-[950px] font-[DM Sans]">
       <div className="bg-white rounded-lg shadow border p-4">
         <div className="flex justify-between mb-2">
           <div className="flex gap-2 items-center">
             <div className="flex items-center space-x-3">
-              <button
-                onClick={() => setEnabled(!enabled)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  enabled ? "bg-blue-600" : "bg-gray-300"
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    enabled ? "translate-x-6" : "translate-x-1"
+                <button
+                  onClick={() => setShowDetails(!showDetails)}
+                  className={` inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    showDetails ? "bg-blue-600" : "bg-gray-300"
                   }`}
+                >
+                <span
+                className={` h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  showDetails ? "translate-x-6" : "translate-x-1"
+                }`}
                 />
-              </button>
-              <span className="text-sm font-medium">Detailed View</span>
-            </div>
+                </button>
+                {showDetails ? "Hide Details" : "View Details"}
+              </div>
             <div className="flex gap-2 items-center ml-20 p-4">
               <span className="text-sm p-1.5 bg-[#EDEDED] rounded-xl text-black">
                 {totalElements} Records
@@ -265,6 +262,7 @@ export default function AttendanceTable({
         </div>
 
         <div className="overflow-x-auto">
+        {!showDetails && (
           <table className="w-full border text-sm">
             <thead className="bg-gray-100">
               <tr>
@@ -289,7 +287,7 @@ export default function AttendanceTable({
                   const chartData = getChartData(row);
                   return (
                     <tr key={row.id} className="text-center">
-                      <td className="border p-2">
+                      <td className="border p-2 whitespace-nowrap">
                         {new Date(row.serviceDate).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "short",
@@ -301,32 +299,17 @@ export default function AttendanceTable({
                       </td>
                       <td className="border p-2">{row.localAssembly}</td>
                       <td className="border p-2">{row.region}</td>
-                      <td className="border p-2">
-                        {row.boys} / {row.girls}
-                      </td>
-                      <td className="border p-2">
-                        {row.juniorYouthMale} / {row.juniorYouthFemale}
-                      </td>
-                      <td className="border p-2">
-                        {row.seniorYouthMale} / {row.seniorYouthFemale}
-                      </td>
-                      <td className="border p-2">
-                        {row.adultMen} / {row.adultWomen}
-                      </td>
-                      <td className="border p-2">
-                        {row.visitorMale} / {row.visitorFemale}
-                      </td>
+                      <td className="border p-2">{row.boys + row.girls}</td>
+                      <td className="border p-2">{row.juniorYouthMale + row.juniorYouthFemale}</td>
+                      <td className="border p-2">{row.seniorYouthMale + row.seniorYouthFemale}</td>
+                      <td className="border p-2">{row.adultMen + row.adultWomen}</td>
+                      <td className="border p-2">{row.visitorMale + row.visitorFemale}</td>
                       <td className="border p-2 font-bold">
-                        {row.boys +
-                          row.girls +
-                          row.juniorYouthMale +
-                          row.juniorYouthFemale +
-                          row.seniorYouthMale +
-                          row.seniorYouthFemale +
-                          row.adultMen +
-                          row.adultWomen +
-                          row.visitorMale +
-                          row.visitorFemale}
+                        {row.boys + row.girls +
+                         row.juniorYouthMale + row.juniorYouthFemale +
+                         row.seniorYouthMale + row.seniorYouthFemale +
+                         row.adultMen + row.adultWomen +
+                         row.visitorMale + row.visitorFemale}
                       </td>
                       <td className="border p-2">
                         <div className="flex gap-[3px] justify-center items-center">
@@ -337,19 +320,14 @@ export default function AttendanceTable({
                               style={{
                                 backgroundColor: entry.fill,
                                 height: "16px",
-                                width: `${
-                                  entry.value > 0
-                                    ? Math.max(entry.value, 10)
-                                    : 10
-                                }px`,
+                                width: `${entry.value > 0 ? Math.max(entry.value, 10) : 10}px`,
                               }}
                             ></div>
                           ))}
                         </div>
                       </td>
-
                       <td className="border p-2">{row.submittedBy}</td>
-                      <td className="border p-2 flex justify-center gap-2">
+                      <td className="border py-5 px-2 flex justify-center gap-2">
                         <button
                           onClick={() => handleViewClick(row.id)}
                           className="text-blue-500 hover:text-blue-700"
@@ -358,13 +336,13 @@ export default function AttendanceTable({
                         </button>
                         <button
                           onClick={() => handleEditClick(row.id)}
-                            className="bg-blue-500 text-white m-1 px-1 py-1 rounded hover:bg-blue-600"
+                          className=" text-blue-500 m-1 px-1 py-1 "
                         >
                           <Edit/>
                         </button>
                         <button
                           onClick={() => handleDeleteClick(row.id)}
-                            className="bg-red-500 text-white px-1 py-1 rounded hover:bg-red-600"
+                          className=" text-red-500 px-1 py-1 "
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
@@ -384,46 +362,135 @@ export default function AttendanceTable({
               )}
             </tbody>
           </table>
-        </div>
-
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-4 px-4">
-            <div className="text-sm text-gray-700">
-              Showing {currentPage * 10 + 1} to{" "}
-              {Math.min((currentPage + 1) * 10, totalElements)} of{" "}
-              {totalElements} results
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={goToPrevious}
-                disabled={currentPage === 0}
-                className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Previous
-              </button>
-              {getPageNumbers().map((page) => (
-                <button
-                  key={page}
-                  onClick={() => goToPage(page)}
-                  className={`px-3 py-1 border rounded ${
-                    page === currentPage
-                      ? "bg-blue-500 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {page + 1}
-                </button>
-              ))}
-              <button
-                onClick={goToNext}
-                disabled={currentPage === totalPages - 1}
-                className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Next
-              </button>
-            </div>
-          </div>
         )}
+        {showDetails && (
+          <table>
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border p-2"></th>
+                <th className="border p-2">Service Type</th>
+                <th className="border p-2">Assembly</th>
+                <th className="border p-2">Region</th>
+                <th colSpan={2} className="border p-2">Children</th>
+                <th colSpan={2} className="border p-2">Jr. Youth</th>
+                <th colSpan={2} className="border p-2">Sr. Youth</th>
+                <th colSpan={2} className="border p-2">Adults</th>
+                <th  className="border p-2">Visitors</th>
+                <th className="border p-2">Total</th>
+                <th className="border p-2">Chart</th>
+                <th className="border p-2">Submitted By</th>
+                <th className="border p-2">Actions</th>
+              </tr>
+            </thead>
+            <thead className="bg-gray-50">
+            <tr>
+              <th className="border px-3 py-2">Date</th>
+              <th className="border px-3 py-2">Service</th>
+              <th className="border px-3 py-2">Assembly</th>
+              <th className="border px-3 py-2">Region</th>
+              <th className="border px-3 py-2">Boys</th>
+              <th className="border px-3 py-2">Girls</th>
+              <th className="border px-3 py-2">Jr Male</th>
+              <th className="border px-3 py-2">Jr Female</th>
+              <th className="border px-3 py-2">Sr Male</th>
+              <th className="border px-3 py-2">Sr Female</th>
+              <th className="border px-3 py-2">Men</th>
+              <th className="border px-3 py-2">Women</th>
+              <th className="border px-3 py-2">Visitors</th>
+              <th className="border px-3 py-2">Total</th>
+              <th className="border px-3 py-2">Chart</th>
+              <th className="border px-3 py-2">Submitted By</th>
+              <th className="border px-3 py-2">Actions</th>
+            </tr>
+          </thead>
+            <tbody>
+              {records.length > 0 ? (
+                records.map((row) => {
+                  const chartData = getChartData(row);
+                  return (
+                    <tr key={row.id} className="text-center">
+                      <td className="border p-2">
+                        {new Date(row.serviceDate).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </td>
+                      <td className="border p-2">
+                        <ServiceTypeTag type={row.serviceType} />
+                      </td>
+                      <td className="border p-2">{row.localAssembly}</td>
+                      <td className="border p-2">{row.region}</td>
+                      <td className="border p-2">{row.boys }</td>
+                      <td className="border p-2">{ row.girls}</td>
+                      <td className="border p-2">{row.juniorYouthMale }</td>
+                      <td className="border p-2">{ row.juniorYouthFemale}</td>
+                      <td className="border p-2">{row.seniorYouthMale }</td>
+                      <td className="border p-2">{ row.seniorYouthFemale}</td>
+                      <td className="border p-2">{row.adultMen }</td>
+                      <td className="border p-2">{ row.adultWomen}</td>
+                      <td className="border p-2">{row.visitorMale + row.visitorFemale}</td>
+                      <td className="border p-2 font-bold">
+                        {row.boys + row.girls +
+                         row.juniorYouthMale + row.juniorYouthFemale +
+                         row.seniorYouthMale + row.seniorYouthFemale +
+                         row.adultMen + row.adultWomen +
+                         row.visitorMale + row.visitorFemale}
+                      </td>
+                      <td className="border p-2">
+                        <div className="flex gap-[3px] justify-center items-center">
+                          {chartData.map((entry, index) => (
+                            <div
+                              key={index}
+                              className="rounded-md"
+                              style={{
+                                backgroundColor: entry.fill,
+                                height: "16px",
+                                width: `${entry.value > 0 ? Math.max(entry.value, 10) : 10}px`,
+                              }}
+                            ></div>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="border p-2">{row.submittedBy}</td>
+                      <td className="border py-5 px-2 flex justify-center gap-2">
+                        <button
+                          onClick={() => handleViewClick(row.id)}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          👁️
+                        </button>
+                        <button
+                          onClick={() => handleEditClick(row.id)}
+                          className=" text-blue-500 m-1 px-1 py-1 "
+                        >
+                          <Edit/>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(row.id)}
+                          className=" text-red-500 px-1 py-1 "
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td
+                    colSpan="13"
+                    className="border p-4 text-center text-gray-500"
+                  >
+                    No records available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          
+        )}
+        </div>
       </div>
 
       <ViewModal

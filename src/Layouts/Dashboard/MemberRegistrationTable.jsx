@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import memberService from "../../api/memberService";
-import { Trash2, Edit } from "lucide-react";
+import { Trash2, Edit, MoveRight } from "lucide-react";
 import MemberFullView from "./MemberFullView";
 import LoadingSpinner from "./LoadingSpinner";
 import EditMemberModal from "./EditMemberModal";
@@ -99,8 +99,10 @@ export default function MemberTable() {
       nationality: member.nationality,
       assembly: member.assembly,
       jurisdiction: member.jurisdiction,
+      preferredLanguages: member.preferredLanguages,
       district: member.district,
       ethnicity: member.ethnicity,
+      email: member.email,
       phoneNumber: member.phoneNumber,
       status: member.status,
     };
@@ -126,11 +128,13 @@ export default function MemberTable() {
   return (
     <div className="w-[960px] font-[Poppins] bg-gray-100 py-10 ">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold">Member Registration - Table View</h2>
+      <div className="mb-6 display flex justify-center text-center">
+        <div>
+          <h2 className="text-xl font-semibold">Member Registration - Table View</h2>
         <p className="text-gray-600">
           Manage and view member registrations with advanced filtering and search
         </p>
+        </div>
       </div>
 
       {/* Filters */}
@@ -176,31 +180,36 @@ export default function MemberTable() {
 
       {/* Table */}
       {/* Table */}
-<div className="p-4 bg-white mt-3 font-[Poppins] min-w-full">
-  <button
+<div className="rounded-xl overflow-hidden shadow-md border bg-white border-gray-200">
+  <div className="flex justify-end items-center">
+    <button
     onClick={() => setShowDashboard(true)}
     className="text-blue-500 cursor-pointer underline hover:text-blue-600 font-medium text-2xl  mb-4 text-center"
   >
     View Details
   </button>
+   <MoveRight className="text-blue-500 mb-4 ml-2"/>
+  </div>
 
   {/* Horizontal scroll container */}
-  <div className="overflow-x-auto shadow-lg rounded-lg">
-    <table className="w-full min-w-[400px] border-collapse">
-      <thead className="bg-gray-100 text-md text-gray-700">
+  <div className="overflow-x-auto shadow-lg ">
+    <table className="w-full min-w-[500px]   whitespace-nowrap ">
+      <thead className="bg-gray-100 whitespace-nowrap  text-md text-gray-700">
         <tr>
-          <th className="border px-2 py-2">Full_Name</th>
-          <th className="border px-2 py-2">Gender</th>
-          <th className="border px-2 py-2">Date of Birth</th>
-          <th className="border px-2 py-2">Marital Status</th>
-          <th className="border px-2 py-2">Nationality</th>
-          <th className="border px-2 py-2">Region</th>
-          <th className="border px-2 py-2">District</th>
-          <th className="border px-2 py-2">Local / Assembly</th>
-          <th className="border px-2 py-2">Ethnicity</th>
-          <th className="border px-2 py-2">Contact Info</th>
-          <th className="border px-2 py-2">Status</th>
-          <th className="border px-2 py-2">Action</th>
+          <th className="border p-2">Full Name</th>
+          <th className="border p-2">Gender</th>
+          <th className="border p-2">Date of Birth</th>
+          <th className="border p-2">Marital Status</th>
+          <th className="border p-2">Nationality</th>
+          <th className="border p-2">Region</th>
+          <th className="border p-2">Language</th>
+          <th className="border p-2">District</th>
+          <th className="border p-2">Local  Assembly</th>
+          <th className="border p-2">Ethnicity</th>
+          <th className="border p-2">Email</th>
+          <th className="border p-2">Contact Info</th>
+          <th className="border p-2">Status</th>
+          <th className="border p-2">Action</th>
         </tr>
       </thead>
 
@@ -216,9 +225,11 @@ export default function MemberTable() {
             <td className="p-2 border">{m.maritalStatus}</td>
             <td className="p-2 border">{m.nationality}</td>
             <td className="p-2 border">{m.jurisdiction}</td>
+            <td className="p-2 border">{m.preferredLanguages}</td>
             <td className="p-2 border">{m.district}</td>
             <td className="p-2 border">{m.assembly}</td>
             <td className="p-2 border">{m.ethnicity}</td>
+            <td className="p-2 border">{m.email}</td>
             <td className="p-2 border">{m.phoneNumber}</td>
 
             <td className="p-2 border">
@@ -260,12 +271,11 @@ export default function MemberTable() {
         ))}
       </tbody>
     </table>
-  </div>
-</div>
+  
 
 
       {/* Pagination */}
-      <div className="flex justify-center gap-2 p-4">
+      <div className="flex justify-center m-4 gap-2 p-4">
         <button
           onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
           disabled={currentPage === 1}
@@ -294,6 +304,8 @@ export default function MemberTable() {
           Next
         </button>
       </div>
+      </div>
+</div>
 
       {editingMember && <EditMemberModal member={editingMember} onClose={() => setEditingMember(null)} onSave={saveEdit} />}
       {deletingMember && (
