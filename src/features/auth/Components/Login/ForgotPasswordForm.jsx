@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import ResetCodeForm from './ResetCodeForm';
+import { Link } from 'react-router-dom';
 
 /**
  * ForgotPasswordForm component: handles the forgot password form and sends a verification email.
  */
-function ForgotPasswordForm({ onBackToLoginForm }) {
+function ForgotPasswordForm() {
   const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(true);
   const [showResetCodeForm, setShowResetCodeForm] = useState(false);
 
@@ -22,7 +23,7 @@ function ForgotPasswordForm({ onBackToLoginForm }) {
   return (
     <>
       {showForgotPasswordForm && (
-          <div className="flex w-full h-screen font-[Poppins]">
+          <div className="flex w-full h-screen font-[DM Sans]">
 
   {/* LEFT SIDE */}
   <div className="relative w-1/2 h-full overflow-hidden">
@@ -116,13 +117,14 @@ function ForgotPasswordForm({ onBackToLoginForm }) {
                   </button>
 
                   {/* Back to login button */}
-                  <button 
+                  {/* <button 
                     type="button" 
                     className="text-sm text-blue-600 hover:text-blue-800 hover:underline hover:cursor-pointer"
                     onClick={onBackToLoginForm}
                   >
                     Back to Login
-                  </button>
+                  </button> */}
+                  <Link to="/login" className="text-sm text-blue-600 hover:text-blue-800 hover:underline hover:cursor-pointer" >back to login</Link>
  </form>
     </div>
   </div>

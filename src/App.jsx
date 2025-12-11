@@ -10,6 +10,9 @@ import CountriesOverview from "./Layouts/Dashboard/CountriesOverview";
 import Configuration from "./Layouts/Dashboard/Configuration";
 import PrivateRoute from "./utils/PrivateRoute";
 import UserTable from "./Layouts/Dashboard/UserTable";
+// import SignUp from "./features/auth/Components/SignUp/SignUpForm";
+import ForgotPassword from "./features/auth/Components/Login/ForgotPasswordForm";
+
 
 function App() {
   return (
@@ -20,6 +23,12 @@ function App() {
 
         {/* Login Page */}
         <Route path="/login" element={<Login />} />
+
+        {/* Sign Up Page */}
+        {/* <Route path="/signup" element={<SignUp />} /> */}
+
+        {/* Forgot Password Page */}
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Protected Dashboard Routes */}
         <Route

@@ -205,6 +205,22 @@ export default function AttendanceTable({
     }
   };
 
+
+  const goToPrevious = () => currentPage > 0 && onPageChange(currentPage - 1);
+  const goToNext = () =>
+    currentPage < totalPages - 1 && onPageChange(currentPage + 1);
+  const goToPage = (page) =>
+    page >= 0 && page < totalPages && onPageChange(page);
+
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisible = 5;
+    let start = Math.max(0, currentPage - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible);
+    if (end - start < maxVisible) start = Math.max(0, end - maxVisible);
+    for (let i = start; i < end; i++) pages.push(i);
+    return pages;
+  };
   const handleEditClick = (id) => onEdit(id);
   const handleDeleteClick = (id) => onDelete(id);
 
@@ -260,238 +276,312 @@ export default function AttendanceTable({
             </div>
           </div>
         </div>
+<div className="overflow-x-auto">
+  {!showDetails && (
+    <table className="w-full border text-sm">
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="border p-2">Date</th>
+          <th className="border p-2">Service Type</th>
+          <th className="border p-2">Assembly</th>
+          <th className="border p-2">Region</th>
+          <th className="border p-2">Children</th>
+          <th className="border p-2">Jr. Youth</th>
+          <th className="border p-2">Sr. Youth</th>
+          <th className="border p-2">Adults</th>
+          <th className="border p-2">Visitors</th>
+          <th className="border p-2">Total</th>
+          <th className="border p-2">Chart</th>
+          <th className="border p-2">Submitted By</th>
+          <th className="border p-2">Actions</th>
+        </tr>
+      </thead>
 
-        <div className="overflow-x-auto">
-        {!showDetails && (
-          <table className="w-full border text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border p-2">Date</th>
-                <th className="border p-2">Service Type</th>
-                <th className="border p-2">Assembly</th>
-                <th className="border p-2">Region</th>
-                <th className="border p-2">Children</th>
-                <th className="border p-2">Jr. Youth</th>
-                <th className="border p-2">Sr. Youth</th>
-                <th className="border p-2">Adults</th>
-                <th className="border p-2">Visitors</th>
-                <th className="border p-2">Total</th>
-                <th className="border p-2">Chart</th>
-                <th className="border p-2">Submitted By</th>
-                <th className="border p-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {records.length > 0 ? (
-                records.map((row) => {
-                  const chartData = getChartData(row);
-                  return (
-                    <tr key={row.id} className="text-center">
-                      <td className="border p-2 whitespace-nowrap">
-                        {new Date(row.serviceDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </td>
-                      <td className="border p-2">
-                        <ServiceTypeTag type={row.serviceType} />
-                      </td>
-                      <td className="border p-2">{row.localAssembly}</td>
-                      <td className="border p-2">{row.region}</td>
-                      <td className="border p-2">{row.boys + row.girls}</td>
-                      <td className="border p-2">{row.juniorYouthMale + row.juniorYouthFemale}</td>
-                      <td className="border p-2">{row.seniorYouthMale + row.seniorYouthFemale}</td>
-                      <td className="border p-2">{row.adultMen + row.adultWomen}</td>
-                      <td className="border p-2">{row.visitorMale + row.visitorFemale}</td>
-                      <td className="border p-2 font-bold">
-                        {row.boys + row.girls +
-                         row.juniorYouthMale + row.juniorYouthFemale +
-                         row.seniorYouthMale + row.seniorYouthFemale +
-                         row.adultMen + row.adultWomen +
-                         row.visitorMale + row.visitorFemale}
-                      </td>
-                      <td className="border p-2">
-                        <div className="flex gap-[3px] justify-center items-center">
-                          {chartData.map((entry, index) => (
-                            <div
-                              key={index}
-                              className="rounded-md"
-                              style={{
-                                backgroundColor: entry.fill,
-                                height: "16px",
-                                width: `${entry.value > 0 ? Math.max(entry.value, 10) : 10}px`,
-                              }}
-                            ></div>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="border p-2">{row.submittedBy}</td>
-                      <td className="border py-5 px-2 flex justify-center gap-2">
-                        <button
-                          onClick={() => handleViewClick(row.id)}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          👁️
-                        </button>
-                        <button
-                          onClick={() => handleEditClick(row.id)}
-                          className=" text-blue-500 m-1 px-1 py-1 "
-                        >
-                          <Edit/>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(row.id)}
-                          className=" text-red-500 px-1 py-1 "
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td
-                    colSpan="13"
-                    className="border p-4 text-center text-gray-500"
+      <tbody>
+        {records.length > 0 ? (
+          records.map((row) => {
+            const chartData = getChartData(row);
+            return (
+              <tr key={row.id} className="text-center">
+                <td className="border p-2 whitespace-nowrap">
+                  {new Date(row.serviceDate).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </td>
+
+                <td className="border p-2">
+                  <ServiceTypeTag type={row.serviceType} />
+                </td>
+
+                <td className="border p-2">{row.localAssembly}</td>
+                <td className="border p-2">{row.region}</td>
+
+                <td className="border p-2">{row.boys + row.girls}</td>
+                <td className="border p-2">{row.juniorYouthMale + row.juniorYouthFemale}</td>
+                <td className="border p-2">{row.seniorYouthMale + row.seniorYouthFemale}</td>
+                <td className="border p-2">{row.adultMen + row.adultWomen}</td>
+                <td className="border p-2">{row.visitorMale + row.visitorFemale}</td>
+
+                <td className="border p-2 font-bold">
+                  {row.boys +
+                    row.girls +
+                    row.juniorYouthMale +
+                    row.juniorYouthFemale +
+                    row.seniorYouthMale +
+                    row.seniorYouthFemale +
+                    row.adultMen +
+                    row.adultWomen +
+                    row.visitorMale +
+                    row.visitorFemale}
+                </td>
+
+                <td className="border p-2">
+                  <div className="flex gap-[3px] justify-center items-center">
+                    {chartData.map((entry, index) => (
+                      <div
+                        key={index}
+                        className="rounded-md"
+                        style={{
+                          backgroundColor: entry.fill,
+                          height: "16px",
+                          width: `${entry.value > 0 ? Math.max(entry.value, 10) : 10}px`,
+                        }}
+                      ></div>
+                    ))}
+                  </div>
+                </td>
+
+                <td className="border p-2">{row.submittedBy}</td>
+
+                <td className="border py-5 px-2 flex justify-center gap-2">
+                  <button
+                    onClick={() => handleViewClick(row.id)}
+                    className="text-blue-500 hover:text-blue-700"
                   >
-                    No records available.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        )}
-        {showDetails && (
-          <table>
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border p-2"></th>
-                <th className="border p-2">Service Type</th>
-                <th className="border p-2">Assembly</th>
-                <th className="border p-2">Region</th>
-                <th colSpan={2} className="border p-2">Children</th>
-                <th colSpan={2} className="border p-2">Jr. Youth</th>
-                <th colSpan={2} className="border p-2">Sr. Youth</th>
-                <th colSpan={2} className="border p-2">Adults</th>
-                <th  className="border p-2">Visitors</th>
-                <th className="border p-2">Total</th>
-                <th className="border p-2">Chart</th>
-                <th className="border p-2">Submitted By</th>
-                <th className="border p-2">Actions</th>
-              </tr>
-            </thead>
-            <thead className="bg-gray-50">
-            <tr>
-              <th className="border px-3 py-2">Date</th>
-              <th className="border px-3 py-2">Service</th>
-              <th className="border px-3 py-2">Assembly</th>
-              <th className="border px-3 py-2">Region</th>
-              <th className="border px-3 py-2">Boys</th>
-              <th className="border px-3 py-2">Girls</th>
-              <th className="border px-3 py-2">Jr Male</th>
-              <th className="border px-3 py-2">Jr Female</th>
-              <th className="border px-3 py-2">Sr Male</th>
-              <th className="border px-3 py-2">Sr Female</th>
-              <th className="border px-3 py-2">Men</th>
-              <th className="border px-3 py-2">Women</th>
-              <th className="border px-3 py-2">Visitors</th>
-              <th className="border px-3 py-2">Total</th>
-              <th className="border px-3 py-2">Chart</th>
-              <th className="border px-3 py-2">Submitted By</th>
-              <th className="border px-3 py-2">Actions</th>
-            </tr>
-          </thead>
-            <tbody>
-              {records.length > 0 ? (
-                records.map((row) => {
-                  const chartData = getChartData(row);
-                  return (
-                    <tr key={row.id} className="text-center">
-                      <td className="border p-2">
-                        {new Date(row.serviceDate).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </td>
-                      <td className="border p-2">
-                        <ServiceTypeTag type={row.serviceType} />
-                      </td>
-                      <td className="border p-2">{row.localAssembly}</td>
-                      <td className="border p-2">{row.region}</td>
-                      <td className="border p-2">{row.boys }</td>
-                      <td className="border p-2">{ row.girls}</td>
-                      <td className="border p-2">{row.juniorYouthMale }</td>
-                      <td className="border p-2">{ row.juniorYouthFemale}</td>
-                      <td className="border p-2">{row.seniorYouthMale }</td>
-                      <td className="border p-2">{ row.seniorYouthFemale}</td>
-                      <td className="border p-2">{row.adultMen }</td>
-                      <td className="border p-2">{ row.adultWomen}</td>
-                      <td className="border p-2">{row.visitorMale + row.visitorFemale}</td>
-                      <td className="border p-2 font-bold">
-                        {row.boys + row.girls +
-                         row.juniorYouthMale + row.juniorYouthFemale +
-                         row.seniorYouthMale + row.seniorYouthFemale +
-                         row.adultMen + row.adultWomen +
-                         row.visitorMale + row.visitorFemale}
-                      </td>
-                      <td className="border p-2">
-                        <div className="flex gap-[3px] justify-center items-center">
-                          {chartData.map((entry, index) => (
-                            <div
-                              key={index}
-                              className="rounded-md"
-                              style={{
-                                backgroundColor: entry.fill,
-                                height: "16px",
-                                width: `${entry.value > 0 ? Math.max(entry.value, 10) : 10}px`,
-                              }}
-                            ></div>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="border p-2">{row.submittedBy}</td>
-                      <td className="border py-5 px-2 flex justify-center gap-2">
-                        <button
-                          onClick={() => handleViewClick(row.id)}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          👁️
-                        </button>
-                        <button
-                          onClick={() => handleEditClick(row.id)}
-                          className=" text-blue-500 m-1 px-1 py-1 "
-                        >
-                          <Edit/>
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(row.id)}
-                          className=" text-red-500 px-1 py-1 "
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td
-                    colSpan="13"
-                    className="border p-4 text-center text-gray-500"
+                    👁️
+                  </button>
+
+                  <button
+                    onClick={() => handleEditClick(row.id)}
+                    className="text-blue-500 m-1 px-1 py-1"
                   >
-                    No records available.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-          
+                    <Edit />
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteClick(row.id)}
+                    className="text-red-500 px-1 py-1"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </td>
+              </tr>
+            );
+          })
+        ) : (
+          <tr>
+            <td colSpan="13" className="border p-4 text-center text-gray-500">
+              No records available.
+            </td>
+          </tr>
         )}
-        </div>
-      </div>
+      </tbody>
+    </table>
+  )}
+
+  {/* DETAIL VIEW TABLE REMAINS UNTOUCHED */}
+  {showDetails && (
+    <table>
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="border p-2"></th>
+          <th className="border p-2">Service Type</th>
+          <th className="border p-2">Assembly</th>
+          <th className="border p-2">Region</th>
+          <th colSpan={2} className="border p-2">Children</th>
+          <th colSpan={2} className="border p-2">Jr. Youth</th>
+          <th colSpan={2} className="border p-2">Sr. Youth</th>
+          <th colSpan={2} className="border p-2">Adults</th>
+          <th className="border p-2">Visitors</th>
+          <th className="border p-2">Total</th>
+          <th className="border p-2">Chart</th>
+          <th className="border p-2">Submitted By</th>
+          <th className="border p-2">Actions</th>
+        </tr>
+      </thead>
+
+      {/* SECOND HEADER */}
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="border px-3 py-2">Date</th>
+          <th className="border px-3 py-2">Service</th>
+          <th className="border px-3 py-2">Assembly</th>
+          <th className="border px-3 py-2">Region</th>
+          <th className="border px-3 py-2">Boys</th>
+          <th className="border px-3 py-2">Girls</th>
+          <th className="border px-3 py-2">Jr Male</th>
+          <th className="border px-3 py-2">Jr Female</th>
+          <th className="border px-3 py-2">Sr Male</th>
+          <th className="border px-3 py-2">Sr Female</th>
+          <th className="border px-3 py-2">Men</th>
+          <th className="border px-3 py-2">Women</th>
+          <th className="border px-3 py-2">Visitors</th>
+          <th className="border px-3 py-2">Total</th>
+          <th className="border px-3 py-2">Chart</th>
+          <th className="border px-3 py-2">Submitted By</th>
+          <th className="border px-3 py-2">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {records.length > 0 ? (
+          records.map((row) => {
+            const chartData = getChartData(row);
+            return (
+              <tr key={row.id} className="text-center">
+                <td className="border p-2">
+                  {new Date(row.serviceDate).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </td>
+
+                <td className="border p-2">
+                  <ServiceTypeTag type={row.serviceType} />
+                </td>
+
+                <td className="border p-2">{row.localAssembly}</td>
+                <td className="border p-2">{row.region}</td>
+
+                <td className="border p-2">{row.boys}</td>
+                <td className="border p-2">{row.girls}</td>
+                <td className="border p-2">{row.juniorYouthMale}</td>
+                <td className="border p-2">{row.juniorYouthFemale}</td>
+                <td className="border p-2">{row.seniorYouthMale}</td>
+                <td className="border p-2">{row.seniorYouthFemale}</td>
+                <td className="border p-2">{row.adultMen}</td>
+                <td className="border p-2">{row.adultWomen}</td>
+                <td className="border p-2">
+                  {row.visitorMale + row.visitorFemale}
+                </td>
+
+                <td className="border p-2 font-bold">
+                  {row.boys +
+                    row.girls +
+                    row.juniorYouthMale +
+                    row.juniorYouthFemale +
+                    row.seniorYouthMale +
+                    row.seniorYouthFemale +
+                    row.adultMen +
+                    row.adultWomen +
+                    row.visitorMale +
+                    row.visitorFemale}
+                </td>
+
+                <td className="border p-2">
+                  <div className="flex gap-[3px] justify-center items-center">
+                    {chartData.map((entry, index) => (
+                      <div
+                        key={index}
+                        className="rounded-md"
+                        style={{
+                          backgroundColor: entry.fill,
+                          height: "16px",
+                          width: `${entry.value > 0 ? Math.max(entry.value, 10) : 10}px`,
+                        }}
+                      ></div>
+                    ))}
+                  </div>
+                </td>
+
+                <td className="border p-2">{row.submittedBy}</td>
+
+                <td className="border py-5 px-2 flex justify-center gap-2">
+                  <button
+                    onClick={() => handleViewClick(row.id)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    👁️
+                  </button>
+
+                  <button
+                    onClick={() => handleEditClick(row.id)}
+                    className="text-blue-500 m-1 px-1 py-1"
+                  >
+                    <Edit />
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteClick(row.id)}
+                    className="text-red-500 px-1 py-1"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </td>
+              </tr>
+            );
+          })
+        ) : (
+          <tr>
+            <td colSpan="13" className="border p-4 text-center text-gray-500">
+              No records available.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  )}
+</div>
+
+{/* ------------------------------------------------------------------- */}
+{/* PAGINATION INSERTED HERE – NO LOGIC MODIFIED */}
+{/* ------------------------------------------------------------------- */}
+
+{totalPages > 1 && (
+  <div className="flex items-center justify-between mt-4 px-4">
+    <div className="text-sm text-gray-700">
+      Showing {currentPage * 10 + 1} to{" "}
+      {Math.min((currentPage + 1) * 10, totalElements)} of{" "}
+      {totalElements} results
+    </div>
+
+    <div className="flex space-x-2">
+      <button
+        onClick={goToPrevious}
+        disabled={currentPage === 0}
+        className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+
+      {getPageNumbers().map((page) => (
+        <button
+          key={page}
+          onClick={() => goToPage(page)}
+          className={`px-3 py-1 border rounded ${
+            page === currentPage
+              ? "bg-blue-500 text-white"
+              : "bg-white text-gray-700 hover:bg-gray-50"
+          }`}
+        >
+          {page + 1}
+        </button>
+      ))}
+
+      <button
+        onClick={goToNext}
+        disabled={currentPage === totalPages - 1}
+        className="px-3 py-1 border rounded disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+)}
+
 
       <ViewModal
         record={selectedRecord}
@@ -499,5 +589,7 @@ export default function AttendanceTable({
         onClose={() => setViewModalOpen(false)}
       />
     </div>
+    </div>
+
   );
 }
