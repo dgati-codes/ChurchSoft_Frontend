@@ -63,7 +63,7 @@ const Step4EducationInfo = () => {
 
   return (
     <>
-      <h1 className="text-3xl flex justify-center font-semibold mb-1">
+      <h1 className="text-3xl flex justify-center font-[DM Sans] font-semibold mb-1">
         Church Member Registration
       </h1>
       <p className="flex justify-center pb-6">
@@ -72,7 +72,7 @@ const Step4EducationInfo = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto px-6 py-10 bg-white shadow-md rounded-lg"
+        className="max-w-3xl mx-auto  px-6 py-10 bg-white shadow-md rounded-lg"
       >
         <div className="flex gap-3 mb-4">
           <GraduationCap className="w-8 h-8 text-amber-500" />

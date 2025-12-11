@@ -126,7 +126,7 @@ export default function MemberTable() {
   if (showDashboard) return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
   return (
-    <div className="w-[960px] font-[Poppins] bg-gray-100 py-10 ">
+    <div className="w-[960px] font-[DM Sans] bg-gray-100 py-10 ">
       {/* Header */}
       <div className="mb-6 display flex justify-center text-center">
         <div>

@@ -86,7 +86,7 @@ const Step1PersonalInfo = () => {
 
   return (
     <>
-      <h1 className="text-xl font-[Poppins] flex justify-center font-semibold mb-1">
+      <h1 className="text-xl font-[DM Sans] flex justify-center font-semibold mb-1">
         Church Member Registration
       </h1>
       <p className="flex justify-center pb-6">
@@ -95,7 +95,7 @@ const Step1PersonalInfo = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="max-w-6xl font-[Poppins] mx-auto px-6 py-10 bg-white shadow-md rounded-lg"
+        className="max-w-6xl font-[DM Sans] mx-auto px-6 py-10 bg-white shadow-md rounded-lg"
       >
         <div className="mb-6 flex gap-3">
           <User className="w-8 h-8 text-fuchsia-500" />

@@ -49,7 +49,7 @@ const Step2ContactInfo = () => {
 
   return (
     <>
-      <h1 className="text-3xl  font-semibold text-center mb-1">
+      <h1 className="text-3xl font-[DM Sans] font-semibold text-center mb-1">
         Church Member Registration
       </h1>
       <p className="text-center pb-6">
@@ -58,7 +58,7 @@ const Step2ContactInfo = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="max-w-3xl mx-auto font-[Poppins] px-6 py-10 bg-white shadow-md rounded-lg space-y-8"
+        className="max-w-3xl mx-auto font-[DM Sans] px-6 py-10 bg-white shadow-md rounded-lg space-y-8"
       >
         {/* Contact and Location Section */}
         <div>

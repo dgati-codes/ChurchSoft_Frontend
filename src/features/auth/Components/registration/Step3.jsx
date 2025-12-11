@@ -43,7 +43,7 @@ const Step3MembershipInfo = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen font-[DM Sans] bg-gray-50">
       <form
         onSubmit={handleSubmit}
         className="max-w-4xl mx-auto px-6 py-10 bg-white shadow-md rounded-lg"

@@ -68,7 +68,7 @@ const Sidebar = () => {
     }`;
 
   return (
-    <aside className="w-64 fixed left-0 top-0 h-screen border-r border-gray-200 bg-[#001866] z-10">
+    <aside className="w-64 font-[DM Sans] fixed left-0 top-0 h-screen border-r border-gray-200 bg-[#001866] z-10">
       <div className="p-4 border-b font-bold border-gray-300">
         <div className="flex mb-14 items-center space-x-2">
           <img className="w-20 ml-10" src="/images/logo.png" alt="logo" />

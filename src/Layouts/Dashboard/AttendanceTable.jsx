@@ -1,15 +1,6 @@
 import React, { useState } from "react";
 import { Trash2, Edit } from 'lucide-react';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+
 
 // Service type label with colors (flexible)
 const ServiceTypeTag = ({ type }) => {
@@ -280,9 +271,9 @@ export default function AttendanceTable({
   {!showDetails && (
     <table className="w-full border text-sm">
       <thead className="bg-gray-100">
-        <tr>
+        <tr className="h[36px]">
           <th className="border p-2">Date</th>
-          <th className="border p-2">Service Type</th>
+          <th className="border p-2 w-[136px] ">Service Type</th>
           <th className="border p-2">Assembly</th>
           <th className="border p-2">Region</th>
           <th className="border p-2">Children</th>
@@ -311,11 +302,11 @@ export default function AttendanceTable({
                   })}
                 </td>
 
-                <td className="border p-2">
+                <td className="border p-2 whitespace-nowrap">
                   <ServiceTypeTag type={row.serviceType} />
                 </td>
 
-                <td className="border p-2">{row.localAssembly}</td>
+                <td className="border p-2 whitespace-nowrap">{row.localAssembly}</td>
                 <td className="border p-2">{row.region}</td>
 
                 <td className="border p-2">{row.boys + row.girls}</td>
@@ -338,7 +329,7 @@ export default function AttendanceTable({
                 </td>
 
                 <td className="border p-2">
-                  <div className="flex gap-[3px] justify-center items-center">
+                  <div className="flex gap-1 justify-center items-center">
                     {chartData.map((entry, index) => (
                       <div
                         key={index}
@@ -396,7 +387,7 @@ export default function AttendanceTable({
     <table>
       <thead className="bg-gray-100">
         <tr>
-          <th className="border p-2"></th>
+          <th className="border p-2">Date</th>
           <th className="border p-2">Service Type</th>
           <th className="border p-2">Assembly</th>
           <th className="border p-2">Region</th>
@@ -415,23 +406,23 @@ export default function AttendanceTable({
       {/* SECOND HEADER */}
       <thead className="bg-gray-50">
         <tr>
-          <th className="border px-3 py-2">Date</th>
-          <th className="border px-3 py-2">Service</th>
-          <th className="border px-3 py-2">Assembly</th>
-          <th className="border px-3 py-2">Region</th>
+          <th colSpan={4} className="border px-3 py-2"></th>
+          {/* <th className="border px-3 py-2">Service</th> */}
+          {/* <th className="border px-3 py-2">Assembly</th> */}
+          {/* <th className="border px-3 py-2">Region</th> */}
           <th className="border px-3 py-2">Boys</th>
           <th className="border px-3 py-2">Girls</th>
-          <th className="border px-3 py-2">Jr Male</th>
-          <th className="border px-3 py-2">Jr Female</th>
-          <th className="border px-3 py-2">Sr Male</th>
-          <th className="border px-3 py-2">Sr Female</th>
+          <th className="border px-3 py-2"> M</th>
+          <th className="border px-3 py-2"> F</th>
+          <th className="border px-3 py-2"> M</th>
+          <th className="border px-3 py-2">F</th>
           <th className="border px-3 py-2">Men</th>
           <th className="border px-3 py-2">Women</th>
           <th className="border px-3 py-2">Visitors</th>
-          <th className="border px-3 py-2">Total</th>
-          <th className="border px-3 py-2">Chart</th>
-          <th className="border px-3 py-2">Submitted By</th>
-          <th className="border px-3 py-2">Actions</th>
+          <th colSpan={4} className="border px-3 py-2">Total</th>
+          {/* <th className="border px-3 py-2">Chart</th> */}
+          {/* <th className="border px-3 py-2">Submitted By</th> */}
+          {/* <th className="border px-3 py-2">Actions</th> */}
         </tr>
       </thead>
 
@@ -441,7 +432,7 @@ export default function AttendanceTable({
             const chartData = getChartData(row);
             return (
               <tr key={row.id} className="text-center">
-                <td className="border p-2">
+                <td className="border p-2 whitespace-nowrap">
                   {new Date(row.serviceDate).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
@@ -449,11 +440,11 @@ export default function AttendanceTable({
                   })}
                 </td>
 
-                <td className="border p-2">
+                <td className="border p-2 whitespace-nowrap">
                   <ServiceTypeTag type={row.serviceType} />
                 </td>
 
-                <td className="border p-2">{row.localAssembly}</td>
+                <td className="border p-2 whitespace-nowrap">{row.localAssembly}</td>
                 <td className="border p-2">{row.region}</td>
 
                 <td className="border p-2">{row.boys}</td>

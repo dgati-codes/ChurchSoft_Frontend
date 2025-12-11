@@ -43,7 +43,7 @@ function NewPasswordForm({ onBackToLogin }) {
   }
 
   return (
-    <div className="fixed bg-[url('/images/pexels-valeriya-kobzar-42371713-8358604.jpg')] bg-cover bg-center inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed font-[DM Sans] bg-[url('/images/pexels-valeriya-kobzar-42371713-8358604.jpg')] bg-cover bg-center inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
       <div className="flex w-full max-w-4xl bg-white rounded-xl overflow-hidden shadow-2xl">
         <div className="md:w-1/2 w-full">
           <img 
@@ -53,7 +53,7 @@ function NewPasswordForm({ onBackToLogin }) {
           />
         </div>
 
-        <div className="w-[300px] mx-auto p-4 flex flex-col border-[1px] border-blue-600 rounded-lg items-center justify-center m-12">
+        <div className="w-[300px] mx-auto p-4 flex flex-col border border-blue-600 rounded-lg items-center justify-center m-12">
           <div className="text-center mb-8">
             <img src="/images/logo.png" alt="Church logo" className="w-24 h-24 mx-auto mb-4"/>
             <h1 className="text-3xl p-2 font-bold text-gray-800">New Password</h1>
