@@ -120,10 +120,10 @@ const Sidebar = () => {
 
             {openDropdown === "users" && (
               <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
-                <span className="absolute -left-1 top-1/6 w-5 h-9 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
+                <span className="absolute -left-0.5 top-1/6 w-6 h-10 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
 
                 <li className="relative">
-                  <span className="absolute -left-[13px] top-1/9 w-5 h-3 border-l border-b border-yellow-300/60 rounded-bl-md"></span>
+                  <span className="absolute -left-3.5 top-1/9 w-5 h-3 border-l border-b border-yellow-300/60 rounded-bl-md"></span>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -172,10 +172,10 @@ const Sidebar = () => {
                 </li>
               {openDropdown === "members" && (
                 <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
-                  <span className="absolute -left-1 top-1/6 w-5 h-9 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
+                  <span className="absolute -left-0.5 top-1/6 w-6 h-10 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
 
                   <li className="relative">
-                    <span className="absolute -left-[13px] top-1/9 w-5 h-3 border-l border-b border-yellow-300/60  rounded-bl-md"></span>
+                    <span className="absolute -left-3.5 top-1/9 w-5 h-3 border-l border-b border-yellow-300/60  rounded-bl-md"></span>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleChildClick("addMember", "/dashboard/register"); }}
                       className={linkClasses(activeView === "addMember")}
