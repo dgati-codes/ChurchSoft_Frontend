@@ -10,7 +10,6 @@ import CountriesOverview from "./Layouts/Dashboard/CountriesOverview";
 import Configuration from "./Layouts/Dashboard/Configuration";
 import PrivateRoute from "./utils/PrivateRoute";
 import UserTable from "./Layouts/Dashboard/UserTable";
-// import SignUp from "./features/auth/Components/SignUp/SignUpForm";
 import ForgotPassword from "./features/auth/Components/Login/ForgotPasswordForm";
 
 
@@ -18,39 +17,15 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Default route → Login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-
-        {/* Login Page */}
-        <Route path="/login" element={<Login />} />
-
-        {/* Sign Up Page */}
-        {/* <Route path="/signup" element={<SignUp />} /> */}
-
-        {/* Forgot Password Page */}
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-
-        {/* Protected Dashboard Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <DashboardLayout />
-            </PrivateRoute>
-          }
-        >
-          {/* Default dashboard content */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/login" element={<Login />} />      
+          <Route path="/forgot-password" element={<ForgotPassword />} />  
+          <Route path="/dashboard" element={ <PrivateRoute><DashboardLayout /></PrivateRoute> } >
           <Route index element={<Dashboard2 />} />
-
-          {/* USERS DROPDOWN */}
           <Route path="add-user" element={<AddUserForm />} />
           <Route path="user-table" element={<UserTable />} />
-
-          {/* MEMBERS DROPDOWN */}
           <Route path="register" element={<Register />} />
           <Route path="members" element={<MemberTable />} />
-
-          {/* OTHER ROUTES */}
           <Route path="attendance" element={<AttendanceTracking />} />
           <Route path="countries" element={<CountriesOverview />} />
           <Route path="configuration" element={<Configuration />} />

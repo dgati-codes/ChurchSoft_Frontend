@@ -269,11 +269,11 @@ export default function AttendanceTable({
         </div>
 <div className="overflow-x-auto">
   {!showDetails && (
-    <table className="w-full border text-sm">
+    <table className=" border text-sm">
       <thead className="bg-gray-100">
-        <tr className="h[36px]">
+        <tr className="w-5">
           <th className="border p-2">Date</th>
-          <th className="border p-2 w-[136px] ">Service Type</th>
+          <th className="border p-2">Service Type</th>
           <th className="border p-2">Assembly</th>
           <th className="border p-2">Region</th>
           <th className="border p-2">Children</th>
@@ -293,8 +293,8 @@ export default function AttendanceTable({
           records.map((row) => {
             const chartData = getChartData(row);
             return (
-              <tr key={row.id} className="text-center">
-                <td className="border p-2 whitespace-nowrap">
+              <tr key={row.id} className="text-center h-2">
+                <td className="border  p-2 whitespace-nowrap">
                   {new Date(row.serviceDate).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
@@ -329,7 +329,7 @@ export default function AttendanceTable({
                 </td>
 
                 <td className="border p-2">
-                  <div className="flex gap-1 justify-center items-center">
+                  <div className="flex w-15 gap-1 justify-center items-center">
                     {chartData.map((entry, index) => (
                       <div
                         key={index}
@@ -346,7 +346,7 @@ export default function AttendanceTable({
 
                 <td className="border p-2">{row.submittedBy}</td>
 
-                <td className="border py-5 px-2 flex justify-center gap-2">
+                <td className="border   flex justify-center gap-1">
                   <button
                     onClick={() => handleViewClick(row.id)}
                     className="text-blue-500 hover:text-blue-700"
@@ -356,14 +356,14 @@ export default function AttendanceTable({
 
                   <button
                     onClick={() => handleEditClick(row.id)}
-                    className="text-blue-500 m-1 px-1 py-1"
+                    className="text-blue-500 m-1"
                   >
                     <Edit />
                   </button>
 
                   <button
                     onClick={() => handleDeleteClick(row.id)}
-                    className="text-red-500 px-1 py-1"
+                    className="text-red-500 "
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
@@ -384,9 +384,9 @@ export default function AttendanceTable({
 
   {/* DETAIL VIEW TABLE REMAINS UNTOUCHED */}
   {showDetails && (
-    <table>
+    <table className="w-full border text-sm">
       <thead className="bg-gray-100">
-        <tr>
+        <tr className="text-sm">
           <th className="border p-2">Date</th>
           <th className="border p-2">Service Type</th>
           <th className="border p-2">Assembly</th>
@@ -404,25 +404,25 @@ export default function AttendanceTable({
       </thead>
 
       {/* SECOND HEADER */}
-      <thead className="bg-gray-50">
-        <tr>
-          <th colSpan={4} className="border px-3 py-2"></th>
-          {/* <th className="border px-3 py-2">Service</th> */}
-          {/* <th className="border px-3 py-2">Assembly</th> */}
-          {/* <th className="border px-3 py-2">Region</th> */}
-          <th className="border px-3 py-2">Boys</th>
-          <th className="border px-3 py-2">Girls</th>
-          <th className="border px-3 py-2"> M</th>
-          <th className="border px-3 py-2"> F</th>
-          <th className="border px-3 py-2"> M</th>
-          <th className="border px-3 py-2">F</th>
-          <th className="border px-3 py-2">Men</th>
-          <th className="border px-3 py-2">Women</th>
-          <th className="border px-3 py-2">Visitors</th>
-          <th colSpan={4} className="border px-3 py-2">Total</th>
-          {/* <th className="border px-3 py-2">Chart</th> */}
-          {/* <th className="border px-3 py-2">Submitted By</th> */}
-          {/* <th className="border px-3 py-2">Actions</th> */}
+      <thead className="bg-gray-50 text-sm">
+        <tr className="h-2 text-sm">
+          <th colSpan={4} className="border  py-2"></th>
+          {/* <th className="border  py-2">Service</th> */}
+          {/* <th className="border  py-2">Assembly</th> */}
+          {/* <th className="border  py-2">Region</th> */}
+          <th className="border  py-2">Boys</th>
+          <th className="border  py-2">Girls</th>
+          <th className="border  py-2"> M</th>
+          <th className="border  py-2"> F</th>
+          <th className="border  py-2"> M</th>
+          <th className="border  py-2">F</th>
+          <th className="border  py-2">M</th>
+          <th className="border  py-2">W</th>
+          <th className="border  py-2">Visitors</th>
+          {/* <th colSpan={4} className="border  py-2">Total</th> */}
+          {/* <th className="border  py-2">Chart</th> */}
+          {/* <th className="border  py-2">Submitted By</th> */}
+          {/* <th className="border  py-2">Actions</th> */}
         </tr>
       </thead>
 
@@ -447,7 +447,7 @@ export default function AttendanceTable({
                 <td className="border p-2 whitespace-nowrap">{row.localAssembly}</td>
                 <td className="border p-2">{row.region}</td>
 
-                <td className="border p-2">{row.boys}</td>
+                <td className=" border-r-0 border-b-1  p-2">{row.boys}</td>
                 <td className="border p-2">{row.girls}</td>
                 <td className="border p-2">{row.juniorYouthMale}</td>
                 <td className="border p-2">{row.juniorYouthFemale}</td>
@@ -456,7 +456,7 @@ export default function AttendanceTable({
                 <td className="border p-2">{row.adultMen}</td>
                 <td className="border p-2">{row.adultWomen}</td>
                 <td className="border p-2">
-                  {row.visitorMale + row.visitorFemale}
+                  {row.visitorMale + row.visitorFemale} 
                 </td>
 
                 <td className="border p-2 font-bold">
@@ -473,7 +473,7 @@ export default function AttendanceTable({
                 </td>
 
                 <td className="border p-2">
-                  <div className="flex gap-[3px] justify-center items-center">
+                  <div className="flex w-15 gap-1 justify-center items-center">
                     {chartData.map((entry, index) => (
                       <div
                         key={index}
@@ -490,7 +490,7 @@ export default function AttendanceTable({
 
                 <td className="border p-2">{row.submittedBy}</td>
 
-                <td className="border py-5 px-2 flex justify-center gap-2">
+                <td className="border   flex justify-center gap-1">
                   <button
                     onClick={() => handleViewClick(row.id)}
                     className="text-blue-500 hover:text-blue-700"
@@ -500,14 +500,14 @@ export default function AttendanceTable({
 
                   <button
                     onClick={() => handleEditClick(row.id)}
-                    className="text-blue-500 m-1 px-1 py-1"
+                    className="text-blue-500 m-1 "
                   >
                     <Edit />
                   </button>
 
                   <button
                     onClick={() => handleDeleteClick(row.id)}
-                    className="text-red-500 px-1 py-1"
+                    className="text-red-500 "
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
