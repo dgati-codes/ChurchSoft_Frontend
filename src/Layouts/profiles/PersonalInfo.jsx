@@ -2,7 +2,7 @@ import { User } from "lucide-react";
 
 function PersonalInfo() {
   return (
-    <div className="bg-white w-10/10 ml-3 rounded-lg shadow-sm border p-6">
+    <div className="bg-[#F9FAFB] border-[#E5E7EB] w-10/10 ml-3 rounded-lg shadow-sm border p-6">
       <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
         <User size={14} />
         Personal Information

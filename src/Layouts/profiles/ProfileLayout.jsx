@@ -1,14 +1,19 @@
 import React from "react";
 import { ArrowLeft, Pencil, User, Shield, Church, Phone, Heart, GraduationCap } from "lucide-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
 
 function ProfileLayout() {
   const navigate = useNavigate();
+   const { user, loading} = useAuth();
+
+if (loading) return null;
 
   return (
-    <div className="min-h-screen w-full  bg-gray-50">
+    <div className="min-h-screen w-full  ">
       
-      <div className="bg-[#031B6B] text-white px-10 py-6 grid grid-cols-[10%_40%_50%]">
+      <div className="bg-[#031B6B] border-[#E5E7EB] text-white px-10 py-6 grid grid-cols-[10%_40%_50%]">
         <div className="flex items-center">
           <button
             onClick={() => navigate("/dashboard")}
@@ -21,12 +26,12 @@ function ProfileLayout() {
 
         <div className="flex items-center gap-4">
           <img
-            src="https://tse1.mm.bing.net/th/id/OIP.U3JegUYEzKUc7D3To2i1jgHaHa"
+            src="https://tse2.mm.bing.net/th/id/OIP.QTD-DEW7Iablt1WXp0csOQHaE8?w=1060&h=707&rs=1&pid=ImgDetMain&o=7&rm=3"
             alt="Profile"
             className="w-16 h-16 rounded-full border-2 border-white object-cover"
           />
           <div>
-            <h2 className="text-lg font-semibold">Sarah Johnson</h2>
+            <h2 className="text-lg font-semibold">{user?.firstName} {user?.lastName}</h2>
             <p className="text-sm bg-blue-300/20 px-2 py-1 rounded-full inline-block">
               Active Member
             </p>

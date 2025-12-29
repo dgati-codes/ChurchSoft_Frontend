@@ -10,24 +10,24 @@ function welfare() {
   const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen fixed bg-gray-50">
-             <div className=" w-13/8 ml-10 flex items-center justify-between bg-white rounded-lg shadow-sm border p-6">
-                <div className="flex gap-1">
+        <div className="min-h-screen fixed bg-white">
+             <div className=" w-12/12 ml-50 bg-[#F9FAFB] border-[#E5E7EB] rounded-lg shadow-sm border p-6">
+                <div className="flex gap-1 mb-2">
                   <Church className="h-5 w-5 text-blue-500" />
-                <h1>Membership</h1>
+                <h1>Welfare & Health Information</h1>
                 </div>
                 
-                <div>
-                  <label htmlFor="">Date Joined</label>
-                  <input type="date" />
+                <hr />
+                <br />
+                <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <label htmlFor="">Any Health Condition(s)</label>
+                  <input type="text" placeholder="Yes" />
                 </div>
-                <div>
-                  <label htmlFor="">Baptism Status</label>
-                  <input type="radio" />
+                <div className="flex flex-col">
+                  <label htmlFor="">Any special needs or medical conditions</label>
+                  <input type="text" placeholder="N/A" name="" id="" />
                 </div>
-                <div>
-                  <label htmlFor="">Salvation/Born Again</label>
-                  <input type="radio" name="" id="" />
                 </div>
              </div>
         </div>

@@ -10,9 +10,9 @@ function Contact() {
   // const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen fixed bg-gray-50">
+        <div className="min-h-screen fixed ">
           <div className="w-15/8 ml-12 ">
-              <div className="bg-white rounded-lg shadow-sm border p-6">
+              <div className="bg-[#F9FAFB] border-[#E5E7EB] rounded-lg shadow-sm border p-6">
                 <h2 className="text-sm font-bold mb-4 flex items-center gap-2">
                     <Phone size={14} />
                    Contact

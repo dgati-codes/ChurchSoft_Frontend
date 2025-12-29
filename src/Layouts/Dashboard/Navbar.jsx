@@ -1,18 +1,24 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
+
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+   const { user, loading, logout } = useAuth();
 
-  const user = JSON.parse(localStorage.getItem("churchsoft_user"));
+
+
+
 
   return (
     <header className="bg-white fixed font-[DM Sans] grid grid-cols-[40%_60%] p-8 shadow-sm w-full">
       <div>
-        <h1 className="text-[20px] font-semibold text-[#0B1C2D]">
-          Hello {user?.firstName} {user?.lastName}!
-        </h1>
+        <div className="text-[20px] font-semibold text-[#0B1C2D]">
+            <h1>Hello <span className="">{user?.firstName} {user?.lastName}</span>!</h1>
+        </div>
         <p className="text-[13px] text-gray-500">
           Welcome back! Here’s what’s happening today
         </p>
@@ -25,12 +31,12 @@ const Navbar = () => {
             className="flex items-center gap-2 focus:outline-none"
           >
             <img
-              src="https://tse1.mm.bing.net/th/id/OIP.U3JegUYEzKUc7D3To2i1jgHaHa"
+              src="https://tse2.mm.bing.net/th/id/OIP.QTD-DEW7Iablt1WXp0csOQHaE8?w=1060&h=707&rs=1&pid=ImgDetMain&o=7&rm=3"
               alt="User"
               className="w-10 h-10 rounded-full object-cover"
             />
             <span className="text-sm font-medium text-gray-700">
-              {user?.username}
+              {user?.firstName} {user?.lastName}
             </span>
             <ChevronDown className="mt-2 h-4 w-4" />
           </button>

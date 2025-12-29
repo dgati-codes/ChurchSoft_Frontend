@@ -93,3 +93,8 @@ const UserService = {
 
 export default UserService;
 
+// ✅ Get currently logged-in user
+export const getCurrentUser = async () => {
+  const res = await axiosInstance.get("/users/me");
+  return res.data;
+};
