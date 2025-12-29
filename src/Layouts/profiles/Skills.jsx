@@ -6,8 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 
 
-function welfare() {
-  const navigate = useNavigate();
+function Skills() {
 
     return (
         <div className="min-h-screen fixed bg-gray-50">
@@ -35,6 +34,6 @@ function welfare() {
     )
 };
 
-export default welfare;
+export default Skills;
 
 

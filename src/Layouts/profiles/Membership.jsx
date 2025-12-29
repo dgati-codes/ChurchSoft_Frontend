@@ -6,28 +6,32 @@ import { useNavigate } from "react-router-dom";
 
 
 
-function welfare() {
+function Membership() {
   const navigate = useNavigate();
 
     return (
         <div className="min-h-screen fixed bg-gray-50">
-             <div className=" w-13/8 ml-10 flex items-center justify-between bg-white rounded-lg shadow-sm border p-6">
-                <div className="flex gap-1">
+             <div className=" w-12/12 ml-50 bg-white rounded-lg shadow-sm border p-6">
+                <div className="flex gap-1 mb-2">
                   <Church className="h-5 w-5 text-blue-500" />
                 <h1>Membership</h1>
                 </div>
                 
-                <div>
+                <hr />
+                <br />
+                <div className="flex items-center justify-between">
+                  <div className="flex flex-col">
                   <label htmlFor="">Date Joined</label>
-                  <input type="date" />
+                  <input type="text" placeholder="23/02/2023"  />
                 </div>
-                <div>
+                <div className="flex flex-col">
                   <label htmlFor="">Baptism Status</label>
-                  <input type="radio" />
+                  <input type="text" placeholder="Yes" />
                 </div>
-                <div>
+                <div className="flex flex-col">
                   <label htmlFor="">Salvation/Born Again</label>
-                  <input type="radio" name="" id="" />
+                  <input type="text" placeholder="No" name="" id="" />
+                </div>
                 </div>
              </div>
         </div>
@@ -35,6 +39,7 @@ function welfare() {
     )
 };
 
-export default welfare;
+export default Membership;
+
 
 

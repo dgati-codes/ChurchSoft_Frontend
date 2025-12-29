@@ -4,54 +4,36 @@ import { useNavigate } from "react-router-dom";
 
 
 function Educationwork() {
-  const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-gray-50">
-             <div className="bg-[#031B6B] text-white px-10 py-6 grid grid-cols-[10%_40%_50%]">
-        <div className="flex items-center justify-evenly">
-            <button
-  onClick={() => navigate("/dashboard")}
-  className="flex items-center gap-2 text-sm"
->
-  <ArrowLeft size={16} />
-  Back
-</button>
-
-        </div>
-        <div className="flex items-center justify-evenly">
-            
-             <div className="flex items-center gap-4">
-          <img
-            src="https://tse1.mm.bing.net/th/id/OIP.U3JegUYEzKUc7D3To2i1jgHaHa?cb=ucfimg2&ucfimg=1&w=700&h=700&rs=1&pid=ImgDetMain&o=7&rm=3"
-            alt="Profile"
-            className="w-16 h-16 rounded-full border-2 border-white object-cover"
-          />
-          <div>
-            <h2 className="text-lg font-semibold">Sarah Johnson</h2>
-            <p className="text-sm mr-8 bg-blue-300/20  px-2 py-1 rounded-full text-center">Active Member</p>
-            <p className="text-xs ">Member since March 2018</p>
-          </div>
-        </div>
-        </div>
-        <div className=" flex items-center justify-end">
-              <button className="bg-white text-blue-700 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium">
-          <Pencil size={14} />
-          Edit Profile
-        </button>
-      </div> 
-        </div>
-         <div className="bg-white border-b flex justify-center">
-        <div className="flex gap-10 px-12">
-          <Link to="/profile"><Tab icon={<User size={14} />} label="Personal Info" /></Link>
-<Link to="/contact"><Tab icon={<Phone size={14} />} label="Contact" /></Link>
-<Link to="/membership"><Tab icon={<Church size={14} />} label="Membership" /></Link>
-<Link to="/education"><Tab icon={<GraduationCap size={14} />} label="Education" /></Link>
-<Link to="/skills"><Tab icon={<Heart size={14} />} label="Skills" /></Link>
-<Link to="/welfare"><Tab icon={<Shield size={14} />} label="Welfare" /></Link>
-
-         </div>
-         </div>
+       <div className="min-h-screen fixed bg-gray-50">
+             <div className=" w-10/14 ml-50  bg-white rounded-lg shadow-sm border p-6">
+                <div className="flex gap-1 mb-2">
+                  <GraduationCap className="h-5 w-5 text-blue-500" />
+                <h1>Education & Profession</h1>
+                </div>
+                
+                <hr />
+                <br />
+                <div className="flex items-center gap-8 flex-wrap justify-between">
+                  <div className="flex flex-col">
+                  <label htmlFor="">Education Level</label>
+                  <input type="text" placeholder="Masters"  />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="">Current Occupation/Profession</label>
+                  <input type="text" placeholder="Doctor" />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="">Employment Sector</label>
+                  <input type="text" placeholder="N/A" name="" id="" />
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="">Employment Type</label>
+                  <input type="text" placeholder="N/A" name="" id="" />
+                </div>
+                </div>
+             </div>
         </div>
         
     )
