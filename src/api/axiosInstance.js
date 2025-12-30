@@ -11,7 +11,6 @@ const axiosInstance = axios.create({
   timeout: 30000,
 });
 
-// ✅ Attach token to all requests except login/register
 axiosInstance.interceptors.request.use(
   (config) => {
     if (
@@ -28,7 +27,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ✅ Global error handling - now includes 403
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -36,8 +34,7 @@ axiosInstance.interceptors.response.use(
       console.warn(
         "⚠️ Unauthorized or Forbidden - clearing token and redirecting to login"
       );
-      localStorage.removeItem("accessToken"); // Clear expired/invalid token
-      // Redirect to login (adjust path if needed)
+      localStorage.removeItem("accessToken"); 
       if (typeof window !== "undefined" && window.location) {
         window.location.href = "/login";
       }
