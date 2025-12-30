@@ -1,14 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { loginUser } from "../../../../api/userService";
-
 import "../../../../App.css";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import ResetSuccess from "./ResetSuccess";
 
 function LoginForm({ onLoginSuccess }) {
   const [showLoginForm, setShowLoginForm] = useState(true);
-  const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
+  // const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
   const [showResetSuccess, setShowResetSuccess] = useState(false);
 
   const [credentials, setCredentials] = useState({
@@ -52,10 +51,10 @@ function LoginForm({ onLoginSuccess }) {
     }
   };
 
-  const handleToggle = () => {
-    setShowLoginForm(false);
-    setShowForgotPasswordForm(true);
-  };
+  // const handleToggle = () => {
+  //   setShowLoginForm(false);
+  //   setShowForgotPasswordForm(true);
+  // };
 
   const handleBackToLoginForm = () => {
     setShowLoginForm(true);
@@ -76,7 +75,7 @@ function LoginForm({ onLoginSuccess }) {
     <>
       {showLoginForm && (
         
-  <div className="flex w-full h-screen font-[Poppins]">
+  <div className="flex w-full h-screen font-[DM Sans]">
 
   {/* LEFT SIDE */}
   <div className="relative w-1/2 h-full overflow-hidden">
@@ -195,13 +194,14 @@ function LoginForm({ onLoginSuccess }) {
         </button>
 
         
-          <button
+          {/* <button
             type="button"
             onClick={handleToggle}
             className="text-sm text-blue-600 mt-6  hover:underline"
           >
             Forgot Password?
-          </button>
+          </button> */}
+          <Link to="/forgot-password" className="text-sm text-blue-600 mt-6  hover:underline">forget Password?</Link>
         
       </form>
     </div>
@@ -211,9 +211,9 @@ function LoginForm({ onLoginSuccess }) {
 )}
 
 
-      {showForgotPasswordForm && (
+      {/* {showForgotPasswordForm && (
         <ForgotPasswordForm onBackToLoginForm={handleBackToLoginForm} />
-      )}
+      )} */}
 
       {showResetSuccess && (
         <ResetSuccess onBackToLoginForm={handleBackToLogin} />

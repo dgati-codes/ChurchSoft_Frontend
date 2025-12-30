@@ -18,6 +18,8 @@ export default function EditMemberModal({ member, onClose, onSave }) {
     assembly: member.assembly || "",
     district: member.district || "",
     ethnicity: member.ethnicity || "",
+    preferredLanguages: member.preferredLanguages || "",
+    email: member.email || "",
     phoneNumber: member.phoneNumber || "",
     status: member.status || "ACTIVE",
   });
@@ -38,6 +40,8 @@ export default function EditMemberModal({ member, onClose, onSave }) {
         assembly: member.assembly || "",
         district: member.district || "",
         ethnicity: member.ethnicity || "",
+        preferredLanguages: member.preferredLanguages || "",
+        email: member.email || "",
         phoneNumber: member.phoneNumber || "",
         status: member.status || "ACTIVE",
       });
@@ -54,7 +58,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed font-[Poppins] inset-0 flex items-center justify-center bg-black/60 z-50">
+    <div className="fixed font-[DM Sans] inset-0 flex items-center justify-center bg-black/60 z-50">
       <div className="bg-white rounded-lg w-96 p-6 overflow-y-auto max-h-[90vh]">
         <h2 className="text-xl font-semibold mb-4">Edit Member</h2>
 
@@ -173,6 +177,16 @@ export default function EditMemberModal({ member, onClose, onSave }) {
             onChange={handleChange}
           />
         </div>
+          {/* Languages */}
+        <div className="mb-3">
+          <label className="text-sm font-medium">Languages</label>
+          <input
+            className="input w-full"
+            name="preferredLanguages"
+            value={form.preferredLanguages}
+            onChange={handleChange}
+          />
+        </div>
 
         {/* Phone Number */}
         <div className="mb-3">
@@ -181,6 +195,16 @@ export default function EditMemberModal({ member, onClose, onSave }) {
             className="input w-full"
             name="phoneNumber"
             value={form.phoneNumber}
+            onChange={handleChange}
+          />
+        </div>
+        {/*email */}
+        <div className="mb-3">
+          <label className="text-sm font-medium">Email</label>
+          <input
+            className="input w-full"
+            name="email"
+            value={form.email}
             onChange={handleChange}
           />
         </div>

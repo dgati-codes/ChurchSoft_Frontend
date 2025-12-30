@@ -77,7 +77,7 @@ function ParentChildManager() {
   };
 
   return (
-    <div className="p-8 ml-64 bg-gray-50 min-h-screen">
+    <div className="p-8 ml-64 bg-gray-50 min-h-screen font-[DM Sans]">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="ml-70 mb-20">

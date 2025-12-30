@@ -34,12 +34,19 @@ getAllMembers: async () => {
     return res.data;
   },
 
-  updateMember: async (id, updatedData) => {
-    // Backend expects memberId and the updated data in the body
-    const payload = { id, ...updatedData };
-    const res = await axiosInstance.put("/members/update", payload);
-    return res.data;
-  },
+ updateMember: async (id, updatedData) => {
+  const payload = {
+    id,
+    ...updatedData,
+    preferredLanguages: Array.isArray(updatedData.preferredLanguages)
+      ? updatedData.preferredLanguages
+      : [updatedData.preferredLanguages].filter(Boolean),
+  };
+
+  const res = await axiosInstance.put("/members/update", payload);
+  return res.data;
+},
+
 
    createMember: async (memberData, payload) => {
     // POST to create a new member

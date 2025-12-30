@@ -40,7 +40,7 @@ const Step6HealthWelfareInfo = () => {
 
   return (
     <>
-      <h1 className="text-3xl flex justify-center font-semibold mb-1">
+      <h1 className="text-3xl flex font-[DM Sans] justify-center font-semibold mb-1">
         Church Member Registration
       </h1>
       <p className="flex justify-center pb-6">

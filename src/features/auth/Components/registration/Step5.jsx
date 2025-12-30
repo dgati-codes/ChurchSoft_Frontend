@@ -24,8 +24,12 @@ const Step5SkillsInfo = () => {
     ministries: formData.ministries || [],
     reasonForNonParticipation: formData.reasonForNonParticipation || "",
     leadershipRole: formData.leadershipRole || "",
-    skillsTalents: formData.skillsTalents || [],
-    spiritualGifts: formData.spiritualGifts || [],
+    skillsTalents: Array.isArray(formData.skillsTalents)
+      ? formData.skillsTalents
+      : [], 
+    spiritualGifts: Array.isArray(formData.spiritualGifts)
+      ? formData.spiritualGifts
+      : [], 
   });
 
   // Handle ministry checkbox toggle
@@ -73,13 +77,24 @@ const Step5SkillsInfo = () => {
       ...localData,
       ministries: mappedMinistries,
     });
+ const cleanedSkills = [...localData.skillsTalents];
 
+    updateForm({
+      ...localData,
+      skillsTalents: cleanedSkills,
+    });
+ const cleanedGifts = [...localData.spiritualGifts];
+
+    updateForm({
+      ...localData,
+      spiritualGifts: cleanedGifts,
+    });
     nextStep();
   };
 
   return (
     <>
-      <h1 className="text-3xl flex justify-center font-semibold mb-1">
+      <h1 className="text-3xl font-[DM Sans] flex justify-center font-semibold mb-1">
         Church Member Registration
       </h1>
       <p className="flex justify-center pb-6">
@@ -154,27 +169,42 @@ const Step5SkillsInfo = () => {
           <label className="block text-sm font-medium mb-1">
             Skills / Talents<span className="text-red-600">*</span>
           </label>
-          <TagInput
-            name="skillsTalents"
-            items={localData.skillsTalents}
-            onAdd={(val) => handleAddItem("skillsTalents", val)}
-            onRemove={(item) => handleRemoveItem("skillsTalents", item)}
-            placeholder="Type a skill and press Enter"
-          />
+          <input
+                type="text"
+                placeholder="Enter languages separated by commas"
+                value={localData.skillsTalents.join(", ")}
+                onChange={(e) =>
+                  setLocalData((prev) => ({
+                    ...prev,
+                    skillsTalents: e.target.value
+                      .split(", ")
+                      .map((l) => l.trim())
+                      .filter(Boolean),
+                  }))
+                }
+                className="input"
+              />
         </div>
-
-        {/* Spiritual Gifts */}
+         {/* Spiritual Gifts */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">
-            Spiritual Gifts (optional)
+           Spiritual Gifts (optional)<span className="text-red-600">*</span>
           </label>
-          <TagInput
-          name="spiritualGifts"
-            items={localData.spiritualGifts}
-            onAdd={(val) => handleAddItem("spiritualGifts", val)}
-            onRemove={(item) => handleRemoveItem("spiritualGifts", item)}
-            placeholder="Type a gift and press Enter"
-          />
+          <input
+                type="text"
+                placeholder="Enter languages separated by commas"
+                value={localData.spiritualGifts.join(", ")}
+                onChange={(e) =>
+                  setLocalData((prev) => ({
+                    ...prev,
+                    spiritualGifts: e.target.value
+                      .split(" , ")
+                      .map((l) => l.trim())
+                      .filter(Boolean),
+                  }))
+                }
+                className="input"
+              />
         </div>
 
         {/* Navigation Buttons */}

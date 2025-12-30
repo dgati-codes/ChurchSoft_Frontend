@@ -161,7 +161,7 @@ const Step7ReviewSubmit = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl font-[DM Sans] mx-auto px-4 py-10">
       <h1 className="text-3xl font-semibold text-center mb-2">Church Member Registration</h1>
       <p className="text-center text-gray-600 mb-8">
         Review all information carefully before submission.
