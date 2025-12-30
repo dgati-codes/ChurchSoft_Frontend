@@ -57,7 +57,7 @@ const Navbar = () => {
                 <li>
                   <button
                     className="w-full text-left px-4 py-3 hover:bg-gray-100 text-red-600"
-                    onClick={() => localStorage.clear()}
+                    // onClick={() => localStorage.clear()}
                   >
                     Logout
                   </button>
