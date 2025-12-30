@@ -1,63 +1,68 @@
-import { createContext, useContext } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getCurrentUser, loginUser } from "../api/userService";
+import { createContext, useContext, useEffect, useState } from "react";
+import axiosInstance from "../api/axiosInstance";
+import { loginUser, getCurrentUser } from "../api/userService";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const queryClient = useQueryClient();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Get token from localStorage
-  const token = localStorage.getItem("accessToken");
+  // 🔁 Restore user on page refresh
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
 
-  // 🔐 Fetch logged-in user, only if token exists
-  const {
-    data: user,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: getCurrentUser,
-    enabled: !!token, // fetch only when token is available
-    retry: false,
-  });
+    if (!token) {
+      setLoading(false);
+      return;
+    }
 
-  // 🔑 Login handler
+    axiosInstance.defaults.headers.Authorization = `Bearer ${token}`;
+
+    const fetchUser = async () => {
+      try {
+        const userData = await getCurrentUser();
+        setUser(userData); // 🔥 triggers re-render everywhere
+      } catch (err) {
+        console.error("Failed to restore user:", err);
+        localStorage.removeItem("accessToken");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // 🔑 Login — IMMEDIATE username update
   const login = async (credentials) => {
     const result = await loginUser(credentials);
 
     if (result.success) {
-      // Store token
+      // 1️⃣ Save token
       localStorage.setItem("accessToken", result.token);
 
-      // Immediately fetch current user and update cache
-      const userData = await queryClient.fetchQuery({
-        queryKey: ["currentUser"],
-        queryFn: getCurrentUser,
-      });
+      // 2️⃣ Update axios header immediately
+      axiosInstance.defaults.headers.Authorization =
+        `Bearer ${result.token}`;
 
-      queryClient.setQueryData(["currentUser"], userData);
+      // 3️⃣ Fetch user and update context state
+      const userData = await getCurrentUser();
+      setUser(userData); // 🔥 THIS fixes the delay
     }
 
     return result;
   };
 
-  // 🚪 Logout handler
+  // 🚪 Logout
   const logout = () => {
     localStorage.removeItem("accessToken");
-    queryClient.clear();
+    delete axiosInstance.defaults.headers.Authorization;
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading: isLoading,
-        isError,
-        login,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
