@@ -6,26 +6,24 @@ import ResetSuccess from "./ResetSuccess";
 import { useAuth } from "../../../../context/AuthContext";
 
 function LoginForm() {
-  const { login } = useAuth(); // ✅ use AuthContext login
+  const { login } = useAuth(); 
   const [showLoginForm, setShowLoginForm] = useState(true);
-  const [showResetSuccess, setShowResetSuccess] = useState(false);
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  // ✅ Handle login
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const result = await login(credentials); // 🔥 use AuthContext login
+      const result = await login(credentials); 
 
       if (result.success) {
-        navigate("/dashboard"); // ✅ redirect after login
+        navigate("/dashboard"); 
       } else {
         setError(result.message || "Invalid credentials. Please try again.");
       }
@@ -39,12 +37,11 @@ function LoginForm() {
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.id]: e.target.value });
-    if (error) setError(""); // Clear error on typing
+    if (error) setError(""); 
   };
 
   const handleBackToLogin = () => {
     setShowLoginForm(true);
-    setShowResetSuccess(false);
   };
 
   return (
@@ -140,9 +137,6 @@ function LoginForm() {
         </div>
       )}
 
-      {showResetSuccess && (
-        <ResetSuccess onBackToLoginForm={handleBackToLogin} />
-      )}
     </>
   );
 }
