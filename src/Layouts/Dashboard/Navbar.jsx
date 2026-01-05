@@ -1,15 +1,21 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 
 
 const Navbar = () => {
+    const navigate = useNavigate();
   const [open, setOpen] = useState(false);
    const { user, loading, logout } = useAuth();
 
 
+const handleLogout = () => {
+  logout();              // clears auth state + token (inside AuthContext)
+  localStorage.clear();  // optional: only if logout() doesn’t already do this
+  navigate("/login");    // redirect to login
+};
 
 
 
@@ -57,7 +63,7 @@ const Navbar = () => {
                 <li>
                   <button
                     className="w-full text-left px-4 py-3 hover:bg-gray-100 text-red-600"
-                    // onClick={() => localStorage.clear()}
+                    onClick={handleLogout}
                   >
                     Logout
                   </button>

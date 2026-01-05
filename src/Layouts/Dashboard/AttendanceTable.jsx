@@ -447,7 +447,7 @@ export default function AttendanceTable({
                 <td className="border p-2 whitespace-nowrap">{row.localAssembly}</td>
                 <td className="border p-2">{row.region}</td>
 
-                <td className=" border-r-0 border-b-1  p-2">{row.boys}</td>
+                <td className=" border-r-0 border-b  p-2">{row.boys}</td>
                 <td className="border p-2">{row.girls}</td>
                 <td className="border p-2">{row.juniorYouthMale}</td>
                 <td className="border p-2">{row.juniorYouthFemale}</td>

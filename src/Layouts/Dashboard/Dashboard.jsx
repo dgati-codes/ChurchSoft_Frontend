@@ -33,8 +33,8 @@ export default function Dashboard() {
           {/* BIRTHDAYS */}
           <div className="bg-white rounded-2xl p-6">
             <div className="grid grid-cols-3 gap-4">
-              <BirthdayCard name="Rhoda Tuckson" age="26" role="Worship Team" image="https://thumbs.dreamstime.com/b/portrait-view-regular-happy-smiling-niger-man-ultra-realistic-candid-social-media-avatar-image-plain-solid-background-338037856.jpg"/>
-              <BirthdayCard name="Kofi Annan" age="22" role="Junior Youth" image="https://tse2.mm.bing.net/th/id/OIP.-OD0dCrXXOQenE_Y6CaiXQHaJQ?w=1440&h=1800&rs=1&pid=ImgDetMain&o=7&rm=3"/>
+              <BirthdayCard name="Kofi Annan" age="26" role="Worship Team" image="https://thumbs.dreamstime.com/b/portrait-view-regular-happy-smiling-niger-man-ultra-realistic-candid-social-media-avatar-image-plain-solid-background-338037856.jpg"/>
+              <BirthdayCard name="Rhoda Tuckson" age="22" role="Junior Youth" image="https://tse2.mm.bing.net/th/id/OIP.-OD0dCrXXOQenE_Y6CaiXQHaJQ?w=1440&h=1800&rs=1&pid=ImgDetMain&o=7&rm=3"/>
               <BirthdayCard name="Gloria Pamela" age="25" role="Worship Team" image="https://tse1.mm.bing.net/th/id/OIP.bjD1_yD-tJ6aJyCAjPfaBwHaLG?w=1707&h=2560&rs=1&pid=ImgDetMain&o=7&rm=3"/>
             </div>
           </div>
@@ -162,7 +162,7 @@ function EventCard({ title, location, date }) {
 
 function NewsItem({ title, image, name, parag }) {
   return (
-    <div className="mb-9 flex text-center align-center justify-">
+    <div className="mb-9 gap-2 flex text-center align-center justify-">
       
         <img
         src={image}

@@ -1,13 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-
-// Auth
 import Login from "./features/auth/Components/Login/LoginForm";
 import ForgotPassword from "./features/auth/Components/Login/ForgotPasswordForm";
-
-// Utils
 import PrivateRoute from "./utils/PrivateRoute";
-
-// Dashboard
 import DashboardLayout from "./Layouts/Dashboard/DashboardLayout";
 import Dashboard2 from "./Layouts/Dashboard/Dashboard";
 import AddUserForm from "./Layouts/Dashboard/AddUserForm";
@@ -17,8 +11,6 @@ import AttendanceTracking from "./Layouts/Dashboard/Attendance";
 import CountriesOverview from "./Layouts/Dashboard/CountriesOverview";
 import Configuration from "./Layouts/Dashboard/Configuration";
 import UserTable from "./Layouts/Dashboard/UserTable";
-
-// Profile (FULLSCREEN)
 import ProfileLayout from "./Layouts/profiles/ProfileLayout";
 import Contact from "./Layouts/profiles/Contact";
 import EducationWork from "./Layouts/profiles/education-work";

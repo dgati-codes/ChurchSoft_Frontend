@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../../../../App.css";
-import ForgotPasswordForm from "./ForgotPasswordForm";
-import ResetSuccess from "./ResetSuccess";
 import { useAuth } from "../../../../context/AuthContext";
 
 function LoginForm() {
