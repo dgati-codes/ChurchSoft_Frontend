@@ -33,7 +33,7 @@ function Contact() {
                   <br />
                   <div className="grid grid-cols-3 gap-y-6 gap-x-10 text-sm">
       
-                  <Info label="Phone Number" value={member.phoneNumber} />
+                  <Info  label="Phone Number" value={member.phoneNumber} />
                   <Info label="whatapp Number " value={member.whatsappAvailable} />
                   <Info label="Email" value={member.email} />
 

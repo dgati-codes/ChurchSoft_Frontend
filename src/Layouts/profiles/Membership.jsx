@@ -3,10 +3,6 @@ import {Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-
-
-
-
 function Membership() {
   const navigate = useNavigate();
   const { user, members, loading } = useAuth();
@@ -32,16 +28,16 @@ function Membership() {
                 <br />
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                  <label htmlFor="">Baptism Status</label>
-                  <input type="text" value={member.baptismStatus}  />
+                  <label htmlFor="" className="text-gray-500">Date Joined</label>
+                  <input type="text" className="font-semibold" value={member.dateJoinedChurch}  />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="">Baptism Status</label>
-                  <input type="text" value={member.baptismStatus} />
+                  <label htmlFor="" className="text-gray-500">Baptism Status</label>
+                  <input type="text" className="font-semibold" value={member.baptismStatus} />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="">Salvation/Born Again</label>
-                  <input type="text" placeholder="No" name="" id="" />
+                  <label htmlFor="" className="text-gray-500">Salvation/Born Again</label>
+                  <input type="text" className="font-semibold" value={member.salvationStatus} name="" id="" />
                 </div>
                 </div>
              </div>

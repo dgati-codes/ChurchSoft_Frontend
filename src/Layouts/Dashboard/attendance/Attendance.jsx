@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Users, Trash2, TrendingUp, MapPin, BookOpen } from "lucide-react";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "../LoadingSpinner";
 
 import AttendanceTable from "./AttendanceTable";
 import AddAttendanceRecord from "./AddAttendanceRecord";
-import { attendanceService } from "../../api/attendanceService";
+import { attendanceService } from "../../../api/attendanceService";
 
 // Reusable Card component
 const StatCard = ({ title, value, subtitle, icon, color }) => (

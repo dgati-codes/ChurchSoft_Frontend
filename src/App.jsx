@@ -13,8 +13,8 @@ import Dashboard2 from "./Layouts/Dashboard/Dashboard";
 import AddUserForm from "./Layouts/Dashboard/AddUserForm";
 import Register from "./Layouts/Dashboard/Register";
 import MemberTable from "./Layouts/Dashboard/MemberRegistrationTable";
-import AttendanceTracking from "./Layouts/Dashboard/Attendance";
-import CountriesOverview from "./Layouts/Dashboard/CountriesOverview";
+import AttendanceTracking from "./Layouts/Dashboard/attendance/Attendance";
+import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
 import Configuration from "./Layouts/Dashboard/Configuration";
 import UserTable from "./Layouts/Dashboard/UserTable";
 

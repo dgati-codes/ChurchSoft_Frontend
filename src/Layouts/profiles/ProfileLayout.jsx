@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowLeft, Pencil, User, Shield, Church, Phone, Heart, GraduationCap } from "lucide-react";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import {  Outlet, useNavigate, NavLink  } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 
@@ -50,13 +50,43 @@ if (loading) return null;
       {/* TABS */}
       <div className="bg-white border-b flex justify-center">
         <div className="flex gap-10 px-12">
-          <Link to="/profile"><Tab icon={<User size={14} />} label="Personal Info" /></Link>
-          <Link to="/profile/contact"><Tab icon={<Phone size={14} />} label="Contact" /></Link>
-          <Link to="/profile/membership"><Tab icon={<Church size={14} />} label="Membership" /></Link>
-          <Link to="/profile/education"><Tab icon={<GraduationCap size={14} />} label="Education" /></Link>
-          <Link to="/profile/skills"><Tab icon={<Heart size={14} />} label="Skills" /></Link>
-          <Link to="/profile/welfare"><Tab icon={<Shield size={14} />} label="Welfare" /></Link>
-        </div>
+            <NavLink to="/profile" end>
+              {({ isActive }) => (
+                <Tab icon={<User size={14} />} label="Personal Info" active={isActive} />
+              )}
+            </NavLink>
+
+            <NavLink to="/profile/contact">
+              {({ isActive }) => (
+                <Tab icon={<Phone size={14} />} label="Contact" active={isActive} />
+              )}
+            </NavLink>
+
+            <NavLink to="/profile/membership">
+              {({ isActive }) => (
+                <Tab icon={<Church size={14} />} label="Membership" active={isActive} />
+              )}
+            </NavLink>
+
+            <NavLink to="/profile/education">
+              {({ isActive }) => (
+                <Tab icon={<GraduationCap size={14} />} label="Education" active={isActive} />
+              )}
+            </NavLink>
+
+            <NavLink to="/profile/skills">
+              {({ isActive }) => (
+                <Tab icon={<Heart size={14} />} label="Skills" active={isActive} />
+              )}
+            </NavLink>
+
+            <NavLink to="/profile/welfare">
+              {({ isActive }) => (
+                <Tab icon={<Shield size={14} />} label="Welfare" active={isActive} />
+              )}
+            </NavLink>
+          </div>
+
       </div>
 
       {/* PAGE CONTENT */}
@@ -69,11 +99,20 @@ if (loading) return null;
 
 export default ProfileLayout;
 
-function Tab({ icon, label }) {
+function Tab({ icon, label, active }) {
   return (
-    <button className="flex items-center gap-2 py-4 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent">
+    <button
+      className={`flex items-center gap-2 py-4 text-sm font-medium border-b-2 transition-colors
+        ${
+          active
+            ? "text-blue-600 border-blue-600"
+            : "text-gray-500 border-transparent hover:text-gray-700"
+        }
+      `}
+    >
       {icon}
       {label}
     </button>
   );
 }
+
