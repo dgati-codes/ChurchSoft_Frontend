@@ -52,23 +52,32 @@ export const registerUser = async (userData) => {
 
 const UserService = {
   // Fetch all users (standardized)
-  getAllUsers: async () => {
-    try {
-      const res = await axiosInstance.get("/users/all?page=0&size=10");
+ getAllUsers: async (page = 0, size = 10, filters = {}) => {
+  try {
+    const res = await axiosInstance.get("/users/all", {
+      params: {
+        page,
+        size,
+        country: filters.country,
+        region: filters.region,
+        ageGroup: filters.ageGroup,
+        search: filters.search,
+      },
+    });
 
-      const payload = res?.data;
+    const payload = res?.data;
 
-      if (Array.isArray(payload)) return payload;
-      if (Array.isArray(payload?.data?.content)) return payload.data.content;
-      if (Array.isArray(payload?.data)) return payload.data;
-      if (Array.isArray(payload?.content)) return payload.content;
+    // ✅ normalize response
+    if (payload?.data) return payload.data;
+    if (payload?.content) return payload;
+    if (payload?.data?.content) return payload.data;
 
-      return [];
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      throw error;
-    }
-  },
+    return payload;
+  } catch (error) {
+    console.error("Error fetching users:", error.response || error);
+    throw error;
+  }
+},
 
   // Delete a user by ID
   deleteUser: async (id) => {

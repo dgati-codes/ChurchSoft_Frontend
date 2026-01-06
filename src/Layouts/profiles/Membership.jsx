@@ -1,13 +1,20 @@
-import { ArrowLeft, Pencil, User, Shield ,Church , Phone, Heart, GraduationCap, } from "lucide-react";
+import { Church  } from "lucide-react";
 import {Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-
-
-
-
+import { useAuth } from "../../context/AuthContext";
 
 function Membership() {
   const navigate = useNavigate();
+  const { user, members, loading } = useAuth();
+  
+    if (loading) return <p>Loading...</p>;
+    if (!user || !members) return null;
+  
+    const member = members.find(
+      (m) => m.email === user.email
+    );
+  
+    if (!member) return null;
 
     return (
         <div className="min-h-screen fixed ">
@@ -21,16 +28,16 @@ function Membership() {
                 <br />
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                  <label htmlFor="">Date Joined</label>
-                  <input type="text" placeholder="23/02/2023"  />
+                  <label htmlFor="" className="text-gray-500">Date Joined</label>
+                  <input type="text" className="font-semibold" value={member.dateJoinedChurch}  />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="">Baptism Status</label>
-                  <input type="text" placeholder="Yes" />
+                  <label htmlFor="" className="text-gray-500">Baptism Status</label>
+                  <input type="text" className="font-semibold" value={member.baptismStatus} />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="">Salvation/Born Again</label>
-                  <input type="text" placeholder="No" name="" id="" />
+                  <label htmlFor="" className="text-gray-500">Salvation/Born Again</label>
+                  <input type="text" className="font-semibold" value={member.salvationStatus} name="" id="" />
                 </div>
                 </div>
              </div>

@@ -1,9 +1,19 @@
-import { ArrowLeft, Pencil, User, Shield ,Church , Phone, Heart, GraduationCap, } from "lucide-react";
-import {Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import {  GraduationCap } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 
 function Educationwork() {
+  const { user, members, loading } = useAuth();
+  
+    if (loading) return <p>Loading...</p>;
+    if (!user || !members) return null;
+  
+    const member = members.find(
+      (m) => m.email === user.email
+    );
+  
+    if (!member) return null;
+
 
     return (
        <div className="min-h-screen fixed bg-gray-50">
@@ -16,21 +26,21 @@ function Educationwork() {
                 <hr />
                 <br />
                 <div className="flex items-center gap-8 flex-wrap justify-between">
-                  <div className="flex flex-col">
-                  <label htmlFor="">Education Level</label>
-                  <input type="text" placeholder="Masters"  />
+                  <div className="flex flex-col ">
+                  <label htmlFor="" className="text-gray-500" >Education Level</label>
+                  <input type="text" className="font-semibold" value={member.educationalLevel}  />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="">Current Occupation/Profession</label>
-                  <input type="text" placeholder="Doctor" />
+                  <label htmlFor="" className="text-gray-500">Current Occupation/Profession</label>
+                  <input type="text" className="font-semibold" value={member.occupation} />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="">Employment Sector</label>
-                  <input type="text" placeholder="N/A" name="" id="" />
+                  <label htmlFor="" className="text-gray-500">Employment Sector</label>
+                  <input type="text" className="font-semibold" value={member.employmentSector} name="" id="" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="">Employment Type</label>
-                  <input type="text" placeholder="N/A" name="" id="" />
+                  <label htmlFor="" className="text-gray-500">Employment Type</label>
+                  <input type="text" className="font-semibold" value={member.employmentType} name="" id="" />
                 </div>
                 </div>
              </div>

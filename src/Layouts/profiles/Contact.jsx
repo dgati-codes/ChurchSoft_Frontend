@@ -1,13 +1,24 @@
 import { ArrowLeft, Pencil, User, Shield ,Church , Phone, Heart, GraduationCap, } from "lucide-react";
 import {Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+
 
 
 
 
 
 function Contact() {
-  // const navigate = useNavigate();
+  const { user, members, loading } = useAuth();
+
+  if (loading) return <p>Loading...</p>;
+  if (!user || !members) return null;
+
+  const member = members.find(
+    (m) => m.email === user.email
+  );
+
+  if (!member) return null;
 
     return (
         <div className="min-h-screen fixed ">
@@ -22,9 +33,9 @@ function Contact() {
                   <br />
                   <div className="grid grid-cols-3 gap-y-6 gap-x-10 text-sm">
       
-                  <Info label="Phone Number" value="+233 55 55 55 55" />
-                  <Info label="whatapp Number " value="+233 55 55 55 55" />
-                  <Info label="Email" value="K7dX5@example.com" />
+                  <Info  label="Phone Number" value={member.phoneNumber} />
+                  <Info label="whatapp Number " value={member.whatsappAvailable} />
+                  <Info label="Email" value={member.email} />
 
                   <Info label="Address" value="Springfield" />
                   
@@ -35,9 +46,9 @@ function Contact() {
                 <hr />
                 <br />
                 <div className="grid grid-cols-3 gap-y-6 gap-x-10 text-sm">
-                  <Info label="Marital Status" value="Single" />
-                  <Info label="Hometown" value="Springfield" />
-                  <Info label="Nationality" value="Ghanaian" />
+                  <Info label="Name" value={member.name} />
+                  <Info label="Relationship" value={member.relationship} />
+                  <Info label="Contact Information" value={member.contactInformation} />
                 </div>
               </div>
             </div>

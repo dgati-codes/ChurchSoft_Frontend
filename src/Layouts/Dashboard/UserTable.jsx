@@ -1,207 +1,258 @@
-import React, { useEffect, useState } from "react";
-import { Trash2, Edit } from "lucide-react";
-import LoadingSpinner from "./LoadingSpinner";
-import UserService from "../../api/userService";   // import service
+import React, { useState, useEffect } from "react";
+import {
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Edit,
+} from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import UserService from "../../api/userService";
 
-const UsersTable = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const PAGE_SIZE = 10;
+
+const UserTable = () => {
+  /* ===================== STATE ===================== */
+  const [page, setPage] = useState(0);
+const [searchInput, setSearchInput] = useState("");
+  const [filters, setFilters] = useState({
+    country: "Ghana",
+    region: "ALL",
+    ageGroup: "ALL",
+    search: "",
+  });
+
   const [editingUser, setEditingUser] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(null);
   const [formData, setFormData] = useState({
     id: "",
     firstName: "",
     lastName: "",
     username: "",
     email: "",
-    profileImage: "",
     phoneNumber: "",
     localAssemblyName: "",
     status: "",
     roleName: "",
   });
+const queryClient = useQueryClient();
 
-  const [deleteModal, setDeleteModal] = useState(null);
-  const [deleteSuccess, setDeleteSuccess] = useState(false);
-  const [editSuccess, setEditSuccess] = useState(false);
+  /* ===================== DATA FETCH ===================== */
+  const {
+  data,
+  isFetching,
+  isError,
+  error,
+  refetch,
+} = useQuery({
+  queryKey: ["users", page, filters],
+  queryFn: () =>
+    UserService.getAllUsers(page, PAGE_SIZE, filters),
+  keepPreviousData: true,
+  staleTime: 0,                 
+  refetchInterval: 30000,       
+  refetchOnWindowFocus: true,   
+});
 
-  // Load cache
-  const loadCachedUsers = () => {
-    const cached = localStorage.getItem("users_cache");
-    if (cached) return JSON.parse(cached);
-    return null;
+
+  const users = Array.isArray(data?.content)
+  ? data.content
+  : Array.isArray(data)
+  ? data
+  : [];
+
+  const totalPages = data?.totalPages || 1;
+  const totalElements = data?.totalElements || 0;
+
+  /* ===================== HANDLERS ===================== */
+  const handleFilterChange = (e) => {
+    setPage(0);
+    setFilters({ ...filters, [e.target.name]: e.target.value });
   };
 
-  // Fetch via UserService
-  const fetchUsers = async () => {
-    try {
-      const usersData = await UserService.getAllUsers();
-
-      setUsers(usersData);
-
-      localStorage.setItem("users_cache", JSON.stringify(usersData));
-      localStorage.setItem("users_cache_time", Date.now());
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      setError("Failed to load user details.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    const cachedUsers = loadCachedUsers();
-    const cacheTime = localStorage.getItem("users_cache_time");
-
-    if (cachedUsers && cacheTime) {
-      const age = Date.now() - Number(cacheTime);
-      if (age < 900000) {
-        setUsers(cachedUsers);
-        setLoading(false);
-        return;
-      }
-    }
-
-    fetchUsers();
-    const interval = setInterval(fetchUsers, 900000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // DELETE (uses service)
-  const handleDelete = (user) => {
-  setDeleteModal(user);
-};
-  const confirmDelete = async (id) => {
-    try {
-      await UserService.deleteUser(id);
-
-      setUsers((prev) => prev.filter((u) => u.id !== id));
-      setDeleteModal(null);
-      setDeleteSuccess(true);
-
-      setTimeout(() => setDeleteSuccess(false), 2000);
-    } catch (err) {
-      console.error("Error deleting user:", err);
-      setError("Failed to delete user.");
-    }
-  };
-
-  // EDIT modal open
   const handleEditClick = (user) => {
     setEditingUser(user.id);
     setFormData({ ...user });
   };
 
-  // UPDATE (uses service)
   const handleUpdate = async () => {
-    try {
-      await UserService.updateUser(formData);
-
-      setEditingUser(null);
-      fetchUsers();
-      setEditSuccess(true);
-
-      setTimeout(() => setEditSuccess(false), 2000);
-    } catch (err) {
-      console.error("Error updating user:", err);
-      setError("Failed to update user.");
-    }
+    await UserService.updateUser(formData);
+    setEditingUser(null);
+    queryClient.invalidateQueries(["users"]);
   };
 
+  const handleDelete = (user) => setDeleteModal(user);
   const handleFormChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  if (loading)
-    return (
-      <div className="h-screen flex items-center justify-center bg-gray-100">
-        <LoadingSpinner text="Users loading  wait..." />
-      </div>
-    );
+  const confirmDelete = async () => {
+    await UserService.deleteUser(deleteModal.id);
+    setDeleteModal(null);
+    queryClient.invalidateQueries(["users"]);
+  };
 
-  if (error)
+  /* ===================== ERROR ===================== */
+  if (isError) {
     return (
-      <div className="p-4 text-center text-red-500 font-semibold">
-        {error}
+      <div className="p-4 text-center text-red-500">
+        {error?.message || "Failed to load users"}
       </div>
     );
+  }
+
+  /* ===================== UI ===================== */
   return (
-    <div className="p-4 -m-8 mt-3  font-[DM Sans] min-w-full ">
-      <h2 className="text-2xl font-bold mb-4 text-center">Users Table</h2>
-      <div className="overflow-x-auto whitespace-nowrap shadow-lg rounded-lg">
-        <table className="w-full border-collapse">
-          <thead className="bg-gray-100 whitespace-nowrap text-sm text-gray-700">
-            <tr>
-              {/* <th className="px-4 py-2 border border-gray-400">Profile</th> */}
-              <th className=" border border-gray-400">First Name</th>
-              <th className=" border border-gray-400">Last Name</th>
-              <th className=" border border-gray-400">Username</th>
-              <th className=" border border-gray-400">Email</th>
-              <th className=" border border-gray-400">Phone</th>
-              <th className=" border border-gray-400">Local Assembly</th>
-              <th className=" border border-gray-400">Status</th>
-              <th className=" border border-gray-400">Role</th>
-              <th className=" border border-gray-400 ">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length === 0 ? (
-              <tr>
-                <td
-                  colSpan="11"
-                  className=" text-center text-gray-500 border border-gray-400"
-                >
-                  No users found.
-                </td>
-              </tr>
-            ) : (
-              users.map((user) => (
-                <tr key={user.id} className="text-[13px] text-gray-700 hover:bg-gray-50">
-                  <td className=" p-2 border  border-gray-400">{user.firstName}</td>
-                  <td className=" p-2 border  border-gray-400">{user.lastName}</td>
-                  <td className=" p-2 border  border-gray-400">{user.username}</td>
-                  <td className=" p-2 border  border-gray-400">{user.email}</td>
-                  <td className=" p-2 border  border-gray-400">{user.phoneNumber}</td>
-                  <td className=" p-2 border  border-gray-400">
-                    {user.localAssemblyName}
-                  </td>
-                  <td className=" p-2 border border-gray-400">{user.roleName}</td>
-                  <td className=" p-2 border border-gray-400">              
-                    <span
-                    className={`px-1 py-1 rounded text-white  ${
-                      user.status === "ACTIVE"
-                        ? "bg-green-600"                     
-                        : user.status === "INACTIVE"
-                        ? "bg-red-400"
-                        : "bg-gray-500"
-                    }`}
-                  >
-                    {user.status}
-                  </span>
-                  </td>
-                  
-                  <td className="p-4 border border-gray-400 text-center space-x-2">
-                    <button
-                      onClick={() => handleEditClick(user)}
-                      className="text-blue-500  rounded hover:cursor-pointer"
-                    >
-                          <Edit className="w-5 h-5"/> 
-                    </button>
-                    <button
-                      onClick={() => handleDelete(user)}
-                      className=" text-red-500  rounded hover:cursor-pointer "
-                    >
-                          <Trash2 className="w-5 h-5"/>
+    <div className="mt-8 w-full font-[DM_Sans] text-gray-800">
 
-                    </button>
+      {/* HEADER */}
+      <div className="text-center mb-6">
+        <h1 className="text-xl font-semibold">View Users</h1>
+        <p className="text-sm text-gray-500">
+          Manage and view users with advanced filtering and search
+        </p>
+      </div>
+
+      {/* FILTERS */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
+        <h3 className="text-sm font-semibold mb-4">Filters</h3>
+
+        <div className="grid grid-cols-4 gap-4">
+          <select
+            name="country"
+            value={filters.country}
+            onChange={handleFilterChange}
+            className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
+          >
+            <option value="Ghana">Ghana</option>
+          </select>
+
+          <select
+            name="region"
+            value={filters.region}
+            onChange={handleFilterChange}
+            className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
+          >
+            <option value="ALL">All Regions</option>
+          </select>
+
+          <select
+            name="ageGroup"
+            value={filters.ageGroup}
+            onChange={handleFilterChange}
+            className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
+          >
+            <option value="ALL">All Age Groups</option>
+          </select>
+
+          <input
+            name="search"
+            value={filters.search}
+            onChange={handleFilterChange}
+            placeholder="Search by name or ID"
+            className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
+          />
+        </div>
+      </div>
+
+      {/* USERS TABLE */}
+      <div className="bg-white rounded-xl border border-gray-200 p-4">
+        <h3 className="font-semibold mb-4">Users</h3>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border-collapse ">
+            <thead>
+              <tr className="bg-gray-50 text-gray-600">
+                <th className="border px-3 py-2">User ID</th>
+                <th className="border px-3 py-2">Full Name</th>
+                <th className="border px-3 py-2">Email</th>
+                <th className="border px-3 py-2">Phone</th>
+                <th className="border px-3 py-2">Assembly</th>
+                <th className="border px-3 py-2">Status</th>
+                <th className="border px-3 py-2">Role</th>
+                <th className="border px-3 py-2 text-center">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {users.length === 0 ? (
+                <tr>
+                  <td colSpan="8" className="text-center py-6 border">
+                    No users found
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                users.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50">
+                    <td className="border px-3 py-2">{user.id}</td>
+                    <td className="border px-3 py-2">
+                      {user.firstName} {user.lastName}
+                    </td>
+                    <td className="border px-3 py-2">{user.email}</td>
+                    <td className="border px-3 py-2">{user.phoneNumber}</td>
+                    <td className="border px-3 py-2">{user.localAssemblyName}</td>
+                    <td className="border px-3 py-2">
+                      <span
+                        className={`px-2 py-1 rounded text-white ${
+                          user.status === "ACTIVE"
+                            ? "bg-green-600"
+                            : "bg-red-500"
+                        }`}
+                      >
+                        {user.status}
+                      </span>
+                    </td>
+                    <td className="border px-3 py-2">{user.roleName}</td>
+                    <td className="border p-2 text-center space-x-2">
+                    <Edit className="inline w-4 h-4 text-blue-500 cursor-pointer"
+                      onClick={() => handleEditClick(user)}
+                    />
+                    <Trash2 className="inline w-4 h-4 text-red-500 cursor-pointer"
+                      onClick={() => handleDelete(user)}
+                    />
+                  </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* PAGINATION */}
+        <div className="flex items-center justify-center gap-6 mt-4 text-sm text-gray-600">
+          <span>
+            Page {page + 1} of {totalPages} ({totalElements} users)
+          </span>
+
+          <div className="flex items-center gap-2">
+            <ChevronsLeft
+              onClick={() => setPage(0)}
+              className="w-4 h-4 cursor-pointer"
+            />
+            <ChevronLeft
+              onClick={() => setPage((p) => Math.max(p - 1, 0))}
+              className="w-4 h-4 cursor-pointer"
+            />
+            <ChevronRight
+              onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
+              className="w-4 h-4 cursor-pointer"
+            />
+            <ChevronsRight
+              onClick={() => setPage(totalPages - 1)}
+              className="w-4 h-4 cursor-pointer"
+            />
+          </div>
+        </div>
+
+        {/* BACKGROUND FETCH */}
+        {isFetching && (
+          <p className="text-xs text-center text-gray-400 mt-2">
+            Updating data...
+          </p>
+        )}
       </div>
 
-      {/* Edit Modal */}
       {editingUser && (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
@@ -293,27 +344,23 @@ const UsersTable = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* ================= DELETE MODAL ================= */}
       {deleteModal && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
-            <h3 className="text-lg font-semibold mb-4">
-              Are you sure you want to delete{" "}
-              <span className="font-bold text-red-600">
-                {deleteModal.firstName} {deleteModal.lastName}
-              </span>
-              ?
-            </h3>
-            <div className="flex justify-center space-x-4">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg w-96 text-center">
+            <p className="mb-4 font-semibold">
+              Delete {deleteModal.firstName} {deleteModal.lastName}?
+            </p>
+            <div className="flex justify-center gap-4">
               <button
                 onClick={() => confirmDelete(deleteModal.id)}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                className="bg-red-600 text-white px-4 py-2 rounded"
               >
-                Yes, Delete
+                Delete
               </button>
               <button
                 onClick={() => setDeleteModal(null)}
-                className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+                className="bg-gray-400 text-white px-4 py-2 rounded"
               >
                 Cancel
               </button>
@@ -321,36 +368,8 @@ const UsersTable = () => {
           </div>
         </div>
       )}
-
-      {/* Delete Success Modal */}
-      {deleteSuccess && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-lg shadow-md">
-          Delete successful
-        </div>
-      )}
-
-      {/* Edit Success Modal */}
-      {editSuccess && (
-  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/30">
-    <div className="bg-white rounded-lg p-6 w-96 text-center shadow-lg">
-      <h2 className="text-xl font-semibold mb-2 text-green-600">Update Successful</h2>
-      <p className="mb-4">
-        <span className="font-medium">{editSuccess.fullName}</span> has been successfully updated.
-      </p>
-      <button
-        onClick={() => setEditSuccess(null)}
-        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)}
-
-
-      
     </div>
   );
 };
 
-export default UsersTable;
+export default UserTable;

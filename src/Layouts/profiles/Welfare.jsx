@@ -1,13 +1,16 @@
-import { ArrowLeft, Pencil, User, Shield ,Church , Phone, Heart, GraduationCap, } from "lucide-react";
-import {Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-
-
-
-
-
+import { Church  } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 function welfare() {
-  const navigate = useNavigate();
+  const { user, members, loading } = useAuth();
+      
+        if (loading) return <p>Loading...</p>;
+        if (!user || !members) return null;
+      
+        const member = members.find(
+          (m) => m.email === user.email
+        );
+      
+        if (!member) return null;
 
     return (
         <div className="min-h-screen fixed bg-white">
@@ -21,12 +24,12 @@ function welfare() {
                 <br />
                 <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                  <label htmlFor="">Any Health Condition(s)</label>
-                  <input type="text" placeholder="Yes" />
+                  <label htmlFor="" className="text-gray-500">Any Health Condition(s)</label>
+                  <input type="text" className="font-semibold" value={member.hasHealthIssues} />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="">Any special needs or medical conditions</label>
-                  <input type="text" placeholder="N/A" name="" id="" />
+                  <label htmlFor="" className="text-gray-500">Any special needs or medical conditions</label>
+                  <input type="text" className="font-semibold" value={member.specialNeedsOrMedicalConditions} name="" id="" />
                 </div>
                 </div>
              </div>
