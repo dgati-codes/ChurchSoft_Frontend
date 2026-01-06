@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { loginUser, getCurrentUser } from "../api/userService";
+import MemberService from "../api/memberService";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // 🔁 Restore user on page refresh
@@ -19,10 +21,14 @@ export const AuthProvider = ({ children }) => {
 
     axiosInstance.defaults.headers.Authorization = `Bearer ${token}`;
 
-    const fetchUser = async () => {
+    const fetchUserAndMembers = async () => {
       try {
         const userData = await getCurrentUser();
-        setUser(userData); // 🔥 triggers re-render everywhere
+        setUser(userData);
+
+        // ✅ Fetch ALL members (pagination handled in service)
+        const membersData = await MemberService.getAllMembers();
+        setMembers(membersData);
       } catch (err) {
         console.error("Failed to restore user:", err);
         localStorage.removeItem("accessToken");
@@ -30,25 +36,27 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
+   
 
-    fetchUser();
+    fetchUserAndMembers();
   }, []);
 
-  // 🔑 Login — IMMEDIATE username update
+  // 🔑 Login
   const login = async (credentials) => {
     const result = await loginUser(credentials);
 
     if (result.success) {
-      // 1️⃣ Save token
       localStorage.setItem("accessToken", result.token);
 
-      // 2️⃣ Update axios header immediately
       axiosInstance.defaults.headers.Authorization =
         `Bearer ${result.token}`;
 
-      // 3️⃣ Fetch user and update context state
       const userData = await getCurrentUser();
-      setUser(userData); // 🔥 THIS fixes the delay
+      setUser(userData);
+
+      // ✅ Fetch ALL members immediately after login
+      const membersData = await MemberService.getAllMembers();
+      setMembers(membersData);
     }
 
     return result;
@@ -59,10 +67,19 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("accessToken");
     delete axiosInstance.defaults.headers.Authorization;
     setUser(null);
+    setMembers([]);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        members,
+        loading,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

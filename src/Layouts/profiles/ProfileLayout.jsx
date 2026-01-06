@@ -35,7 +35,7 @@ if (loading) return null;
             <p className="text-sm bg-blue-300/20 px-2 py-1 rounded-full inline-block">
               Active Member
             </p>
-            <p className="text-xs">Member since March 2018</p>
+            <p className="text-xs">{user?.dateJoinedChurch}</p>
           </div>
         </div>
 

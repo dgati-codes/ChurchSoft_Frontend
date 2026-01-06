@@ -4,6 +4,8 @@ import "../../../../App.css";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import ResetSuccess from "./ResetSuccess";
 import { useAuth } from "../../../../context/AuthContext";
+import { Mail, KeyRound } from 'lucide-react';
+
 
 function LoginForm() {
   const { login } = useAuth(); 
@@ -91,22 +93,38 @@ function LoginForm() {
               )}
 
               {/* LOGIN FORM */}
-              <form onSubmit={handleLogin} className="w-full">
-                <label htmlFor="username" className="text-[12px] font-medium text-gray-700">User Name</label>
-                <div className="mb-4 mt-1">
-                  <input
-                    type="text"
-                    id="username"
-                    value={credentials.username}
-                    onChange={handleChange}
-                    placeholder="Enter your user ID"
-                    required
-                    className="input"
-                  />
-                </div>
+              <form onSubmit={handleLogin} className="w-full ">
+                <label htmlFor="username" className="text-[12px] font-medium text-gray-700">
+                    User Name
+                  </label>
 
-                <label htmlFor="password" className="text-[12px] font-medium text-gray-700">Password</label>
-                <div className="mb-5 mt-1">
+                  <div className="w-[350px] mx-auto mb-4 relative z-10">
+                    {/* Icon */}
+                    <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                    <Mail className="text-blue-600"/>
+                    </span>
+
+                    {/* Input */}
+                    <input
+                      type="text"
+                      id="username"
+                      value={credentials.username}
+                      onChange={handleChange}
+                      placeholder="Enter your user ID"
+                      required
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                  </div>
+
+
+                  <label htmlFor="username" className="text-[12px] font-medium text-gray-700">
+                  Password</label>
+                <div className="w-[350px] mx-auto mb-4 relative z-10">
+                    {/* Icon */}
+                    <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+                    <KeyRound className="text-blue-600"/>
+                    </span>
+
                   <input
                     type="password"
                     id="password"
@@ -114,19 +132,23 @@ function LoginForm() {
                     onChange={handleChange}
                     placeholder="Enter your password"
                     required
-                    className="input"
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+
                   />
                 </div>
 
+                <div className="w-[350px] mx-auto flex flex-col items-center justify-center relative z-10">
+
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className={`w-full py-2.5 rounded-lg font-semibold text-white transition text-sm ${
-                    loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                >
-                  {loading ? "Logging in..." : "Login"}
-                </button>
+                    type="submit"
+                    disabled={loading}
+                    className={`w-full py-2.5 rounded-lg font-semibold text-white text-sm ${
+                      loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
+                    }`}
+                  >
+                    {loading ? "Logging in..." : "Login"}
+                  </button>
+                </div>
 
                 <Link to="/forgot-password" className="text-sm text-blue-600 mt-6 hover:underline">
                   Forget Password?

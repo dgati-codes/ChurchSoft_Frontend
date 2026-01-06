@@ -97,7 +97,7 @@ export default function MemberFullView({ onBack }) {
   
 
   return (
-    <div className=" font-[DM Sans] p-6 space-y-6  bg-gray-100 min-h-screen">
+    <div className=" font-[DM Sans] mt-8 space-y-6  bg-gray-100 min-h-screen">
         <div
         className="flex items-center gap-2 cursor-pointer w-fit text-blue-600 hover:text-blue-800"
         onClick={onBack} // ✅ use the passed prop
@@ -232,7 +232,7 @@ export default function MemberFullView({ onBack }) {
       {/* Registration Trend - Area Chart */}
 <Card>
   <CardContent>
-    <div className="flex justify-between items-center mb-4">
+    <div className="flex justify-between items-center mb-4 -z-1">
       <h2 className="text-lg font-semibold">
        Registration Trend (12-month view - 2024)
       </h2>
@@ -271,7 +271,7 @@ export default function MemberFullView({ onBack }) {
 
 
       {/* Additional Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 mt-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2  mt-4 gap-4">
         {/* Pie Chart */}
         <Card>
           <CardContent>
@@ -287,7 +287,7 @@ export default function MemberFullView({ onBack }) {
           labelLine={false}
           label={renderCustomizedLabel}
           outerRadius={100}
-          dataKey="value"
+          dataKey="value"       
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

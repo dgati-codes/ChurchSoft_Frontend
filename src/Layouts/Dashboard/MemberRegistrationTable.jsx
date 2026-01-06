@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import memberService from "../../api/memberService";
-import { Trash2, Edit, MoveRight } from "lucide-react";
+import { Trash2, Edit, ChevronRight } from "lucide-react";
 import MemberFullView from "./MemberFullView";
 import LoadingSpinner from "./LoadingSpinner";
 import EditMemberModal from "./EditMemberModal";
@@ -181,35 +181,38 @@ export default function MemberTable() {
       {/* Table */}
       {/* Table */}
 <div className="rounded-xl overflow-hidden shadow-md border bg-white border-gray-200">
-  <div className="flex justify-end items-center">
-    <button
+  <div className="flex justify-between items-center p-3 ">
+    <h1 className="ml-5 text-xl font-semibold">Filters</h1>
+    <div className=" bg-blue-700 flex items-center justify-center rounded-md">
+      <button
     onClick={() => setShowDashboard(true)}
-    className="text-blue-500 cursor-pointer underline hover:text-blue-600 font-medium text-2xl  mb-4 text-center"
+    className="text-white cursor-pointer p-1  font-medium text-lg  text-center"
   >
     View Details
   </button>
-   <MoveRight className="text-blue-500 mb-4 ml-2"/>
+   <ChevronRight className="text-white text-center ml-2"/>
+    </div>
   </div>
 
-  {/* Horizontal scroll container */}
+  
   <div className="overflow-x-auto shadow-lg ">
-    <table className="w-full min-w-[500px]   whitespace-nowrap ">
-      <thead className="bg-gray-100 whitespace-nowrap  text-md text-gray-700">
-        <tr>
-          <th className="border p-2">Full Name</th>
-          <th className="border p-2">Gender</th>
-          <th className="border p-2">Date of Birth</th>
-          <th className="border p-2">Marital Status</th>
-          <th className="border p-2">Nationality</th>
-          <th className="border p-2">Region</th>
-          <th className="border p-2">Language</th>
-          <th className="border p-2">District</th>
-          <th className="border p-2">Local  Assembly</th>
-          <th className="border p-2">Ethnicity</th>
-          <th className="border p-2">Email</th>
-          <th className="border p-2">Contact Info</th>
-          <th className="border p-2">Status</th>
-          <th className="border p-2">Action</th>
+    <table className="w-full min-w-[500px] text-sm  whitespace-nowrap ">
+      <thead>
+        <tr className="bg-gray-50 text-gray-600">
+          <th className="border px-3 py-2">Full Name</th>
+          <th className="border px-3 py-2">Gender</th>
+          <th className="border px-3 py-2">Date of Birth</th>
+          <th className="border px-3 py-2">Marital Status</th>
+          <th className="border px-3 py-2">Nationality</th>
+          <th className="border px-3 py-2">Region</th>
+          <th className="border px-3 py-2">Language</th>
+          <th className="border px-3 py-2">District</th>
+          <th className="border px-3 py-2">Local  Assembly</th>
+          <th className="border px-3 py-2">Ethnicity</th>
+          <th className="border px-3 py-2">Email</th>
+          <th className="border px-3 py-2">Contact Info</th>
+          <th className="border px-3 py-2">Status</th>
+          <th className="border px-3 py-2">Action</th>
         </tr>
       </thead>
 
@@ -217,22 +220,22 @@ export default function MemberTable() {
         {paginatedMembers.map((m) => (
           <tr
             key={m.id}
-            className="text-[13px] text-gray-700 hover:bg-gray-50"
+            className="hover:bg-gray-50"
           >
-            <td className="p-2 font-semibold border">{m.fullName}</td>
-            <td className="p-2 border">{m.gender}</td>
-            <td className="p-2 border">{m.dateOfBirth}</td>
-            <td className="p-2 border">{m.maritalStatus}</td>
-            <td className="p-2 border">{m.nationality}</td>
-            <td className="p-2 border">{m.jurisdiction}</td>
-            <td className="p-2 border">{m.preferredLanguages}</td>
-            <td className="p-2 border">{m.district}</td>
-            <td className="p-2 border">{m.assembly}</td>
-            <td className="p-2 border">{m.ethnicity}</td>
-            <td className="p-2 border">{m.email}</td>
-            <td className="p-2 border">{m.phoneNumber}</td>
+            <td className="border px-3 py-2">{m.fullName}</td>
+            <td className="border px-3 py-2">{m.gender}</td>
+            <td className="border px-3 py-2">{m.dateOfBirth}</td>
+            <td className="border px-3 py-2">{m.maritalStatus}</td>
+            <td className="border px-3 py-2">{m.nationality}</td>
+            <td className="border px-3 py-2">{m.jurisdiction}</td>
+            <td className="border px-3 py-2">{m.preferredLanguages}</td>
+            <td className="border px-3 py-2">{m.district}</td>
+            <td className="border px-3 py-2">{m.assembly}</td>
+            <td className="border px-3 py-2">{m.ethnicity}</td>
+            <td className="border px-3 py-2">{m.email}</td>
+            <td className="border px-3 py-2">{m.phoneNumber}</td>
 
-            <td className="p-2 border">
+            <td className="border px-3 py-2">
               <span
                 className={`px-1 py-1 rounded text-white ${
                   m.status === "ACTIVE"
