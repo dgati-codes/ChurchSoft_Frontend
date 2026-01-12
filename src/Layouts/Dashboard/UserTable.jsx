@@ -15,7 +15,7 @@ const PAGE_SIZE = 10;
 const UserTable = () => {
   /* ===================== STATE ===================== */
   const [page, setPage] = useState(0);
-  // const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [filters, setFilters] = useState({
     country: "Ghana",
     region: "ALL",
@@ -39,7 +39,7 @@ const UserTable = () => {
   const queryClient = useQueryClient();
 
   /* ===================== DATA FETCH ===================== */
-  const { data, isFetching, isError, error} = useQuery({
+  const { data, isFetching, isError, error, refetch } = useQuery({
     queryKey: ["users", page, filters],
     queryFn: () => UserService.getAllUsers(page, PAGE_SIZE, filters),
     keepPreviousData: true,
