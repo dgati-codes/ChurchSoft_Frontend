@@ -8,13 +8,13 @@ import { useAuth } from "../../context/AuthContext";
 const Navbar = () => {
     const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-   const { user, loading, logout } = useAuth();
+   const { user,logout } = useAuth();
 
 
 const handleLogout = () => {
-  logout();              // clears auth state + token (inside AuthContext)
-  localStorage.clear();  // optional: only if logout() doesn’t already do this
-  navigate("/login");    // redirect to login
+  logout();              
+  localStorage.clear();  
+  navigate("/login");   
 };
 
 

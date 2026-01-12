@@ -4,17 +4,22 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 function Membership() {
-  const navigate = useNavigate();
   const { user, members, loading } = useAuth();
   
     if (loading) return <p>Loading...</p>;
-    if (!user || !members) return null;
+  
+      if (!user) {
+        navigate("/login");
+        return null;
+      }
+  
   
     const member = members.find(
       (m) => m.email === user.email
     );
   
-    if (!member) return null;
+    if (!member) return <p>Member not found</p>;
+  
 
     return (
         <div className="min-h-screen fixed ">

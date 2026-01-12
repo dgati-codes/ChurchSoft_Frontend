@@ -1,22 +1,28 @@
-import { Church  } from "lucide-react";
+import { Heart  } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 function welfare() {
   const { user, members, loading } = useAuth();
-      
-        if (loading) return <p>Loading...</p>;
-        if (!user || !members) return null;
-      
-        const member = members.find(
-          (m) => m.email === user.email
-        );
-      
-        if (!member) return null;
+  
+    if (loading) return <p>Loading...</p>;
+  
+      if (!user) {
+        navigate("/login");
+        return null;
+      }
+  
+  
+    const member = members.find(
+      (m) => m.email === user.email
+    );
+  
+    if (!member) return <p>Member not found</p>;
+  
 
     return (
         <div className="min-h-screen fixed bg-white">
              <div className=" w-12/12 ml-50 bg-[#F9FAFB] border-[#E5E7EB] rounded-lg shadow-sm border p-6">
                 <div className="flex gap-1 mb-2">
-                  <Church className="h-5 w-5 text-blue-500" />
+                  <Heart className="h-5 w-5 text-blue-500" />
                 <h1>Welfare & Health Information</h1>
                 </div>
                 

@@ -6,9 +6,21 @@ import { useAuth } from "../../context/AuthContext";
 
 function ProfileLayout() {
   const navigate = useNavigate();
-   const { user, loading} = useAuth();
+   const { user, members, loading } = useAuth();
 
-if (loading) return null;
+  if (loading) return <p>Loading...</p>;
+
+    if (!user) {
+      navigate("/login");
+      return null;
+    }
+
+
+  const member = members.find(
+    (m) => m.email === user.email
+  );
+
+  if (!member) return <p>Member not found</p>;
 
   return (
     <div className="min-h-screen w-full  ">
@@ -33,9 +45,13 @@ if (loading) return null;
           <div>
             <h2 className="text-lg font-semibold">{user?.firstName} {user?.lastName}</h2>
             <p className="text-sm bg-blue-300/20 px-2 py-1 rounded-full inline-block">
-              Active Member
+              <span className="text-green-600 font-bold">{user?.status}</span> member
             </p>
-            <p className="text-xs">{user?.dateJoinedChurch}</p>
+            <div className="flex">
+              <p>Joined since</p>
+              <input type="text" className="text-yellow-500" value={member.dateJoinedChurch}/>
+            </div>
+            
           </div>
         </div>
 
@@ -76,13 +92,13 @@ if (loading) return null;
 
             <NavLink to="/profile/skills">
               {({ isActive }) => (
-                <Tab icon={<Heart size={14} />} label="Skills" active={isActive} />
+                <Tab icon={<Shield size={14} />} label="Skills" active={isActive} />
               )}
             </NavLink>
 
             <NavLink to="/profile/welfare">
               {({ isActive }) => (
-                <Tab icon={<Shield size={14} />} label="Welfare" active={isActive} />
+                <Tab icon={< Heart size={14} />} label="Welfare" active={isActive} />
               )}
             </NavLink>
           </div>

@@ -1,11 +1,11 @@
-import { useState, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ChevronRight, Edit, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
 import memberService from "../../api/memberService";
-import { Trash2, Edit, ChevronRight } from "lucide-react";
-import MemberFullView from "./MemberFullView";
-import LoadingSpinner from "./LoadingSpinner";
-import EditMemberModal from "./EditMemberModal";
 import DeleteConfirmModal from "./DeleteConfirmModal";
+import EditMemberModal from "./EditMemberModal";
+import LoadingSpinner from "./LoadingSpinner";
+import MemberFullView from "./MemberFullView";
 
 export default function MemberTable() {
   const queryClient = useQueryClient();
@@ -28,7 +28,11 @@ export default function MemberTable() {
 
   const pageSize = 10;
 
-  const { data: members = [], isLoading, isError } = useQuery({
+  const {
+    data: members = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["members"],
     queryFn: memberService.getAllMembers,
     refetchOnWindowFocus: false,
@@ -37,17 +41,23 @@ export default function MemberTable() {
     staleTime: Infinity,
   });
 
-  const sortedMembers = useMemo(() => [...members].sort((a, b) => b.id - a.id), [members]);
+  const sortedMembers = useMemo(
+    () => [...members].sort((a, b) => b.id - a.id),
+    [members]
+  );
 
   const filteredMembers = useMemo(() => {
     return sortedMembers.filter((m) => {
       return (
-        (filter.jurisdiction === "All" || m.jurisdiction === filter.jurisdiction) &&
-        (filter.maritalStatus === "All" || m.maritalStatus === filter.maritalStatus) &&
+        (filter.jurisdiction === "All" ||
+          m.jurisdiction === filter.jurisdiction) &&
+        (filter.maritalStatus === "All" ||
+          m.maritalStatus === filter.maritalStatus) &&
         (filter.district === "All" || m.district === filter.district) &&
         (filter.assembly === "All" || m.assembly === filter.assembly) &&
         (filter.gender === "All" || m.gender === filter.gender) &&
-        (filter.nationality === "All" || m.nationality === filter.nationality) &&
+        (filter.nationality === "All" ||
+          m.nationality === filter.nationality) &&
         (filter.search === "" ||
           m.fullName?.toLowerCase().includes(filter.search.toLowerCase()) ||
           m.memberId?.toLowerCase().includes(filter.search.toLowerCase()))
@@ -64,7 +74,9 @@ export default function MemberTable() {
   const deleteMutation = useMutation({
     mutationFn: memberService.deleteMember,
     onSuccess: (_, id) => {
-      queryClient.setQueryData(["members"], (old) => old.filter((m) => m.id !== id));
+      queryClient.setQueryData(["members"], (old) =>
+        old.filter((m) => m.id !== id)
+      );
       const deleted = members.find((m) => m.id === id);
       setSuccessModal({ fullName: deleted?.fullName, action: "deleted" });
       setDeletingMember(null);
@@ -123,28 +135,71 @@ export default function MemberTable() {
       </div>
     );
 
-  if (showDashboard) return <MemberFullView onBack={() => setShowDashboard(false)} />;
+  if (showDashboard)
+    return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
   return (
-    <div className="w-[960px] font-[DM Sans] bg-gray-100 py-10 ">
+    <div className="w-[960px] mt-9 font-[DM Sans] bg-gray-100  ">
       {/* Header */}
       <div className="mb-6 display flex justify-center text-center">
         <div>
-          <h2 className="text-xl font-semibold">Member Registration - Table View</h2>
-        <p className="text-gray-600">
-          Manage and view member registrations with advanced filtering and search
-        </p>
+          <h2 className="text-xl font-semibold">
+            Member Registration - Table View
+          </h2>
+          <p className="text-gray-600">
+            Manage and view member registrations with advanced filtering and
+            search
+          </p>
         </div>
       </div>
 
       {/* Filters */}
       <div className="bg-white border border-gray-300 shadow-md rounded-xl p-6 mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
         {[
-          { label: "Region", key: "jurisdiction", options: ["All", "NORTHERN", "EST", "CENTRAL", "WEST", "SOUTH", "GREATER_ACCRA", "VOLTA"] },
-          { label: "District", key: "district", options: ["All", "North District", "Ga District", "Volta1 District"] },
-          { label: "Assembly", key: "assembly", options: ["All", "Breakthrough Assembly", "Legon Assembly", "Marranatha Assembly"] },
-          { label: "Gender", key: "gender", options: ["All", "MALE", "FEMALE"] },
-          { label: "Marital Status", key: "maritalStatus", options: ["All", "SINGLE", "MARRIED", "DIVORCED"] },
+          {
+            label: "Region",
+            key: "jurisdiction",
+            options: [
+              "All",
+              "NORTHERN",
+              "EST",
+              "CENTRAL",
+              "WEST",
+              "SOUTH",
+              "GREATER_ACCRA",
+              "VOLTA",
+            ],
+          },
+          {
+            label: "District",
+            key: "district",
+            options: [
+              "All",
+              "North District",
+              "Ga District",
+              "Volta1 District",
+            ],
+          },
+          {
+            label: "Assembly",
+            key: "assembly",
+            options: [
+              "All",
+              "Breakthrough Assembly",
+              "Legon Assembly",
+              "Marranatha Assembly",
+            ],
+          },
+          {
+            label: "Gender",
+            key: "gender",
+            options: ["All", "MALE", "FEMALE"],
+          },
+          {
+            label: "Marital Status",
+            key: "maritalStatus",
+            options: ["All", "SINGLE", "MARRIED", "DIVORCED"],
+          },
         ].map((f) => (
           <div key={f.key} className="flex flex-col">
             <label className="text-sm font-medium mb-1">{f.label}</label>
@@ -178,141 +233,145 @@ export default function MemberTable() {
         </div>
       </div>
 
-      {/* Table */}
-      {/* Table */}
-<div className="rounded-xl overflow-hidden shadow-md border bg-white border-gray-200">
-  <div className="flex justify-between items-center p-3 ">
-    <h1 className="ml-5 text-xl font-semibold">Filters</h1>
-    <div className=" bg-blue-700 flex items-center justify-center rounded-md">
-      <button
-    onClick={() => setShowDashboard(true)}
-    className="text-white cursor-pointer p-1  font-medium text-lg  text-center"
-  >
-    View Details
-  </button>
-   <ChevronRight className="text-white text-center ml-2"/>
-    </div>
-  </div>
+      <div className="rounded-xl overflow-hidden shadow-md border bg-white border-gray-200">
+        <div className="flex justify-between items-center p-3 ">
+          <h1 className="ml-5 text-xl font-semibold">Filters</h1>
+          <div className=" bg-blue-700 flex items-center justify-center rounded-md">
+            <button
+              onClick={() => setShowDashboard(true)}
+              className="text-white cursor-pointer p-1  font-medium text-lg  text-center"
+            >
+              View Details
+            </button>
+            <ChevronRight className="text-white text-center ml-2" />
+          </div>
+        </div>
 
-  
-  <div className="overflow-x-auto shadow-lg ">
-    <table className="w-full min-w-[500px] text-sm  whitespace-nowrap ">
-      <thead>
-        <tr className="bg-gray-50 text-gray-600">
-          <th className="border px-3 py-2">Full Name</th>
-          <th className="border px-3 py-2">Gender</th>
-          <th className="border px-3 py-2">Date of Birth</th>
-          <th className="border px-3 py-2">Marital Status</th>
-          <th className="border px-3 py-2">Nationality</th>
-          <th className="border px-3 py-2">Region</th>
-          <th className="border px-3 py-2">Language</th>
-          <th className="border px-3 py-2">District</th>
-          <th className="border px-3 py-2">Local  Assembly</th>
-          <th className="border px-3 py-2">Ethnicity</th>
-          <th className="border px-3 py-2">Email</th>
-          <th className="border px-3 py-2">Contact Info</th>
-          <th className="border px-3 py-2">Status</th>
-          <th className="border px-3 py-2">Action</th>
-        </tr>
-      </thead>
+        <div className="overflow-x-auto shadow-lg ">
+          <table className="w-full min-w-[500px] text-sm  whitespace-nowrap ">
+            <thead>
+              <tr className="bg-gray-50 text-gray-600">
+                <th className="border px-3 py-2">Full Name</th>
+                <th className="border px-3 py-2">Gender</th>
+                <th className="border px-3 py-2">Date of Birth</th>
+                <th className="border px-3 py-2">Marital Status</th>
+                <th className="border px-3 py-2">Nationality</th>
+                <th className="border px-3 py-2">Region</th>
+                <th className="border px-3 py-2">Language</th>
+                <th className="border px-3 py-2">District</th>
+                <th className="border px-3 py-2">Local Assembly</th>
+                <th className="border px-3 py-2">Ethnicity</th>
+                <th className="border px-3 py-2">Email</th>
+                <th className="border px-3 py-2">Contact Info</th>
+                <th className="border px-3 py-2">Status</th>
+                <th className="border px-3 py-2">Action</th>
+              </tr>
+            </thead>
 
-      <tbody>
-        {paginatedMembers.map((m) => (
-          <tr
-            key={m.id}
-            className="hover:bg-gray-50"
-          >
-            <td className="border px-3 py-2">{m.fullName}</td>
-            <td className="border px-3 py-2">{m.gender}</td>
-            <td className="border px-3 py-2">{m.dateOfBirth}</td>
-            <td className="border px-3 py-2">{m.maritalStatus}</td>
-            <td className="border px-3 py-2">{m.nationality}</td>
-            <td className="border px-3 py-2">{m.jurisdiction}</td>
-            <td className="border px-3 py-2">{m.preferredLanguages}</td>
-            <td className="border px-3 py-2">{m.district}</td>
-            <td className="border px-3 py-2">{m.assembly}</td>
-            <td className="border px-3 py-2">{m.ethnicity}</td>
-            <td className="border px-3 py-2">{m.email}</td>
-            <td className="border px-3 py-2">{m.phoneNumber}</td>
+            <tbody>
+              {paginatedMembers.map((m) => (
+                <tr key={m.id} className="hover:bg-gray-50">
+                  <td className="border px-3 py-2">{m.fullName}</td>
+                  <td className="border px-3 py-2">{m.gender}</td>
+                  <td className="border px-3 py-2">{m.dateOfBirth}</td>
+                  <td className="border px-3 py-2">{m.maritalStatus}</td>
+                  <td className="border px-3 py-2">{m.nationality}</td>
+                  <td className="border px-3 py-2">{m.jurisdiction}</td>
+                  <td className="border px-3 py-2">{m.preferredLanguages}</td>
+                  <td className="border px-3 py-2">{m.district}</td>
+                  <td className="border px-3 py-2">{m.assembly}</td>
+                  <td className="border px-3 py-2">{m.ethnicity}</td>
+                  <td className="border px-3 py-2">{m.email}</td>
+                  <td className="border px-3 py-2">{m.phoneNumber}</td>
 
-            <td className="border px-3 py-2">
-              <span
-                className={`px-1 py-1 rounded text-white ${
-                  m.status === "ACTIVE"
-                    ? "bg-green-600"
-                    : m.status === "VISITOR"
-                    ? "bg-blue-600"
-                    : m.status === "INACTIVE"
-                    ? "bg-red-400"
-                    : m.status === "SUSPENDED"
-                    ? "bg-yellow-500"
-                    : "bg-gray-500"
+                  <td className="border px-3 py-2">
+                    <span
+                      className={`px-1 py-1 rounded text-white ${
+                        m.status === "ACTIVE"
+                          ? "bg-green-600"
+                          : m.status === "VISITOR"
+                          ? "bg-blue-600"
+                          : m.status === "INACTIVE"
+                          ? "bg-red-400"
+                          : m.status === "SUSPENDED"
+                          ? "bg-yellow-500"
+                          : "bg-gray-500"
+                      }`}
+                    >
+                      {m.status}
+                    </span>
+                  </td>
+
+                  <td className="p-2 border whitespace-nowrap">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => setEditingMember(m)}
+                        className="text-blue-500 hover:cursor-pointer"
+                      >
+                        <Edit className="w-5 h-5" />
+                      </button>
+
+                      <button
+                        onClick={() => setDeletingMember(m)}
+                        className="text-red-500 hover:cursor-pointer"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Pagination */}
+          <div className="flex justify-center m-4 gap-2 p-4">
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 rounded hover:bg-gray-300 ${
+                  currentPage === i + 1
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200"
                 }`}
               >
-                {m.status}
-              </span>
-            </td>
+                {i + 1}
+              </button>
+            ))}
 
-            <td className="p-2 border whitespace-nowrap">
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setEditingMember(m)}
-                  className="text-blue-500 hover:cursor-pointer"
-                >
-                  <Edit className="w-5 h-5" />
-                </button>
-
-                <button
-                  onClick={() => setDeletingMember(m)}
-                  className="text-red-500 hover:cursor-pointer"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  
-
-
-      {/* Pagination */}
-      <div className="flex justify-center m-4 gap-2 p-4">
-        <button
-          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          disabled={currentPage === 1}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          Prev
-        </button>
-
-        {Array.from({ length: totalPages }, (_, i) => (
-          <button
-            key={i + 1}
-            onClick={() => setCurrentPage(i + 1)}
-            className={`px-3 py-1 rounded hover:bg-gray-300 ${
-              currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-gray-200"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-
-        <button
-          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          disabled={currentPage === totalPages}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
-          Next
-        </button>
+            <button
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
-      </div>
-</div>
 
-      {editingMember && <EditMemberModal member={editingMember} onClose={() => setEditingMember(null)} onSave={saveEdit} />}
+      {editingMember && (
+        <EditMemberModal
+          member={editingMember}
+          onClose={() => setEditingMember(null)}
+          onSave={saveEdit}
+        />
+      )}
       {deletingMember && (
-        <DeleteConfirmModal member={deletingMember} onClose={() => setDeletingMember(null)} onConfirm={() => confirmDelete(deletingMember)} />
+        <DeleteConfirmModal
+          member={deletingMember}
+          onClose={() => setDeletingMember(null)}
+          onConfirm={() => confirmDelete(deletingMember)}
+        />
       )}
 
       {successModal && (
@@ -322,9 +381,15 @@ export default function MemberTable() {
               Member {successModal.action === "updated" ? "Updated" : "Deleted"}
             </h2>
             <p className="mb-6">
-              <span className="font-semibold text-green-600">{successModal.fullName}</span> has been successfully {successModal.action}.
+              <span className="font-semibold text-green-600">
+                {successModal.fullName}
+              </span>{" "}
+              has been successfully {successModal.action}.
             </p>
-            <button onClick={() => setSuccessModal(null)} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+            <button
+              onClick={() => setSuccessModal(null)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
               Close
             </button>
           </div>

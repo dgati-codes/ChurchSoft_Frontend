@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Trash2,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   Edit,
+  Trash2,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import UserService from "../../api/userService";
 
 const PAGE_SIZE = 10;
@@ -16,7 +15,7 @@ const PAGE_SIZE = 10;
 const UserTable = () => {
   /* ===================== STATE ===================== */
   const [page, setPage] = useState(0);
-const [searchInput, setSearchInput] = useState("");
+  // const [searchInput, setSearchInput] = useState("");
   const [filters, setFilters] = useState({
     country: "Ghana",
     region: "ALL",
@@ -37,31 +36,23 @@ const [searchInput, setSearchInput] = useState("");
     status: "",
     roleName: "",
   });
-const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   /* ===================== DATA FETCH ===================== */
-  const {
-  data,
-  isFetching,
-  isError,
-  error,
-  refetch,
-} = useQuery({
-  queryKey: ["users", page, filters],
-  queryFn: () =>
-    UserService.getAllUsers(page, PAGE_SIZE, filters),
-  keepPreviousData: true,
-  staleTime: 0,                 
-  refetchInterval: 30000,       
-  refetchOnWindowFocus: true,   
-});
-
+  const { data, isFetching, isError, error} = useQuery({
+    queryKey: ["users", page, filters],
+    queryFn: () => UserService.getAllUsers(page, PAGE_SIZE, filters),
+    keepPreviousData: true,
+    staleTime: 0,
+    refetchInterval: 30000,
+    refetchOnWindowFocus: true,
+  });
 
   const users = Array.isArray(data?.content)
-  ? data.content
-  : Array.isArray(data)
-  ? data
-  : [];
+    ? data.content
+    : Array.isArray(data)
+    ? data
+    : [];
 
   const totalPages = data?.totalPages || 1;
   const totalElements = data?.totalElements || 0;
@@ -105,7 +96,6 @@ const queryClient = useQueryClient();
   /* ===================== UI ===================== */
   return (
     <div className="mt-8 w-full font-[DM_Sans] text-gray-800">
-
       {/* HEADER */}
       <div className="text-center mb-6">
         <h1 className="text-xl font-semibold">View Users</h1>
@@ -191,7 +181,9 @@ const queryClient = useQueryClient();
                     </td>
                     <td className="border px-3 py-2">{user.email}</td>
                     <td className="border px-3 py-2">{user.phoneNumber}</td>
-                    <td className="border px-3 py-2">{user.localAssemblyName}</td>
+                    <td className="border px-3 py-2">
+                      {user.localAssemblyName}
+                    </td>
                     <td className="border px-3 py-2">
                       <span
                         className={`px-2 py-1 rounded text-white ${
@@ -205,13 +197,15 @@ const queryClient = useQueryClient();
                     </td>
                     <td className="border px-3 py-2">{user.roleName}</td>
                     <td className="border p-2 text-center space-x-2">
-                    <Edit className="inline w-4 h-4 text-blue-500 cursor-pointer"
-                      onClick={() => handleEditClick(user)}
-                    />
-                    <Trash2 className="inline w-4 h-4 text-red-500 cursor-pointer"
-                      onClick={() => handleDelete(user)}
-                    />
-                  </td>
+                      <Edit
+                        className="inline w-4 h-4 text-blue-500 cursor-pointer"
+                        onClick={() => handleEditClick(user)}
+                      />
+                      <Trash2
+                        className="inline w-4 h-4 text-red-500 cursor-pointer"
+                        onClick={() => handleDelete(user)}
+                      />
+                    </td>
                   </tr>
                 ))
               )}
@@ -292,7 +286,7 @@ const queryClient = useQueryClient();
                 placeholder="Email"
                 className="w-full border border-gray-100 p-2 rounded"
               />
-             
+
               <input
                 type="text"
                 name="phoneNumber"

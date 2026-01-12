@@ -8,10 +8,7 @@ export default {
       colors: {
         brand: "#001866",
       },
-      fontFamily: {
-        heading: ["Poppins", "sans-serif"],
-        body: ["Inter", "sans-serif"],
-      }
+      
 
     },
   },

@@ -1,5 +1,5 @@
 import {  Heart} from "lucide-react";
-import {  GraduationCap } from "lucide-react";
+import {  Shield } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 
@@ -7,20 +7,26 @@ import { useAuth } from "../../context/AuthContext";
 
 function Skills() {
   const { user, members, loading } = useAuth();
-    
-      if (loading) return <p>Loading...</p>;
-      if (!user || !members) return null;
-    
-      const member = members.find(
-        (m) => m.email === user.email
-      );
-    
-      if (!member) return null;
+  
+    if (loading) return <p>Loading...</p>;
+  
+      if (!user) {
+        navigate("/login");
+        return null;
+      }
+  
+  
+    const member = members.find(
+      (m) => m.email === user.email
+    );
+  
+    if (!member) return <p>Member not found</p>;
+  
     return (
          <div className="min-h-screen fixed bg-gray-50">
              <div className=" w-10/14 ml-50 border-[#E5E7EB] bg-[#F9FAFB] rounded-lg shadow-sm border p-6">
                 <div className="flex gap-1 mb-2">
-                  <GraduationCap className="h-5 w-5 text-blue-500" />
+                  <Shield className="h-5 w-5 text-blue-500" />
                 <h1>Ministry Invlovement & Skills</h1>
                 </div>
                 

@@ -75,7 +75,6 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         members,
-        loading,
         login,
         logout,
       }}

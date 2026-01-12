@@ -3,20 +3,25 @@ import { useAuth } from "../../context/AuthContext";
 
 function PersonalInfo() {
   const { user, members, loading } = useAuth();
-
-  if (loading) return <p>Loading...</p>;
-  if (!user || !members) return null;
-
-  const member = members.find(
-    (m) => m.email === user.email
-  );
-
-  if (!member) return null;
-
+  
+    if (loading) return <p>Loading...</p>;
+  
+      if (!user) {
+        navigate("/login");
+        return null;
+      }
+  
+  
+    const member = members.find(
+      (m) => m.email === user.email
+    );
+  
+    if (!member) return <p>Member not found</p>;
+  
   return (
     <div className="bg-[#F9FAFB] border-[#E5E7EB] w-10/10 ml-3 rounded-lg shadow-sm border p-6">
       <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-        <User size={14} />
+        <User className="h-5 w-5 text-blue-500" />
         Personal Information
       </h3>
       <hr className="mb-6" />
