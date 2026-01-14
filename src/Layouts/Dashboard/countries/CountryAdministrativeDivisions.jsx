@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Upload, FileText } from 'lucide-react';
+import { Upload, X,  FileText } from 'lucide-react';
 
-export default function CountryAdministrativeDivisions() {
+
+export default function CountryAdministrativeDivisions({isOpen, onClose}) {
   const [activeTab, setActiveTab] = useState("manual");
   const [parentLevels, setParentLevels] = useState("");
   const [childLevels, setChildLevels] = useState("");
@@ -22,10 +23,11 @@ export default function CountryAdministrativeDivisions() {
     setChildLevels("");
     setGrandchildrenLevels("");
   };
+  if (!isOpen) return null;
 
   return (
-    <div className="p-6 font-[DM Sans] ml-64 bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto">
+    <div className="fixed inset-0 font-[DM Sans] flex items-center justify-center bg-white rounded-lg ml-64">
+      <div className="max-w-4xl ">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-xl font-semibold">
@@ -39,9 +41,15 @@ export default function CountryAdministrativeDivisions() {
 
         {/* Two-column layout */}
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1   md:grid-cols-2 gap-2">
           {/* Left Side - Form */}
-          <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+          <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
+            <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-800"
+          >
+            <X className="w-6 h-6 text-gray-400"/>
+          </button>
             <p className="text-lg font-semibold mb-4">Add Administrative Divisions</p>
             {/* Tabs */}
             <div className="flex bg-gray-100 rounded-full p-1 mb-6">
@@ -68,7 +76,7 @@ export default function CountryAdministrativeDivisions() {
             </div>
 
             {activeTab === "manual" ? (
-              <div className="space-y-4">
+              <div className="space-y-2 ">
                 <div>
                   <label className="block text-sm text-gray-600 mb-1">
                     Parent Level Names
@@ -122,9 +130,9 @@ export default function CountryAdministrativeDivisions() {
               </div>
             ) : (
               <>
-              <div className="text-center border-dashed border border-gray-300 rounded-md text-gray-500 py-10">
+              <div className="text-center border-dashed border border-green-300 rounded-md text-gray-500 py-2 ">
                 <Upload className="w-10 h-10  bg-gray-100 rounded-full   mx-auto mb-4"/>
-                <p className="font-semibold">Click to upload or drag and drop</p>
+                <p className="font-semibold">Click to upload or drag and drop</p>
                 <p className="text-xs">CSV files only. Max file size: 5MB</p>
               </div>
               

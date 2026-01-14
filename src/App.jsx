@@ -1,30 +1,31 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./features/auth/Components/Login/LoginForm";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import ForgotPassword from "./features/auth/Components/Login/ForgotPasswordForm";
-import PrivateRoute from "./utils/PrivateRoute";
-import DashboardLayout from "./Layouts/Dashboard/DashboardLayout";
-import Dashboard2 from "./Layouts/Dashboard/Dashboard";
+import Login from "./features/auth/Components/Login/LoginForm";
 import AddUserForm from "./Layouts/Dashboard/AddUserForm";
-import Register from "./Layouts/Dashboard/Register";
-import MemberTable from "./Layouts/Dashboard/MemberRegistrationTable";
 import AttendanceTracking from "./Layouts/Dashboard/attendance/Attendance";
-import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
 import Configuration from "./Layouts/Dashboard/Configuration";
+import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
+import Dashboard2 from "./Layouts/Dashboard/Dashboard";
+import DashboardLayout from "./Layouts/Dashboard/DashboardLayout";
+import MemberTable from "./Layouts/Dashboard/MemberRegistrationTable";
+import Register from "./Layouts/Dashboard/Register";
 import UserTable from "./Layouts/Dashboard/UserTable";
-import ProfileLayout from "./Layouts/profiles/ProfileLayout";
 import Contact from "./Layouts/profiles/Contact";
 import EducationWork from "./Layouts/profiles/education-work";
 import Membership from "./Layouts/profiles/Membership";
+import PersonalInfo from "./Layouts/profiles/PersonalInfo";
+import ProfileLayout from "./Layouts/profiles/ProfileLayout";
 import Skills from "./Layouts/profiles/Skills";
 import Welfare from "./Layouts/profiles/Welfare";
-import PersonalInfo from "./Layouts/profiles/PersonalInfo";
+import PrivateRoute from "./utils/PrivateRoute";
+import PageNotFound from "./page-not-found/PageNotFound";
 
 function App() {
   return (
     <Router>
       <Routes>
         {/* 🔁 Redirect root */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<PageNotFound />} />
 
         {/* 🔐 Auth */}
         <Route path="/login" element={<Login />} />
@@ -67,7 +68,8 @@ function App() {
         </Route>
 
         {/* ❌ Fallback */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>
   );

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { RefreshCw, Download, Pencil,  Plus, Clock, Eye, Globe, CircleDot, Network, Trash2 } from "lucide-react";
-import AddCountryModal from "./AddCountryModal";
+import { RefreshCw, Download, Edit,  Plus, Clock, Eye, Globe, CircleDot, Network, Trash2 } from "lucide-react";
+import CountryAdministrativeDivisions from "./CountryAdministrativeDivisions";
+// import CountryAdministrativeDivisions from "./CountryAdministrativeDivisions";
 function CountriesOverview() {
-    const [showAddCountryModal, setShowAddCountryModal] = useState(false);
+    const [showCountryAdministrativeDivisions, setShowCountryAdministrativeDivisions] = useState(false);
 
   
   const [countries] = useState([
@@ -61,7 +62,7 @@ function CountriesOverview() {
           <button className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-100">
             <Download className="w-4 h-4" /> Export
           </button>
-          <button onClick={() => setShowAddCountryModal(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
+          <button onClick={() => setShowCountryAdministrativeDivisions(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700">
             <Plus className="w-4 h-4" /> Add Country
           </button>
         </div>
@@ -140,55 +141,67 @@ function CountriesOverview() {
       </div>
 
       {/* Table */}
-      <div className="bg-white p-20 rounded-lg shadow overflow-hidden">
-        <h2 className="p-4 font-medium border-b">Configured Countries Overview</h2>
-        <table className="w-full text-sm border-collapse ">
-          <thead >
-            <tr className="bg-gray-50 text-gray-600">
-              <th className="p-3 text-left border">Country Name</th>
-              <th className="p-3 text-left border">Continent</th>
-              <th className="p-3 text-left border">Parent Level Name</th>
-              <th className="p-3 text-left border">Child Level Name</th>
-              <th className="p-3 text-left border">No. of Parent levels</th>
-              <th className="p-3 text-left border">Status</th>
-              <th className="p-3 text-left border">Last updated</th>
-              <th className="p-3 text-left border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {countries.map((c, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
-                <td className="p-3 border">{c.name}</td>
-                <td className="p-3 border">{c.continent}</td>
-                <td className="p-3 border">{c.parent}</td>
-                <td className="p-3 border">{c.child}</td>
-                <td className="p-3 border">{c.parentLevels}</td>
-                <td className="p-3 border">
-                  <span
-                    className={`px-2 py-1 rounded text-xs ${
-                      c.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-600"
-                    }`}
+       <div className="bg-white rounded-xl shadow-sm p-6">
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">
+          Configured Countries Overview
+        </h3>
+
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <tr className="bg-gray-50 text-gray-600">
+                {[
+                  "Country Name",
+                  "Parent Level Name",
+                  "Child Level Name",
+                  "Grandchild Level Names",
+                  "Last updated",
+                  "Actions",
+                ].map((head) => (
+                  <th
+                    key={head}
+                    className="text-left  px-4 py-3 font-medium border-b"
                   >
-                    {c.status}
-                  </span>
-                </td>
-                <td className="p-3 border">{c.updated}</td>
-                <td className="p-3 border flex  mb-10">
-                  <Eye className="text-gray-600 "/> 
-                  <Pencil  className="text-gray-600 "/> 
-                  <Trash2 className="text-red-500 "></Trash2>
-                </td>
+                    {head}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <tr
+                  key={i}
+                  className="border-b last:border-none hover:bg-gray-50"
+                >
+                  <td className="border  px-4 py-3">Ghana</td>
+                  <td className="border px-4 py-3">Greater Accra</td>
+                  <td className="border px-4 py-3">Madina</td>
+                  <td className="border px-4 py-3 text-gray-500">
+                    New Road, Old Road, Masalachi, Madina Zongo
+                  </td>
+                  <td className="border px-4 py-3 text-gray-500">
+                    2025-09-04 14:32 GMT
+                  </td>
+                  <td className=" border px-1  py-1 text-center">
+                    <Eye className="inline w-4 h-4 text-green-500 cursor-pointer" />
+                      <Edit
+                        className="inline w-4 h-4 text-blue-500 cursor-pointer"
+                      />
+                      <Trash2
+                        className="inline w-4 h-4 text-red-500 cursor-pointer"
+                      />
+                    </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-       <AddCountryModal
+       <CountryAdministrativeDivisions
        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50"
-        isOpen={showAddCountryModal}
-        onClose={() => setShowAddCountryModal(false)}
+        isOpen={showCountryAdministrativeDivisions}
+        onClose={() => setShowCountryAdministrativeDivisions(false)}
       />
     </div>
    

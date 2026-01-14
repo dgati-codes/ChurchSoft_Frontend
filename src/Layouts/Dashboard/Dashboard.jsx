@@ -86,7 +86,7 @@ export default function Dashboard() {
               <Ministry title="Worship Team" leader="Sarah Mensah" count="24" />
               <Ministry title="Children Ministry" leader="Celine Abbie" count="50" />
               <Ministry title="Junior Youth" leader="James Allortey" count="40" />
-              <Ministry title="Preyer Ministry" leader="James Allortey" count="40" />
+              <Ministry title="Prayer Ministry" leader="James Allortey" count="40" />
             </div>
           </div>
         </div>
