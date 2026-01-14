@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../../../../App.css";
 import { useAuth } from "../../../../context/AuthContext";
-import { Mail, KeyRound } from 'lucide-react';
+import { User, KeyRound } from 'lucide-react';
 
 
 function LoginForm() {
   const { login } = useAuth(); 
-  const [showLoginForm, setShowLoginForm] = useState(true);
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  // const [showLoginForm, setShowLoginForm] = useState(true);
+  const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -40,13 +40,13 @@ function LoginForm() {
     if (error) setError(""); 
   };
 
-  const handleBackToLogin = () => {
-    setShowLoginForm(true);
-  };
+  // const handleBackToLogin = () => {
+  //   setShowLoginForm(true);
+  // };
 
   return (
     <>
-      {showLoginForm && (
+      {/* {showLoginForm && ( */}
         <div className="flex w-full h-screen font-[DM Sans]">
 
           {/* LEFT SIDE */}
@@ -99,7 +99,7 @@ function LoginForm() {
                   <div className="w-[350px] mx-auto mb-4 relative z-10">
                     {/* Icon */}
                     <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
-                    <Mail className="text-blue-600"/>
+                    <User className="text-blue-600"/>
                     </span>
 
                     {/* Input */}
@@ -155,7 +155,7 @@ function LoginForm() {
             </div>
           </div>
         </div>
-      )}
+      {/* )} */}
 
     </>
   );
