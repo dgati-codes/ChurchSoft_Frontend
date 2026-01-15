@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Edit, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import memberService from "../../api/memberService";
-import DeleteConfirmModal from "./DeleteConfirmModal";
-import EditMemberModal from "./EditMemberModal";
-import LoadingSpinner from "./LoadingSpinner";
+import memberService from "../../../api/memberService";
+import DeleteConfirmModal from "../modals/DeleteConfirmModal";
+import EditMemberModal from "../modals/EditMemberModal";
+import LoadingSpinner from "../modals/LoadingSpinner";
 import MemberFullView from "./MemberFullView";
 
 export default function MemberTable() {

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { CheckCircle, Upload, XCircle } from "lucide-react";
-import { registerUser } from "../../api/userService";
+import { CheckCircle, XCircle } from "lucide-react";
+import { useState } from "react";
+import { registerUser } from "../../../api/userService";
 
 const AddUserForm = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -83,7 +83,9 @@ const AddUserForm = () => {
       <div className="w-full max-w-4xl bg-white rounded-xl p-10 border border-gray-100">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold font-heading  text-gray-800">Add User</h1>
+          <h1 className="text-2xl font-semibold font-heading  text-gray-800">
+            Add User
+          </h1>
           <p className="font-body text-sm text-gray-500 mt-1">
             Please fill out all sections to complete the addition of a new user
           </p>

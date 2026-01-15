@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Users, Trash2, TrendingUp, MapPin, BookOpen } from "lucide-react";
-import LoadingSpinner from "../LoadingSpinner";
+import { BookOpen, MapPin, TrendingUp, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import LoadingSpinner from "../modals/LoadingSpinner";
 
-import AttendanceTable from "./AttendanceTable";
-import AddAttendanceRecord from "./AddAttendanceRecord";
 import { attendanceService } from "../../../api/attendanceService";
+import AddAttendanceRecord from "./AddAttendanceRecord";
+import AttendanceTable from "./AttendanceTable";
 
 // Reusable Card component
-const StatCard = ({ title, value, subtitle, icon, color }) => (
+const StatCard = ({ title, value, subtitle, icon,  }) => (
   <div className="bg-white shadow rounded-lg p-4 flex flex-col gap-1 border border-[#E5E5E5]">
     <div className="flex justify-between items-center">
       <h3 className="text-sm font-medium text-gray-600">{title}</h3>
@@ -75,7 +75,7 @@ export default function AttendanceTracking() {
 
   useEffect(() => {
     fetchAttendance();
-  }, []);
+  },[]);
 
   // Handle filter change (reset page to 0)
   const handleFilterChange = (key, value) => {
@@ -91,7 +91,7 @@ export default function AttendanceTracking() {
   };
 
   // Handle successful add (refresh with current filters/page)
-  const handleRecordAdded = async (newRecord) => {
+  const handleRecordAdded = async () => {
     setCurrentPage(0);
     await fetchAttendance(0);
   };
@@ -136,12 +136,11 @@ export default function AttendanceTracking() {
   };
 
   if (loading) {
-   return (
-  <div className="h-screen flex items-center justify-center bg-gray-100">
-    <LoadingSpinner text="Please wait..." />
-  </div>
-);
-
+    return (
+      <div className="h-screen flex items-center justify-center bg-gray-100">
+        <LoadingSpinner text="Please wait..." />
+      </div>
+    );
   }
 
   if (error) {
@@ -153,7 +152,7 @@ export default function AttendanceTracking() {
   }
 
   return (
-    <div className="min-h-screen font-[DM Sans] -ml-12 p-10 bg-[#F9FAFB] ">
+    <div className="min-h-screen font-[DM Sans] mt-15 bg-[#F9FAFB] ">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div className="mb-4">

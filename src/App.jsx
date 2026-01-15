@@ -1,15 +1,20 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
 import ForgotPassword from "./features/auth/Components/Login/ForgotPasswordForm";
 import Login from "./features/auth/Components/Login/LoginForm";
-import AddUserForm from "./Layouts/Dashboard/AddUserForm";
 import AttendanceTracking from "./Layouts/Dashboard/attendance/Attendance";
-import Configuration from "./Layouts/Dashboard/Configuration";
+import Configuration from "./Layouts/Dashboard/configuration/Configuration";
 import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
-import Dashboard2 from "./Layouts/Dashboard/Dashboard";
-import DashboardLayout from "./Layouts/Dashboard/DashboardLayout";
-import MemberTable from "./Layouts/Dashboard/MemberRegistrationTable";
-import Register from "./Layouts/Dashboard/Register";
-import UserTable from "./Layouts/Dashboard/UserTable";
+import Dashboard2 from "./Layouts/Dashboard/dashboard-layouts/Dashboard";
+import DashboardLayout from "./Layouts/Dashboard/dashboard-layouts/DashboardLayout";
+import MemberTable from "./Layouts/Dashboard/members/MemberRegistrationTable";
+import Register from "./Layouts/Dashboard/members/register";
+import AddUserForm from "./Layouts/Dashboard/users/AddUserForm";
+import UserTable from "./Layouts/Dashboard/users/UserTable";
 import Contact from "./Layouts/profiles/Contact";
 import EducationWork from "./Layouts/profiles/education-work";
 import Membership from "./Layouts/profiles/Membership";
@@ -17,21 +22,21 @@ import PersonalInfo from "./Layouts/profiles/PersonalInfo";
 import ProfileLayout from "./Layouts/profiles/ProfileLayout";
 import Skills from "./Layouts/profiles/Skills";
 import Welfare from "./Layouts/profiles/Welfare";
-import PrivateRoute from "./utils/PrivateRoute";
 import PageNotFound from "./page-not-found/PageNotFound";
+import PrivateRoute from "./utils/PrivateRoute";
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* 🔁 Redirect root */}
-        <Route path="*" element={<PageNotFound />} />
+        {/* 🔁 ROOT REDIRECT */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* 🔐 Auth */}
+        {/* 🔐 AUTH */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* 👤 PROFILE (FULL SCREEN — NO SIDEBAR) */}
+        {/* 👤 PROFILE (NO SIDEBAR) */}
         <Route
           path="/profile"
           element={
@@ -48,7 +53,7 @@ function App() {
           <Route path="welfare" element={<Welfare />} />
         </Route>
 
-        {/* 📊 DASHBOARD (WITH SIDEBAR) */}
+        {/* 📊 DASHBOARD */}
         <Route
           path="/dashboard"
           element={
@@ -67,8 +72,7 @@ function App() {
           <Route path="configuration" element={<Configuration />} />
         </Route>
 
-        {/* ❌ Fallback */}
-
+        {/* ❌ 404 (ALWAYS LAST) */}
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>

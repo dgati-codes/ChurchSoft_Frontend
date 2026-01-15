@@ -6,7 +6,7 @@ function CountriesOverview() {
     const [showCountryAdministrativeDivisions, setShowCountryAdministrativeDivisions] = useState(false);
 
   
-  const [countries] = useState([
+  const Countries = useState([
     {
       name: "Ghana",
       continent: "Africa",
@@ -183,15 +183,17 @@ function CountriesOverview() {
                   <td className="border px-4 py-3 text-gray-500">
                     2025-09-04 14:32 GMT
                   </td>
-                  <td className=" border px-1  py-1 text-center">
-                    <Eye className="inline w-4 h-4 text-green-500 cursor-pointer" />
-                      <Edit
-                        className="inline w-4 h-4 text-blue-500 cursor-pointer"
-                      />
-                      <Trash2
-                        className="inline w-4 h-4 text-red-500 cursor-pointer"
-                      />
-                    </td>
+                  <td className="border  text-center space-x-2">
+                          <Eye
+                            className="inline w-4 h-4  cursor-pointer"
+                          />
+                          <Edit
+                            className="inline w-4 h-4  cursor-pointer"
+                          />
+                          <Trash2
+                            className="inline w-4 h-4 text-red-500 cursor-pointer"
+                          />
+                        </td>
                 </tr>
               ))}
             </tbody>
