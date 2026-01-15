@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useRegistration } from "../context/RegistrationContext";
 import { Church } from "lucide-react";
+import { useState } from "react";
+import { useRegistration } from "../../registration-context/RegistrationContext";
 
 // Backend enum mapping
 const baptismTypeMap = {
@@ -128,7 +128,9 @@ const Step3MembershipInfo = () => {
 
           {/* Baptism Location */}
           <div>
-            <label className="text-gray-600 font-semibold">Baptism Location</label>
+            <label className="text-gray-600 font-semibold">
+              Baptism Location
+            </label>
             <input
               type="text"
               name="baptismLocation"
@@ -187,15 +189,14 @@ const Step3MembershipInfo = () => {
               <option value="BORN_AGAIN">BORN_AGAIN</option>
               <option value="SEEKING">SEEKING</option>
               <option value="NOT_APPLICABLE">NOT_APPLICABLE</option>
-              
             </select>
           </div>
 
-          
-
           {/* Fellowship Group / Church Experience */}
           <div>
-            <label className="text-gray-600 font-semibold">Church Experience Rating</label>
+            <label className="text-gray-600 font-semibold">
+              Church Experience Rating
+            </label>
             <select
               name="churchExperienceRating"
               value={localData.churchExperienceRating}

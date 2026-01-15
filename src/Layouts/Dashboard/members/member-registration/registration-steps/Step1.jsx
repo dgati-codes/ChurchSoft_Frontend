@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useRegistration } from "../context/RegistrationContext";
 import { User } from "lucide-react";
+import { useState } from "react";
+import { useRegistration } from "../../registration-context/RegistrationContext";
 
 // ENUM maps (UI → Backend)
 const genderMap = {
@@ -106,7 +106,8 @@ const Step1PersonalInfo = () => {
         </div>
 
         <p className="text-gray-600 mb-6">
-          Basic demographic and identification data to help uniquely recognize members.
+          Basic demographic and identification data to help uniquely recognize
+          members.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -213,7 +214,7 @@ const Step1PersonalInfo = () => {
               placeholder="District"
             />
           </div>
-            {/* jurisdiction */}
+          {/* jurisdiction */}
           <div>
             <label className="text-gray-600 font-bold">Region</label>
             <input
@@ -352,25 +353,24 @@ const Step1PersonalInfo = () => {
           </div>
 
           {/* PREFERRED LANGUAGES */}
-           <div>
-              <label className="text-gray-600 font-bold">Prefer Languages</label>
-              <input
-                type="text"
-                placeholder="Enter language"
-                value={localData.preferredLanguages.join(", ")}
-                onChange={(e) =>
-                  setLocalData((prev) => ({
-                    ...prev,
-                    preferredLanguages: e.target.value
-                      .split(" , ")
-                      .map((l) => l.trim())
-                      .filter(Boolean),
-                  }))
-                }
-                className="input"
-              />
-            </div>
-
+          <div>
+            <label className="text-gray-600 font-bold">Prefer Languages</label>
+            <input
+              type="text"
+              placeholder="Enter language"
+              value={localData.preferredLanguages.join(", ")}
+              onChange={(e) =>
+                setLocalData((prev) => ({
+                  ...prev,
+                  preferredLanguages: e.target.value
+                    .split(" , ")
+                    .map((l) => l.trim())
+                    .filter(Boolean),
+                }))
+              }
+              className="input"
+            />
+          </div>
         </div>
 
         <div className="mt-6 text-right">

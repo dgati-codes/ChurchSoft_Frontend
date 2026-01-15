@@ -11,12 +11,13 @@ import Configuration from "./Layouts/Dashboard/configuration/Configuration";
 import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
 import Dashboard2 from "./Layouts/Dashboard/dashboard-layouts/Dashboard";
 import DashboardLayout from "./Layouts/Dashboard/dashboard-layouts/DashboardLayout";
+// import Register from "./Layouts/Dashboard/members/member-registration/register";
 import MemberTable from "./Layouts/Dashboard/members/MemberRegistrationTable";
-import Register from "./Layouts/Dashboard/members/register";
 import AddUserForm from "./Layouts/Dashboard/users/AddUserForm";
 import UserTable from "./Layouts/Dashboard/users/UserTable";
 import Contact from "./Layouts/profiles/Contact";
 import EducationWork from "./Layouts/profiles/education-work";
+// import IncompleteRegistrations from "./Layouts/Dashboard/members/member-registration/IncompleteRegistrations";
 import Membership from "./Layouts/profiles/Membership";
 import PersonalInfo from "./Layouts/profiles/PersonalInfo";
 import ProfileLayout from "./Layouts/profiles/ProfileLayout";
@@ -24,6 +25,7 @@ import Skills from "./Layouts/profiles/Skills";
 import Welfare from "./Layouts/profiles/Welfare";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
+import IncompleteAndNewRegister from "./Layouts/Dashboard/members/member-registration/IncompleteAndNewRegister";
 
 function App() {
   return (
@@ -65,11 +67,13 @@ function App() {
           <Route index element={<Dashboard2 />} />
           <Route path="add-user" element={<AddUserForm />} />
           <Route path="user-table" element={<UserTable />} />
-          <Route path="register" element={<Register />} />
+          {/* <Route path="register" element={<Register />} /> */}
           <Route path="members" element={<MemberTable />} />
           <Route path="attendance" element={<AttendanceTracking />} />
           <Route path="countries" element={<CountriesOverview />} />
           <Route path="configuration" element={<Configuration />} />
+          {/* <Route path="incomplete-registrations" element={<IncompleteRegistrations />} /> */}
+          <Route path="register" element={<IncompleteAndNewRegister />} />
         </Route>
 
         {/* ❌ 404 (ALWAYS LAST) */}

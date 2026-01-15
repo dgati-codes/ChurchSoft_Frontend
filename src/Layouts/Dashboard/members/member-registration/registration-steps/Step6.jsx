@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useRegistration } from "../context/RegistrationContext";
 import { Shield } from "lucide-react";
+import { useState } from "react";
+import { useRegistration } from "../../registration-context/RegistrationContext";
 
 // 🔹 Constant options
 const yesNoOptions = ["YES", "NO"];
@@ -10,7 +10,8 @@ const Step6HealthWelfareInfo = () => {
 
   const [localData, setLocalData] = useState({
     hasHealthIssues: formData.hasHealthIssues || false,
-    specialNeedsOrMedicalConditions: formData.specialNeedsOrMedicalConditions || "",
+    specialNeedsOrMedicalConditions:
+      formData.specialNeedsOrMedicalConditions || "",
   });
 
   // Handle text input changes
@@ -59,15 +60,21 @@ const Step6HealthWelfareInfo = () => {
           <span className="text-sm text-gray-400 ml-2">• 6/7</span>
         </div>
         <p className="text-sm text-gray-500 mb-6">
-          Supports pastoral care, welfare interventions, and emergency preparedness.
+          Supports pastoral care, welfare interventions, and emergency
+          preparedness.
         </p>
 
         {/* Health Condition */}
         <div className="space-y-2">
-          <label className="font-medium text-gray-800">Any health condition(s)?</label>
+          <label className="font-medium text-gray-800">
+            Any health condition(s)?
+          </label>
           <div className="flex gap-6 mt-1">
             {yesNoOptions.map((option) => (
-              <label key={option} className="flex items-center gap-2 cursor-pointer">
+              <label
+                key={option}
+                className="flex items-center gap-2 cursor-pointer"
+              >
                 <input
                   type="radio"
                   name="hasHealthIssues"
@@ -99,7 +106,6 @@ const Step6HealthWelfareInfo = () => {
           />
         </div>
 
-        
         {/* Navigation Buttons */}
         <div className="mt-6 flex justify-between">
           <button

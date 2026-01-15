@@ -1,14 +1,13 @@
-import React from 'react';
-import { useRegistration } from "../context/RegistrationContext";
+import { useRegistration } from "../../registration-context/RegistrationContext";
 
 const steps = [
-  'Personal Info',
-  'Contact Info',
-  'Membership Info',
-  'Education Info',
-  'Skills & Occupation',
-  'Welfare & Health',
-  'Review & Submit',
+  "Personal Info",
+  "Contact Info",
+  "Membership Info",
+  "Education Info",
+  "Skills & Occupation",
+  "Welfare & Health",
+  "Review & Submit",
 ];
 
 const RegistrationStepper = () => {
@@ -26,13 +25,12 @@ const RegistrationStepper = () => {
               <div
                 className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-bold transition-all duration-300 ${
                   isCompleted
-                    ? 'bg-blue-500 border-blue-500 text-white'
+                    ? "bg-blue-500 border-blue-500 text-white"
                     : isActive
-                    ? 'border-blue-600 text-blue-600'
-                    : 'bg-white border-gray-300 text-black'
+                    ? "border-blue-600 text-blue-600"
+                    : "bg-white border-gray-300 text-black"
                 }`}
               >
-                
                 {isCompleted ? (
                   <svg
                     className="w-4 h-4"
@@ -41,17 +39,21 @@ const RegistrationStepper = () => {
                     strokeWidth={3}
                     viewBox="0 0 24 24"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                     
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
+                ) : isActive ? (
+                  "•"
                 ) : (
-                   isActive ? '•' 
-                  : index + 1
+                  index + 1
                 )}
               </div>
               <span
                 className={`text-xs mt-2 ${
-                  isActive ? 'text-blue-600 font-medium' : 'text-gray-500'
+                  isActive ? "text-blue-600 font-medium" : "text-gray-500"
                 }`}
               >
                 {label}

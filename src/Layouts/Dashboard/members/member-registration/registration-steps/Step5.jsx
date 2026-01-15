@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useRegistration } from "../context/RegistrationContext";
 import { Disc3, X } from "lucide-react";
+import { useState } from "react";
+import { useRegistration } from "../../registration-context/RegistrationContext";
 
 // Backend mapping for ministries (frontend to backend enum)
 const ministryMap = {
@@ -26,10 +26,10 @@ const Step5SkillsInfo = () => {
     leadershipRole: formData.leadershipRole || "",
     skillsTalents: Array.isArray(formData.skillsTalents)
       ? formData.skillsTalents
-      : [], 
+      : [],
     spiritualGifts: Array.isArray(formData.spiritualGifts)
       ? formData.spiritualGifts
-      : [], 
+      : [],
   });
 
   // Handle ministry checkbox toggle
@@ -71,19 +71,21 @@ const Step5SkillsInfo = () => {
     e.preventDefault();
 
     // Map ministries to backend enums
-    const mappedMinistries = localData.ministries.map((item) => ministryMap[item]);
+    const mappedMinistries = localData.ministries.map(
+      (item) => ministryMap[item]
+    );
 
     updateForm({
       ...localData,
       ministries: mappedMinistries,
     });
- const cleanedSkills = [...localData.skillsTalents];
+    const cleanedSkills = [...localData.skillsTalents];
 
     updateForm({
       ...localData,
       skillsTalents: cleanedSkills,
     });
- const cleanedGifts = [...localData.spiritualGifts];
+    const cleanedGifts = [...localData.spiritualGifts];
 
     updateForm({
       ...localData,
@@ -108,11 +110,13 @@ const Step5SkillsInfo = () => {
         <div className="mb-6 flex gap-3">
           <Disc3 className="w-8 h-8 text-blue-500" />
           <h2 className="text-2xl font-semibold mb-1">
-            Ministry Involvement & Skills <span className="text-gray-500 text-sm">• 5/7</span>
+            Ministry Involvement & Skills{" "}
+            <span className="text-gray-500 text-sm">• 5/7</span>
           </h2>
         </div>
         <p className="text-gray-600 mb-6">
-          Helps in identifying engaged members, potential volunteers, and leadership pipeline.
+          Helps in identifying engaged members, potential volunteers, and
+          leadership pipeline.
         </p>
 
         {/* Ministry Checkboxes */}
@@ -146,7 +150,9 @@ const Step5SkillsInfo = () => {
             className="w-full bg-gray-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows={3}
           />
-          <p className="text-sm text-gray-400 text-right">{localData.reasonForNonParticipation.length}/150</p>
+          <p className="text-sm text-gray-400 text-right">
+            {localData.reasonForNonParticipation.length}/150
+          </p>
         </div>
 
         {/* Leadership Role */}
@@ -170,41 +176,41 @@ const Step5SkillsInfo = () => {
             Skills / Talents<span className="text-red-600">*</span>
           </label>
           <input
-                type="text"
-                placeholder="Enter languages separated by commas"
-                value={localData.skillsTalents.join(", ")}
-                onChange={(e) =>
-                  setLocalData((prev) => ({
-                    ...prev,
-                    skillsTalents: e.target.value
-                      .split(", ")
-                      .map((l) => l.trim())
-                      .filter(Boolean),
-                  }))
-                }
-                className="input"
-              />
+            type="text"
+            placeholder="Enter languages separated by commas"
+            value={localData.skillsTalents.join(", ")}
+            onChange={(e) =>
+              setLocalData((prev) => ({
+                ...prev,
+                skillsTalents: e.target.value
+                  .split(", ")
+                  .map((l) => l.trim())
+                  .filter(Boolean),
+              }))
+            }
+            className="input"
+          />
         </div>
-         {/* Spiritual Gifts */}
+        {/* Spiritual Gifts */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1">
-           Spiritual Gifts (optional)<span className="text-red-600">*</span>
+            Spiritual Gifts (optional)<span className="text-red-600">*</span>
           </label>
           <input
-                type="text"
-                placeholder="Enter languages separated by commas"
-                value={localData.spiritualGifts.join(", ")}
-                onChange={(e) =>
-                  setLocalData((prev) => ({
-                    ...prev,
-                    spiritualGifts: e.target.value
-                      .split(" , ")
-                      .map((l) => l.trim())
-                      .filter(Boolean),
-                  }))
-                }
-                className="input"
-              />
+            type="text"
+            placeholder="Enter languages separated by commas"
+            value={localData.spiritualGifts.join(", ")}
+            onChange={(e) =>
+              setLocalData((prev) => ({
+                ...prev,
+                spiritualGifts: e.target.value
+                  .split(" , ")
+                  .map((l) => l.trim())
+                  .filter(Boolean),
+              }))
+            }
+            className="input"
+          />
         </div>
 
         {/* Navigation Buttons */}

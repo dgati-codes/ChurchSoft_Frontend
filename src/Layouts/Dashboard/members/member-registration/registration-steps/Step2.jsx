@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useRegistration } from "../context/RegistrationContext";
 import { MapPin } from "lucide-react";
+import { useState } from "react";
+import { useRegistration } from "../../registration-context/RegistrationContext";
 
 const Step2ContactInfo = () => {
   const { formData, updateForm, nextStep, prevStep } = useRegistration();
@@ -24,15 +24,13 @@ const Step2ContactInfo = () => {
     const { name, value, type, checked } = e.target;
 
     if (name.startsWith("nextOfKin")) {
-  const key = name.replace("nextOfKin", ""); 
-  const finalKey = key.charAt(0).toLowerCase() + key.slice(1); 
-  setLocalData((prev) => ({
-    ...prev,
-    nextOfKin: { ...prev.nextOfKin, [finalKey]: value },
-  }));
-}
-
-     else {
+      const key = name.replace("nextOfKin", "");
+      const finalKey = key.charAt(0).toLowerCase() + key.slice(1);
+      setLocalData((prev) => ({
+        ...prev,
+        nextOfKin: { ...prev.nextOfKin, [finalKey]: value },
+      }));
+    } else {
       setLocalData((prev) => ({
         ...prev,
         [name]: type === "checkbox" ? checked : value,
@@ -99,7 +97,10 @@ const Step2ContactInfo = () => {
               onChange={handleChange}
               className="h-4 w-4"
             />
-            <label htmlFor="whatsappAvailable" className="text-gray-700 text-sm">
+            <label
+              htmlFor="whatsappAvailable"
+              className="text-gray-700 text-sm"
+            >
               WhatsApp Available (optional)
             </label>
           </div>
@@ -111,7 +112,10 @@ const Step2ContactInfo = () => {
               onChange={handleChange}
               className="h-4 w-4"
             />
-            <label htmlFor="consentForCommunication" className="text-gray-700 text-sm">
+            <label
+              htmlFor="consentForCommunication"
+              className="text-gray-700 text-sm"
+            >
               CONSENT FOR COMMUNICATION (optional)
             </label>
           </div>
@@ -155,7 +159,6 @@ const Step2ContactInfo = () => {
               onChange={handleChange}
               placeholder="Contact Information*"
               className="input bg-gray-100 rounded px-4 py-2"
-              
             />
           </div>
         </div>

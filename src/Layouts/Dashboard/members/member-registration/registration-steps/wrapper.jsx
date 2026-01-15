@@ -1,6 +1,7 @@
 // components/registration/RegistrationFormWrapper.jsx
-import React, { useState } from "react";
-import { useRegistration } from "../context/RegistrationContext";
+import { useState } from "react";
+import { useRegistration } from "../../registration-context/RegistrationContext";
+import RegistrationStepper from "./RegistrationStepper";
 import Step1PersonalInfo from "./Step1";
 import Step2ContactInfo from "./Step2";
 import Step3MembershipInfo from "./Step3";
@@ -8,7 +9,6 @@ import Step4EducationInfo from "./Step4";
 import Step5SkillsInfo from "./Step5";
 import Step6HealthWelfareInfo from "./Step6";
 import Step7ReviewSubmit from "./Step7";
-import RegistrationStepper from "./RegistrationStepper";
 
 const RegistrationFormWrapper = () => {
   const { step } = useRegistration();
@@ -23,8 +23,9 @@ const RegistrationFormWrapper = () => {
             🎉 Registration Successful!
           </h2>
           <p className="text-gray-700 text-lg max-w-xl">
-            Thank you for completing your church membership registration.
-            Your details have been successfully submitted and will be reviewed shortly.
+            Thank you for completing your church membership registration. Your
+            details have been successfully submitted and will be reviewed
+            shortly.
           </p>
         </div>
       );

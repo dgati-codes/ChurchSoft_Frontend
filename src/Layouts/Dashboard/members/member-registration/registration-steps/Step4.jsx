@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useRegistration } from "../context/RegistrationContext";
 import { GraduationCap } from "lucide-react";
+import { useState } from "react";
+import { useRegistration } from "../../registration-context/RegistrationContext";
 
 // Backend mappings
 const educationLevelMap = {
@@ -77,12 +77,14 @@ const Step4EducationInfo = () => {
         <div className="flex gap-3 mb-4">
           <GraduationCap className="w-8 h-8 text-amber-500" />
           <h2 className="text-2xl font-semibold mb-1">
-            Education & Occupation <span className="text-gray-500 text-sm">• 4/7</span>
+            Education & Occupation{" "}
+            <span className="text-gray-500 text-sm">• 4/7</span>
           </h2>
         </div>
 
         <p className="text-gray-600 mb-6">
-          Provides insight into educational background, professional network, and ministry involvement.
+          Provides insight into educational background, professional network,
+          and ministry involvement.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
