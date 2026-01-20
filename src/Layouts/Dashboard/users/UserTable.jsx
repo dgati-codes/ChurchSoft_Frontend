@@ -17,7 +17,6 @@ const UserTable = () => {
   const [page, setPage] = useState(0);
   // const [searchInput, setSearchInput] = useState("");
   const [filters, setFilters] = useState({
-    
     assembly: "ALL",
     search: "",
   });
@@ -126,8 +125,6 @@ const UserTable = () => {
         <h3 className="text-sm font-semibold mb-4">Filters</h3>
 
         <div className="grid grid-cols-2 gap-4">
-         
-
           <select
             name="ageGroup"
             value={filters.assembly}
@@ -373,12 +370,18 @@ const UserTable = () => {
                 className={`font-semibold ${
                   successModal.action === "deleted"
                     ? "text-red-600"
-                    : "text-green-600"
+                    : successModal.action === "updated"
+                      ? "text-green-600"
+                      : "text-gray-600"
                 }`}
               >
                 {successModal.firstName} {successModal.lastName}
               </span>{" "}
-              {successModal.action === "updated" ? "Updated" : "Deleted"}
+              {successModal.action === "updated"
+                ? "Updated"
+                : successModal.action === "deleted"
+                  ? "Deleted"
+                  : "Done"}
             </h2>
 
             <button
