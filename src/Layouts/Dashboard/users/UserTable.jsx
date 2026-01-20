@@ -17,13 +17,14 @@ const UserTable = () => {
   const [page, setPage] = useState(0);
   // const [searchInput, setSearchInput] = useState("");
   const [filters, setFilters] = useState({
-    country: "Ghana",
-    region: "ALL",
-    ageGroup: "ALL",
+    
+    assembly: "ALL",
     search: "",
   });
 
+  const [successModal, setSuccessModal] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
+
   const [deleteModal, setDeleteModal] = useState(null);
   const [formData, setFormData] = useState({
     id: "",
@@ -39,7 +40,7 @@ const UserTable = () => {
   const queryClient = useQueryClient();
 
   /* ===================== DATA FETCH ===================== */
-  const { data, isFetching, isError, error,  } = useQuery({
+  const { data, isFetching, isError, error } = useQuery({
     queryKey: ["users", page, filters],
     queryFn: () => UserService.getAllUsers(page, PAGE_SIZE, filters),
     keepPreviousData: true,
@@ -51,8 +52,8 @@ const UserTable = () => {
   const users = Array.isArray(data?.content)
     ? data.content
     : Array.isArray(data)
-    ? data
-    : [];
+      ? data
+      : [];
 
   const totalPages = data?.totalPages || 1;
   const totalElements = data?.totalElements || 0;
@@ -70,16 +71,33 @@ const UserTable = () => {
 
   const handleUpdate = async () => {
     await UserService.updateUser(formData);
+
     setEditingUser(null);
+
+    // ✅ show success modal with fullname
+    setSuccessModal({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      action: "updated",
+    });
+
     queryClient.invalidateQueries(["users"]);
   };
 
   const handleDelete = (user) => setDeleteModal(user);
+
   const handleFormChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const confirmDelete = async () => {
     await UserService.deleteUser(deleteModal.id);
+
+    setSuccessModal({
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      action: "deleted",
+    });
+
     setDeleteModal(null);
     queryClient.invalidateQueries(["users"]);
   };
@@ -103,37 +121,20 @@ const UserTable = () => {
           Manage and view users with advanced filtering and search
         </p>
       </div>
-
       {/* FILTERS */}
       <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
         <h3 className="text-sm font-semibold mb-4">Filters</h3>
 
-        <div className="grid grid-cols-4 gap-4">
-          <select
-            name="country"
-            value={filters.country}
-            onChange={handleFilterChange}
-            className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
-          >
-            <option value="Ghana">Ghana</option>
-          </select>
-
-          <select
-            name="region"
-            value={filters.region}
-            onChange={handleFilterChange}
-            className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
-          >
-            <option value="ALL">All Regions</option>
-          </select>
+        <div className="grid grid-cols-2 gap-4">
+         
 
           <select
             name="ageGroup"
-            value={filters.ageGroup}
+            value={filters.assembly}
             onChange={handleFilterChange}
             className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
           >
-            <option value="ALL">All Age Groups</option>
+            <option value="ALL">All Assemblies</option>
           </select>
 
           <input
@@ -145,7 +146,6 @@ const UserTable = () => {
           />
         </div>
       </div>
-
       {/* USERS TABLE */}
       <div className="bg-white rounded-xl border border-gray-200 p-4">
         <h3 className="font-semibold mb-4">Users</h3>
@@ -246,10 +246,9 @@ const UserTable = () => {
           </p>
         )}
       </div>
-
       {editingUser && (
         <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+          <div className="bg-white p-8 rounded-lg w-150 shadow-lg">
             <h3 className="text-xl font-semibold mb-4 text-center">
               Edit User
             </h3>
@@ -329,7 +328,7 @@ const UserTable = () => {
               </button>
               <button
                 onClick={handleUpdate}
-                className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-green-700"
               >
                 Update
               </button>
@@ -337,13 +336,16 @@ const UserTable = () => {
           </div>
         </div>
       )}
-
       {/* ================= DELETE MODAL ================= */}
       {deleteModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-96 text-center">
             <p className="mb-4 font-semibold">
-              Delete {deleteModal.firstName} {deleteModal.lastName}?
+              Delete{" "}
+              <span className="text-red-500">
+                {deleteModal.firstName} {deleteModal.lastName}
+              </span>
+              ?
             </p>
             <div className="flex justify-center gap-4">
               <button
@@ -359,6 +361,32 @@ const UserTable = () => {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      ;
+      {successModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 text-center">
+            <h2 className="text-xl font-semibold mb-4">
+              <span
+                className={`font-semibold ${
+                  successModal.action === "deleted"
+                    ? "text-red-600"
+                    : "text-green-600"
+                }`}
+              >
+                {successModal.firstName} {successModal.lastName}
+              </span>{" "}
+              {successModal.action === "updated" ? "Updated" : "Deleted"}
+            </h2>
+
+            <button
+              onClick={() => setSuccessModal(null)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

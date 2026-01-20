@@ -218,7 +218,7 @@ const AddUserForm = () => {
       {/* ✅ Success Modal */}
       {showSuccess && (
         <Modal
-          icon={<CheckCircle className="w-10 h-10 text-green-600" />}
+          icon={<CheckCircle className="w-10 h-10 text-blue-600" />}
           message={message}
           onClose={() => setShowSuccess(false)}
           buttonText="Close"
