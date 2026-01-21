@@ -4,9 +4,7 @@ import axiosInstance from "./axiosInstance";
 
 const BASE_URL = "https://churchsoft-backend.onrender.com/church-soft/v1.0";
 
-/**
- * ✅ Login user
- */
+
 export const loginUser = async (credentials) => {
   try {
     const response = await axios.post(`${BASE_URL}/users/login`, credentials, {
@@ -52,32 +50,81 @@ export const registerUser = async (userData) => {
 
 const UserService = {
   // Fetch all users (standardized)
- getAllUsers: async (page = 0, size = 10, filters = {}) => {
+  getAllUsers: async (page = 0, size = 10, filters = {}) => {
+    try {
+      const res = await axiosInstance.get("/users/all", {
+        params: {
+          page,
+          size,
+          country: filters.country,
+          region: filters.region,
+          ageGroup: filters.ageGroup,
+          search: filters.search,
+          assembly: filters.assembly !== "ALL" ? filters.assembly : undefined,
+        },
+      });
+
+      const payload = res?.data;
+
+      // ✅ normalize response
+      if (payload?.data) return payload.data;
+      if (payload?.content) return payload;
+      if (payload?.data?.content) return payload.data;
+
+     return normalizeUsers(payload);
+
+    } catch (error) {
+      console.error("Error fetching users:", error.response || error);
+      throw error;
+    }
+  },
+
+  searchUsers: async (page = 0, size = 10, name = "") => {
+    try {
+      const res = await axiosInstance.get("/users/search", {
+        params: {
+          name,
+          page,
+          size,
+        },
+      });
+
+      const payload = res?.data;
+
+      if (payload?.data) return payload.data;
+      if (payload?.content) return payload;
+      if (payload?.data?.content) return payload.data;
+
+       return normalizeUsers(payload);
+    } catch (error) {
+      console.error("Error searching users:", error.response || error);
+      throw error;
+    }
+  },
+
+  getUsersByAssembly: async (page = 0, size = 10, assembly) => {
   try {
-    const res = await axiosInstance.get("/users/all", {
-      params: {
-        page,
-        size,
-        country: filters.country,
-        region: filters.region,
-        ageGroup: filters.ageGroup,
-        search: filters.search,
-      },
-    });
+    const res = await axiosInstance.get(
+      `/users/assembly/${assembly}`,
+      {
+        params: { page, size },
+      }
+    );
 
     const payload = res?.data;
 
-    // ✅ normalize response
-    if (payload?.data) return payload.data;
     if (payload?.content) return payload;
     if (payload?.data?.content) return payload.data;
+    if (payload?.data?.content===0) return ("No users found");
 
-    return payload;
+    return normalizeUsers(payload);
+
   } catch (error) {
-    console.error("Error fetching users:", error.response || error);
+    console.error("Error fetching users by assembly:", error.response || error);
     throw error;
   }
 },
+
 
   // Delete a user by ID
   deleteUser: async (id) => {
@@ -89,7 +136,7 @@ const UserService = {
     }
   },
 
-  // Update a user 
+  // Update a user
   updateUser: async (data) => {
     try {
       return await axiosInstance.put(`/users`, data);
@@ -98,6 +145,8 @@ const UserService = {
       throw error;
     }
   },
+  
+  
 };
 
 export default UserService;
@@ -106,4 +155,17 @@ export default UserService;
 export const getCurrentUser = async () => {
   const res = await axiosInstance.get("/users/me");
   return res.data;
+};
+
+const normalizeUsers = (payload) => {
+  if (!payload?.content) return payload;
+
+  return {
+    ...payload,
+    content: payload.content.map((user) => ({
+      ...user,
+      localAssemblyName:
+        user.localAssemblyName || user.localAssembly?.name || "",
+    })),
+  };
 };

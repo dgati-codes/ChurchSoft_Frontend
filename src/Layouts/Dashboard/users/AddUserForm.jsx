@@ -1,6 +1,8 @@
 import { CheckCircle, XCircle } from "lucide-react";
 import { useState } from "react";
 import { registerUser } from "../../../api/userService";
+import InputField from "../modals/InputField";
+import SuccessModal from "../modals/successModal.jsx"
 
 const AddUserForm = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -52,9 +54,12 @@ const AddUserForm = () => {
       const result = await registerUser(formDataToSend);
 
       if (result.success) {
-        setMessage(
-          `${result.data.firstName} ${result.data.lastName} added successfully.`
-        );
+        setMessage({
+          firstName: result.data.firstName,
+          lastName: result.data.lastName,
+          text: "added successfully.",
+        });
+
         setShowSuccess(true);
         setFormData({
           firstName: "",
@@ -190,10 +195,10 @@ const AddUserForm = () => {
               name="roleName"
               value={formData.roleName}
               onChange={handleChange}
-              className="w-full border p-2 rounded-md"
+              className="w-full border p-2 rounded-md bg-gray-100 border-gray-100"
               required
             >
-              <option value="">Select role</option>
+              <option value="" >Select role</option>
               <option value="ADMIN">ADMIN</option>
               <option value="FINANCE">FINANCE</option>
               <option value="PASTOR">PASTOR</option>
@@ -218,22 +223,29 @@ const AddUserForm = () => {
         </div>
       </div>
 
-      {/* ✅ Success Modal */}
+      {/* ✅ Success SuccessModal */}
       {showSuccess && (
-        <Modal
+        <SuccessModal
           icon={<CheckCircle className="w-10 h-10 text-blue-600" />}
-          message={message}
+          message={
+            <>
+              <span className="text-green-600 font-semibold">
+                {message.firstName} {message.lastName}
+              </span>{" "}
+              added successfully.
+            </>
+          }
           onClose={() => setShowSuccess(false)}
           buttonText="Close"
           buttonColor="bg-green-600"
         />
       )}
 
-      {/* ❌ Error Modal */}
+      {/* ❌ Error SuccessModal */}
       {showError && (
-        <Modal
+        <SuccessModal
           icon={<XCircle className="w-10 h-10 text-red-600" />}
-          message={message}
+          message={<span className="text-red-600">{message}</span>}
           onClose={() => setShowError(false)}
           buttonText="Try Again"
           buttonColor="bg-red-600"
@@ -243,48 +255,8 @@ const AddUserForm = () => {
   );
 };
 
-/** Reusable Input Component */
-const InputField = ({
-  label,
-  name,
-  value,
-  onChange,
-  type = "text",
-  required = false,
-}) => (
-  <div>
-    <label className="block text-gray-700 text-sm mb-1">
-      {label}
-      {required && <span className="text-red-500">*</span>}
-    </label>
-    <input
-      type={type}
-      name={name}
-      value={value}
-      onChange={onChange}
-      placeholder={`Enter ${label.toLowerCase()}`}
-      className="w-full border p-2 rounded-md"
-      required={required}
-    />
-  </div>
-);
 
-/** Reusable Modal Component */
-const Modal = ({ icon, message, onClose, buttonText, buttonColor }) => (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-    <div className="bg-white rounded-2xl shadow-lg p-8 w-96 text-center animate-fade-in">
-      <div className="flex justify-center mb-4">
-        <div className="bg-gray-100 rounded-full p-4">{icon}</div>
-      </div>
-      <h2 className="text-lg font-semibold text-gray-800">{message}</h2>
-      <button
-        onClick={onClose}
-        className={`mt-6 w-full ${buttonColor} hover:opacity-90 text-white font-medium py-2 rounded`}
-      >
-        {buttonText}
-      </button>
-    </div>
-  </div>
-);
+
+
 
 export default AddUserForm;

@@ -9,22 +9,26 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import UserService from "../../../api/userService";
+import useDebounce from "../../../hooks/useDebounce";
+
 
 const PAGE_SIZE = 10;
 
 const UserTable = () => {
   /* ===================== STATE ===================== */
   const [page, setPage] = useState(0);
-  // const [searchInput, setSearchInput] = useState("");
+
   const [filters, setFilters] = useState({
-    assembly: "ALL",
+    localAssemblyName: "",
     search: "",
   });
 
+  const debouncedSearch = useDebounce(filters.search, 300);
+
   const [successModal, setSuccessModal] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
-
   const [deleteModal, setDeleteModal] = useState(null);
+
   const [formData, setFormData] = useState({
     id: "",
     firstName: "",
@@ -36,32 +40,77 @@ const UserTable = () => {
     status: "",
     roleName: "",
   });
+
   const queryClient = useQueryClient();
+
+  /* ===================== DERIVED FLAGS ===================== */
+  const isSearching = debouncedSearch.trim().length > 0;
+  const hasAssembly = filters.localAssemblyName !== "";
 
   /* ===================== DATA FETCH ===================== */
   const { data, isFetching, isError, error } = useQuery({
-    queryKey: ["users", page, filters],
-    queryFn: () => UserService.getAllUsers(page, PAGE_SIZE, filters),
+    queryKey: [
+      "users",
+      page,
+      filters.localAssemblyName,
+      debouncedSearch,
+    ],
+
+    queryFn: () => {
+      // 1️⃣ Search by name
+      if (isSearching) {
+        return UserService.searchUsers(
+          page,
+          PAGE_SIZE,
+          debouncedSearch
+        );
+      }
+
+      // 2️⃣ Filter by assembly
+      if (hasAssembly) {
+        return UserService.getUsersByAssembly(
+          page,
+          PAGE_SIZE,
+          filters.localAssemblyName
+        );
+      }
+
+      // 3️⃣ Default: all users
+      return UserService.getAllUsers(
+        page,
+        PAGE_SIZE,
+        filters
+      );
+    },
+
     keepPreviousData: true,
     staleTime: 0,
     refetchInterval: 30000,
     refetchOnWindowFocus: true,
   });
 
+  /* ===================== NORMALIZED DATA ===================== */
   const users = Array.isArray(data?.content)
     ? data.content
     : Array.isArray(data)
-      ? data
-      : [];
+    ? data
+    : [];
 
   const totalPages = data?.totalPages || 1;
   const totalElements = data?.totalElements || 0;
 
   /* ===================== HANDLERS ===================== */
   const handleFilterChange = (e) => {
-    setPage(0);
-    setFilters({ ...filters, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setPage(0); // reset pagination
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
+
+
 
   const handleEditClick = (user) => {
     setEditingUser(user.id);
@@ -125,14 +174,14 @@ const UserTable = () => {
         <h3 className="text-sm font-semibold mb-4">Filters</h3>
 
         <div className="grid grid-cols-2 gap-4">
-          <select
-            name="ageGroup"
-            value={filters.assembly}
+          <input
+            name="localAssemblyName"
+            value={filters.localAssemblyName}
             onChange={handleFilterChange}
+            placeholder="Search by Assembly"
             className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
-          >
-            <option value="ALL">All Assemblies</option>
-          </select>
+          />
+            
 
           <input
             name="search"
@@ -166,7 +215,11 @@ const UserTable = () => {
               {users.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center py-6 border">
-                    No users found
+                    
+                      <p className="text-xs text-center text-gray-400 mt-2">
+                        No users found
+                      </p>
+                    
                   </td>
                 </tr>
               ) : (
@@ -239,7 +292,7 @@ const UserTable = () => {
         {/* BACKGROUND FETCH */}
         {isFetching && (
           <p className="text-xs text-center text-gray-400 mt-2">
-            Updating data...
+            Updating Users...
           </p>
         )}
       </div>
@@ -346,22 +399,22 @@ const UserTable = () => {
             </p>
             <div className="flex justify-center gap-4">
               <button
-                onClick={() => confirmDelete(deleteModal.id)}
-                className="bg-red-600 text-white px-4 py-2 rounded"
-              >
-                Delete
-              </button>
-              <button
                 onClick={() => setDeleteModal(null)}
                 className="bg-gray-400 text-white px-4 py-2 rounded"
               >
                 Cancel
               </button>
+              <button
+                onClick={() => confirmDelete(deleteModal.id)}
+                className="bg-red-600 text-white px-4 py-2 cursor-pointer rounded"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>
       )}
-      ;
+
       {successModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96 text-center">
