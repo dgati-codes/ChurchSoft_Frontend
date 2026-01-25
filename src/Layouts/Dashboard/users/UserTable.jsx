@@ -110,6 +110,8 @@ const UserTable = () => {
     }));
   };
 
+const capitalize = (str = "") =>
+  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
 
   const handleEditClick = (user) => {
@@ -173,7 +175,7 @@ const UserTable = () => {
       <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
         <h3 className="text-sm font-semibold mb-4">Filters</h3>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-20  min-w-full">
           <input
             name="localAssemblyName"
             value={filters.localAssemblyName}
@@ -227,12 +229,12 @@ const UserTable = () => {
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="border px-3 py-2">{user.id}</td>
                     <td className="border px-3 py-2">
-                      {user.firstName} {user.lastName}
+                      {capitalize(user.firstName)} {capitalize(user.lastName)}
                     </td>
                     <td className="border px-3 py-2">{user.email}</td>
                     <td className="border px-3 py-2">{user.phoneNumber}</td>
                     <td className="border px-3 py-2">
-                      {user.localAssemblyName}
+                      {capitalize(user.localAssemblyName)}
                     </td>
                     <td className="border px-3 py-2">
                       <span

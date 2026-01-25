@@ -79,7 +79,7 @@ const UserService = {
     }
   },
 
-  searchUsers: async (page = 0, size = 10, name = "") => {
+  searchUsers: async (page = 0, size = 10, name = "" ) => {
     try {
       const res = await axiosInstance.get("/users/search", {
         params: {
