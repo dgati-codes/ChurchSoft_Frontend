@@ -2,7 +2,7 @@ import { BookOpen, MapPin, TrendingUp, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../modals/LoadingSpinner";
 
-import { attendanceService } from "../../../api/attendanceService";
+import { attendanceService } from "../../../api/services/attendanceService";
 import AddAttendanceRecord from "./AddAttendanceRecord";
 import AttendanceTable from "./AttendanceTable";
 

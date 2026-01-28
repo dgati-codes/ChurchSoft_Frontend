@@ -20,7 +20,7 @@ const handleLogout = () => {
 
 
   return (
-    <header className="bg-white fixed font-[DM Sans] grid grid-cols-[40%_60%] p-8 shadow-sm w-full">
+    <header className="bg-white fixed font-[DM Sans] grid grid-cols-[40%_60%] p-8 shadow-sm w-full z-50">
       <div>
         <div className="text-[20px] font-semibold text-[#0B1C2D]">
             <h1>Hello <span className="">{user?.firstName} {user?.lastName}</span>!</h1>

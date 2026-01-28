@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axiosInstance from "../api/axiosInstance";
-import { loginUser, getCurrentUser } from "../api/userService";
-import MemberService from "../api/memberService";
+import axiosInstance from "../api/axiosInstance.js";
+import MemberService from "../api/services/memberService.js";
+import { getCurrentUser, loginUser } from "../api/services/userService.js";
 
 const AuthContext = createContext(null);
 
@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     };
-   
 
     fetchUserAndMembers();
   }, []);
@@ -48,8 +47,7 @@ export const AuthProvider = ({ children }) => {
     if (result.success) {
       localStorage.setItem("accessToken", result.token);
 
-      axiosInstance.defaults.headers.Authorization =
-        `Bearer ${result.token}`;
+      axiosInstance.defaults.headers.Authorization = `Bearer ${result.token}`;
 
       const userData = await getCurrentUser();
       setUser(userData);

@@ -8,9 +8,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
-import UserService from "../../../api/userService";
+import UserService from "../../../api/services/userService.js";
 import useDebounce from "../../../hooks/useDebounce";
-
 
 const PAGE_SIZE = 10;
 
@@ -24,7 +23,6 @@ const UserTable = () => {
   });
 
   const debouncedSearch = useDebounce(filters.search, 300);
-
   const [successModal, setSuccessModal] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
@@ -49,40 +47,20 @@ const UserTable = () => {
 
   /* ===================== DATA FETCH ===================== */
   const { data, isFetching, isError, error } = useQuery({
-    queryKey: [
-      "users",
-      page,
-      filters.localAssemblyName,
-      debouncedSearch,
-    ],
-
+    queryKey: ["users", page, filters.localAssemblyName, debouncedSearch],
     queryFn: () => {
-      // 1️⃣ Search by name
       if (isSearching) {
-        return UserService.searchUsers(
-          page,
-          PAGE_SIZE,
-          debouncedSearch
-        );
+        return UserService.searchUsers(page, PAGE_SIZE, debouncedSearch);
       }
-
-      // 2️⃣ Filter by assembly
       if (hasAssembly) {
         return UserService.getUsersByAssembly(
           page,
           PAGE_SIZE,
-          filters.localAssemblyName
+          filters.localAssemblyName,
         );
       }
-
-      // 3️⃣ Default: all users
-      return UserService.getAllUsers(
-        page,
-        PAGE_SIZE,
-        filters
-      );
+      return UserService.getAllUsers(page, PAGE_SIZE, filters);
     },
-
     keepPreviousData: true,
     staleTime: 0,
     refetchInterval: 30000,
@@ -93,8 +71,8 @@ const UserTable = () => {
   const users = Array.isArray(data?.content)
     ? data.content
     : Array.isArray(data)
-    ? data
-    : [];
+      ? data
+      : [];
 
   const totalPages = data?.totalPages || 1;
   const totalElements = data?.totalElements || 0;
@@ -102,17 +80,15 @@ const UserTable = () => {
   /* ===================== HANDLERS ===================== */
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-
-    setPage(0); // reset pagination
+    setPage(0);
     setFilters((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-const capitalize = (str = "") =>
-  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
+  const capitalize = (str = "") =>
+    str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
   const handleEditClick = (user) => {
     setEditingUser(user.id);
@@ -121,16 +97,12 @@ const capitalize = (str = "") =>
 
   const handleUpdate = async () => {
     await UserService.updateUser(formData);
-
     setEditingUser(null);
-
-    // ✅ show success modal with fullname
     setSuccessModal({
       firstName: formData.firstName,
       lastName: formData.lastName,
       action: "updated",
     });
-
     queryClient.invalidateQueries(["users"]);
   };
 
@@ -141,13 +113,11 @@ const capitalize = (str = "") =>
 
   const confirmDelete = async () => {
     await UserService.deleteUser(deleteModal.id);
-
     setSuccessModal({
       firstName: formData.firstName,
       lastName: formData.lastName,
       action: "deleted",
     });
-
     setDeleteModal(null);
     queryClient.invalidateQueries(["users"]);
   };
@@ -174,8 +144,7 @@ const capitalize = (str = "") =>
       {/* FILTERS */}
       <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
         <h3 className="text-sm font-semibold mb-4">Filters</h3>
-
-        <div className="grid grid-cols-2 gap-20  min-w-full">
+        <div className="grid grid-cols-2 gap-20 min-w-full">
           <input
             name="localAssemblyName"
             value={filters.localAssemblyName}
@@ -183,8 +152,6 @@ const capitalize = (str = "") =>
             placeholder="Search by Assembly"
             className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
           />
-            
-
           <input
             name="search"
             value={filters.search}
@@ -197,12 +164,11 @@ const capitalize = (str = "") =>
       {/* USERS TABLE */}
       <div className="bg-white rounded-xl border border-gray-200 p-4">
         <h3 className="font-semibold mb-4">Users</h3>
-
         <div className="overflow-x-auto">
-          <table className="w-full text-sm border-collapse ">
+          <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gray-50 text-gray-600">
-                <th className="border px-3 py-2">User ID</th>
+                <th className="border px-3 py-2">Image</th>
                 <th className="border px-3 py-2">Full Name</th>
                 <th className="border px-3 py-2">Email</th>
                 <th className="border px-3 py-2">Phone</th>
@@ -212,22 +178,21 @@ const capitalize = (str = "") =>
                 <th className="border px-3 py-2 text-center">Actions</th>
               </tr>
             </thead>
-
             <tbody>
               {users.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center py-6 border">
-                    
-                      <p className="text-xs text-center text-gray-400 mt-2">
-                        No users found
-                      </p>
-                    
+                    <p className="text-xs text-center text-gray-400 mt-2">
+                      No users found
+                    </p>
                   </td>
                 </tr>
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="border px-3 py-2">{user.id}</td>
+                    <td className="border px-3 py-2">
+                      <UserImage imageId={user.image?.id} />
+                    </td>
                     <td className="border px-3 py-2">
                       {capitalize(user.firstName)} {capitalize(user.lastName)}
                     </td>
@@ -238,19 +203,21 @@ const capitalize = (str = "") =>
                     </td>
                     <td className="border px-3 py-2">
                       <span
-                        className={`px-2 py-1 rounded text-white ${
+                        className={`px-2 py-1 rounded text-xs text-white ${
                           user.status === "ACTIVE"
                             ? "bg-green-600"
+                            : user.status === "INACTIVE"
+                            ? "bg-gray-500"
                             : "bg-red-500"
                         }`}
                       >
                         {user.status}
                       </span>
                     </td>
-                    <td className="border px-3 py-2">{user.roleName}</td>
+                    <td className="border text-xs px-3 py-2">{user.roleName}</td>
                     <td className="border p-2 text-center space-x-2">
                       <Edit
-                        className="inline w-4 h-4  cursor-pointer"
+                        className="inline w-4 h-4 cursor-pointer"
                         onClick={() => handleEditClick(user)}
                       />
                       <Trash2
@@ -270,7 +237,6 @@ const capitalize = (str = "") =>
           <span>
             Page {page + 1} of {totalPages} ({totalElements} users)
           </span>
-
           <div className="flex items-center gap-2">
             <ChevronsLeft
               onClick={() => setPage(0)}
@@ -298,12 +264,12 @@ const capitalize = (str = "") =>
           </p>
         )}
       </div>
+
+      {/* Edit Modal */}
       {editingUser && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black/40 flex justify-center z-60 items-center">
           <div className="bg-white p-8 rounded-lg w-150 shadow-lg">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              Edit User
-            </h3>
+            <h3 className="text-xl font-semibold mb-4 text-center">Edit User</h3>
             <div className="space-y-3">
               <input
                 type="text"
@@ -337,7 +303,6 @@ const capitalize = (str = "") =>
                 placeholder="Email"
                 className="w-full border border-gray-100 p-2 rounded"
               />
-
               <input
                 type="text"
                 name="phoneNumber"
@@ -388,9 +353,10 @@ const capitalize = (str = "") =>
           </div>
         </div>
       )}
-      {/* ================= DELETE MODAL ================= */}
+
+      {/* Delete Modal */}
       {deleteModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/40 flex items-center z-60 justify-center">
           <div className="bg-white p-6 rounded-lg w-96 text-center">
             <p className="mb-4 font-semibold">
               Delete{" "}
@@ -417,6 +383,7 @@ const capitalize = (str = "") =>
         </div>
       )}
 
+      {/* Success Modal */}
       {successModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96 text-center">
@@ -426,8 +393,8 @@ const capitalize = (str = "") =>
                   successModal.action === "deleted"
                     ? "text-red-600"
                     : successModal.action === "updated"
-                      ? "text-green-600"
-                      : "text-gray-600"
+                    ? "text-green-600"
+                    : "text-gray-600"
                 }`}
               >
                 {successModal.firstName} {successModal.lastName}
@@ -435,10 +402,9 @@ const capitalize = (str = "") =>
               {successModal.action === "updated"
                 ? "Updated"
                 : successModal.action === "deleted"
-                  ? "Deleted"
-                  : "Done"}
+                ? "Deleted"
+                : "Done"}
             </h2>
-
             <button
               onClick={() => setSuccessModal(null)}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -453,3 +419,18 @@ const capitalize = (str = "") =>
 };
 
 export default UserTable;
+
+/* ===================== UserImage ===================== */
+const UserImage = ({ imageId }) => {
+  const src = imageId
+    ? `https://churchsoft-backend.onrender.com/church-soft/v1.0/images/${imageId}`
+    : "/avatar-placeholder.png";
+
+  return (
+    <img
+      src={src}
+      className="w-8 h-8 rounded-full object-cover mx-auto"
+      alt="profile"
+    />
+  );
+};

@@ -1,8 +1,12 @@
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, Upload } from "lucide-react";
 import { useState } from "react";
-import { registerUser } from "../../../api/userService";
+import { registerUser } from "../../../api/services/userService";
+import {
+  uploadImage,
+  assignImageToUser,
+} from "../../../api/services/userImageService";
 import InputField from "../modals/InputField";
-import SuccessModal from "../modals/successModal.jsx"
+import SuccessModal from "../modals/successModal.jsx";
 
 const AddUserForm = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -22,17 +26,11 @@ const AddUserForm = () => {
   });
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleImageChange = (e) => {
-    setFormData({
-      ...formData,
-      image: e.target.files[0],
-    });
+    setFormData({ ...formData, image: e.target.files[0] || null });
   };
 
   const handleSubmit = async (e) => {
@@ -45,40 +43,48 @@ const AddUserForm = () => {
     }
 
     try {
-      // ✅ convert to multipart/form-data
-      const formDataToSend = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value) formDataToSend.append(key, value);
-      });
+      let imageId = null;
 
-      const result = await registerUser(formDataToSend);
-
-      if (result.success) {
-        setMessage({
-          firstName: result.data.firstName,
-          lastName: result.data.lastName,
-          text: "added successfully.",
-        });
-
-        setShowSuccess(true);
-        setFormData({
-          firstName: "",
-          lastName: "",
-          username: "",
-          email: "",
-          password: "",
-          phoneNumber: "",
-          localAssemblyName: "",
-          roleName: "",
-          image: null,
-        });
-      } else {
-        setMessage(result.message);
-        setShowError(true);
+      if (formData.image) {
+        const uploadedImage = await uploadImage(formData.image);
+        imageId = uploadedImage?.id;
       }
+
+      const payload = { ...formData, image: undefined };
+      const result = await registerUser(payload);
+
+      if (!result?.success) {
+        setMessage(result?.message || "Failed to add user.");
+        setShowError(true);
+        return;
+      }
+
+      const userId = result?.data?.id;
+
+      if (userId && imageId) {
+        await assignImageToUser(userId, imageId);
+      }
+
+      setMessage({
+        firstName: result.data.firstName,
+        lastName: result.data.lastName,
+        text: "added successfully.",
+      });
+      setShowSuccess(true);
+
+      setFormData({
+        firstName: "",
+        lastName: "",
+        username: "",
+        email: "",
+        password: "",
+        phoneNumber: "",
+        localAssemblyName: "",
+        roleName: "",
+        image: null,
+      });
     } catch (error) {
-      console.error("❌ Registration error:", error);
-      setMessage("An error occurred while adding user.");
+      setMessage(error.message || "An error occurred while adding user.");
       setShowError(true);
     }
   };
@@ -86,20 +92,16 @@ const AddUserForm = () => {
   return (
     <div className="min-h-screen font-[DM Sans] bg-gray-50 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-4xl bg-white rounded-xl p-10 border border-gray-100">
-        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-semibold font-heading  text-gray-800">
-            Add User
-          </h1>
-          <p className="font-body text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-semibold text-gray-800">Add User</h1>
+          <p className="text-sm text-gray-500 mt-1">
             Please fill out all sections to complete the addition of a new user
           </p>
         </div>
 
-        {/* Image Upload */}
         <div className="flex justify-center mb-6">
           <div className="relative">
-            {/* <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-200 shadow-md bg-gray-100">
+            <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-200 shadow-md bg-gray-100">
               {formData.image ? (
                 <img
                   src={URL.createObjectURL(formData.image)}
@@ -107,15 +109,12 @@ const AddUserForm = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-                  <div>
-                    <p>upload profile</p>
-                  <Upload  className="ml-8 mt-2"/>
-                  </div>
+                <div className="flex flex-col items-center justify-center h-full text-gray-400 text-sm">
+                  <p>Upload profile</p>
+                  <Upload className="mt-2" />
                 </div>
-                
               )}
-            </div> */}
+            </div>
             <input
               type="file"
               accept="image/*"
@@ -125,11 +124,7 @@ const AddUserForm = () => {
           </div>
         </div>
 
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
-        >
+        <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InputField
             required
             label="First Name"
@@ -137,7 +132,6 @@ const AddUserForm = () => {
             value={formData.firstName}
             onChange={handleChange}
           />
-
           <InputField
             required
             label="Last Name"
@@ -145,40 +139,35 @@ const AddUserForm = () => {
             value={formData.lastName}
             onChange={handleChange}
           />
-
           <InputField
+            required
             label="Username"
             name="username"
             value={formData.username}
             onChange={handleChange}
-            required
           />
-
           <InputField
+            required
             label="Email"
-            name="email"
             type="email"
+            name="email"
             value={formData.email}
             onChange={handleChange}
-            required
           />
-
           <InputField
+            required
             label="Password"
-            name="password"
             type="password"
+            name="password"
             value={formData.password}
             onChange={handleChange}
-            required
           />
-
           <InputField
             label="Phone Number"
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
           />
-
           <InputField
             label="Local Assembly"
             name="localAssemblyName"
@@ -186,7 +175,6 @@ const AddUserForm = () => {
             onChange={handleChange}
           />
 
-          {/* Role */}
           <div>
             <label className="block text-gray-700 text-sm mb-1">
               Role<span className="text-red-500">*</span>
@@ -198,7 +186,7 @@ const AddUserForm = () => {
               className="w-full border p-2 rounded-md bg-gray-100 border-gray-100"
               required
             >
-              <option value="" >Select role</option>
+              <option value="">Select role</option>
               <option value="ADMIN">ADMIN</option>
               <option value="FINANCE">FINANCE</option>
               <option value="PASTOR">PASTOR</option>
@@ -211,9 +199,7 @@ const AddUserForm = () => {
           </div>
         </form>
 
-        {/* Submit Button */}
-        <div className="flex justify-between mt-8">
-          <div></div>
+        <div className="flex justify-end mt-8">
           <button
             onClick={handleSubmit}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-500 transition"
@@ -223,7 +209,6 @@ const AddUserForm = () => {
         </div>
       </div>
 
-      {/* ✅ Success SuccessModal */}
       {showSuccess && (
         <SuccessModal
           icon={<CheckCircle className="w-10 h-10 text-blue-600" />}
@@ -241,7 +226,6 @@ const AddUserForm = () => {
         />
       )}
 
-      {/* ❌ Error SuccessModal */}
       {showError && (
         <SuccessModal
           icon={<XCircle className="w-10 h-10 text-red-600" />}
@@ -254,9 +238,5 @@ const AddUserForm = () => {
     </div>
   );
 };
-
-
-
-
 
 export default AddUserForm;

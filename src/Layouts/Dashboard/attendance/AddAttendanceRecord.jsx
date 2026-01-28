@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import { attendanceService } from "../../../api/attendanceService";
+import { attendanceService } from "../../../api/services/attendanceService";
 // Add this import
 const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added onRecordAdded prop
   const [formData, setFormData] = useState({

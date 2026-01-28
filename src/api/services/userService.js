@@ -1,9 +1,8 @@
 // src/api/userService.js
 import axios from "axios";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../axiosInstance";
 
 const BASE_URL = "https://churchsoft-backend.onrender.com/church-soft/v1.0";
-
 
 export const loginUser = async (credentials) => {
   try {
@@ -71,15 +70,14 @@ const UserService = {
       if (payload?.content) return payload;
       if (payload?.data?.content) return payload.data;
 
-     return normalizeUsers(payload);
-
+      return normalizeUsers(payload);
     } catch (error) {
       console.error("Error fetching users:", error.response || error);
       throw error;
     }
   },
 
-  searchUsers: async (page = 0, size = 10, name = "" ) => {
+  searchUsers: async (page = 0, size = 10, name = "") => {
     try {
       const res = await axiosInstance.get("/users/search", {
         params: {
@@ -95,7 +93,7 @@ const UserService = {
       if (payload?.content) return payload;
       if (payload?.data?.content) return payload.data;
 
-       return normalizeUsers(payload);
+      return normalizeUsers(payload);
     } catch (error) {
       console.error("Error searching users:", error.response || error);
       throw error;
@@ -103,28 +101,26 @@ const UserService = {
   },
 
   getUsersByAssembly: async (page = 0, size = 10, assembly) => {
-  try {
-    const res = await axiosInstance.get(
-      `/users/assembly/${assembly}`,
-      {
+    try {
+      const res = await axiosInstance.get(`/users/assembly/${assembly}`, {
         params: { page, size },
-      }
-    );
+      });
 
-    const payload = res?.data;
+      const payload = res?.data;
 
-    if (payload?.content) return payload;
-    if (payload?.data?.content) return payload.data;
-    if (payload?.data?.content===0) return ("No users found");
+      if (payload?.content) return payload;
+      if (payload?.data?.content) return payload.data;
+      if (payload?.data?.content === 0) return "No users found";
 
-    return normalizeUsers(payload);
-
-  } catch (error) {
-    console.error("Error fetching users by assembly:", error.response || error);
-    throw error;
-  }
-},
-
+      return normalizeUsers(payload);
+    } catch (error) {
+      console.error(
+        "Error fetching users by assembly:",
+        error.response || error,
+      );
+      throw error;
+    }
+  },
 
   // Delete a user by ID
   deleteUser: async (id) => {
@@ -145,8 +141,6 @@ const UserService = {
       throw error;
     }
   },
-  
-  
 };
 
 export default UserService;

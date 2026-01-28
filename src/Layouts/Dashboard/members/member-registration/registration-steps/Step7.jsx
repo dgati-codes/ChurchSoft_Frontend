@@ -11,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import memberService from "../../../../../api/memberService";
+import memberService from "../../../../../api/services/memberService";
 import { useRegistration } from "../../registration-context/RegistrationContext";
 
 // ✅ use service instead of axios
