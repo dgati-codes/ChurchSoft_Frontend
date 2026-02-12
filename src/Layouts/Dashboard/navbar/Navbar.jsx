@@ -52,11 +52,20 @@ const handleLogout = () => {
               <ul className="py-4 text-sm text-gray-700">
                 <li>
                   <Link
+                    // to="/profile"
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setOpen(false)}
+                  >
+                    User Profile
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     to="/profile"
                     className="block px-4 py-2 hover:bg-gray-100"
                     onClick={() => setOpen(false)}
                   >
-                    Profile
+                    Member Profile
                   </Link>
                 </li>
 

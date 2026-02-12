@@ -5,62 +5,95 @@ import { getCurrentUser, loginUser } from "../api/services/userService.js";
 
 const AuthContext = createContext(null);
 
+// ✅ Role constants (prevents typo bugs)
+export const ROLES = {
+  ADMIN: "ADMIN",
+  FINANCE: "FINANCE",
+  PASTOR: "PASTOR",
+  ELDER: "ELDER",
+  REP: "REP",
+  MEMBER: "MEMBER",
+  GUEST: "GUEST",
+  LEADER: "LEADER",
+  
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔁 Restore user on page refresh
+  /* =========================
+     Restore Session On Refresh
+  ========================== */
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+    const restoreSession = async () => {
+      const token = localStorage.getItem("accessToken");
 
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
-    axiosInstance.defaults.headers.Authorization = `Bearer ${token}`;
+      axiosInstance.defaults.headers.Authorization = `Bearer ${token}`;
 
-    const fetchUserAndMembers = async () => {
       try {
         const userData = await getCurrentUser();
-        setUser(userData);
+        setUser({
+          ...userData,
+          role: userData.roleName,
+        });
 
-        // ✅ Fetch ALL members (pagination handled in service)
-        const membersData = await MemberService.getAllMembers();
-        setMembers(membersData);
-      } catch (err) {
-        console.error("Failed to restore user:", err);
-        localStorage.removeItem("accessToken");
+      
+
+
+        // ✅ Fetch members ONLY for allowed roles
+        if ([ROLES.ADMIN, ROLES.PASTOR, ROLES.ELDER, ROLES.REP, ROLES.FINANCE, ROLES.LEADER, ROLES.MEMBER, ROLES.GUEST].includes(userData.role)) {
+          const membersData = await MemberService.getAllMembers();
+          setMembers(membersData);
+        }
+      } catch (error) {
+        console.error("Session restore failed:", error);
+        logout(); // cleanup properly
       } finally {
         setLoading(false);
       }
+      console.log("Normalized role:", user.role);
     };
 
-    fetchUserAndMembers();
+    restoreSession();
   }, []);
 
-  // 🔑 Login
+  /* =========================
+     Login
+  ========================== */
   const login = async (credentials) => {
-    const result = await loginUser(credentials);
+    try {
+      const result = await loginUser(credentials);
 
-    if (result.success) {
+      if (!result.success) return result;
+
       localStorage.setItem("accessToken", result.token);
-
       axiosInstance.defaults.headers.Authorization = `Bearer ${result.token}`;
 
       const userData = await getCurrentUser();
-      setUser(userData);
+      setUser({
+        ...userData,
+        role: userData.roleName,
+      });
 
-      // ✅ Fetch ALL members immediately after login
-      const membersData = await MemberService.getAllMembers();
-      setMembers(membersData);
+     
+
+      return { success: true };
+    } catch (error) {
+      console.error("Login failed:", error);
+      return { success: false, message: "Login failed" };
     }
-
-    return result;
   };
 
-  // 🚪 Logout
+  /* =========================
+     Logout
+  ========================== */
   const logout = () => {
     localStorage.removeItem("accessToken");
     delete axiosInstance.defaults.headers.Authorization;
@@ -68,13 +101,42 @@ export const AuthProvider = ({ children }) => {
     setMembers([]);
   };
 
+  /* =========================
+     Role Helpers (RBAC Core)
+  ========================== */
+
+  const hasRole = (allowedRoles = []) => {
+    if (!user?.role) return false;
+    return allowedRoles.includes(user.role.toUpperCase());
+  };
+
+  const isAdmin = () => user?.role === ROLES.ADMIN;
+  const isPastor = () => user?.role === ROLES.PASTOR;
+  const isElder = () => user?.role === ROLES.ELDER;
+  const isRep = () => user?.role === ROLES.REP;
+  const isMember = () => user?.role === ROLES.MEMBER;
+  const isLeader = () => user?.role === ROLES.LEADER;
+  const isFinance = () => user?.role === ROLES.FINANCE;
+  const isGuest = () => user?.role === ROLES.GUEST;
+
+
   return (
     <AuthContext.Provider
       value={{
         user,
         members,
+        loading,
         login,
         logout,
+        hasRole,
+        isAdmin,
+        isPastor,
+        isElder,
+        isRep,
+        isMember,
+        isLeader,
+        isFinance,
+        isGuest
       }}
     >
       {children}

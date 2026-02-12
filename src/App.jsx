@@ -4,6 +4,7 @@ import {
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom";
+import { ROLES } from "./context/AuthContext";
 import ForgotPassword from "./features/auth/Components/Login/ForgotPasswordForm";
 import Login from "./features/auth/Components/Login/LoginForm";
 import AttendanceTracking from "./Layouts/Dashboard/attendance/Attendance";
@@ -11,6 +12,7 @@ import Configuration from "./Layouts/Dashboard/configuration/Configuration";
 import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
 import Dashboard2 from "./Layouts/Dashboard/dashboard-layouts/Dashboard";
 import DashboardLayout from "./Layouts/Dashboard/dashboard-layouts/DashboardLayout";
+import IncompleteAndNewRegister from "./Layouts/Dashboard/members/member-registration/IncompleteAndNewRegister";
 import MemberTable from "./Layouts/Dashboard/members/MemberRegistrationTable";
 import AddUserForm from "./Layouts/Dashboard/users/AddUserForm";
 import UserTable from "./Layouts/Dashboard/users/UserTable";
@@ -23,7 +25,6 @@ import Skills from "./Layouts/profiles/Skills";
 import Welfare from "./Layouts/profiles/Welfare";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
-import IncompleteAndNewRegister from "./Layouts/Dashboard/members/member-registration/IncompleteAndNewRegister";
 
 function App() {
   return (
@@ -63,15 +64,63 @@ function App() {
           }
         >
           <Route index element={<Dashboard2 />} />
-          <Route path="add-user" element={<AddUserForm />} />
-          <Route path="user-table" element={<UserTable />} />
-          {/* <Route path="register" element={<Register />} /> */}
-          <Route path="members" element={<MemberTable />} />
+          <Route
+            path="add-user"
+            element={
+              <PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.PASTOR]}>
+                <AddUserForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="user-table"
+            element={
+              <PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.PASTOR]}>
+                <UserTable />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="members"
+            element={
+              <PrivateRoute
+                allowedRoles={[
+                  ROLES.ADMIN,
+                  ROLES.PASTOR,
+                  ROLES.ELDER,
+                  ROLES.REP,
+                  ROLES.FINANCE,
+                  ROLES.LEADER,
+                  ROLES.MEMBER,
+                  ROLES.GUEST,
+                ]}
+              >
+                <MemberTable />
+              </PrivateRoute>
+            }
+          />
           <Route path="attendance" element={<AttendanceTracking />} />
           <Route path="countries" element={<CountriesOverview />} />
           <Route path="configuration" element={<Configuration />} />
-          {/* <Route path="incomplete-registrations" element={<IncompleteRegistrations />} /> */}
-          <Route path="register" element={<IncompleteAndNewRegister />} />
+          <Route
+            path="register"
+            element={
+              <PrivateRoute
+                allowedRoles={[
+                  ROLES.ADMIN,
+                  ROLES.PASTOR,
+                  ROLES.ELDER,
+                  ROLES.REP,
+                  ROLES.FINANCE,
+                  ROLES.LEADER,
+                  ROLES.MEMBER,
+                  ROLES.GUEST,
+                ]}
+              >
+                <IncompleteAndNewRegister />
+              </PrivateRoute>
+            }
+          />
         </Route>
 
         {/* ❌ 404 (ALWAYS LAST) */}

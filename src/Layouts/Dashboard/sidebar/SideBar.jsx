@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ROLES, useAuth } from "../../../context/AuthContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -30,6 +31,19 @@ const Sidebar = () => {
     return "dashboard";
   };
   const activeView = getActiveView();
+  const { hasRole } = useAuth();
+
+  const isAdmin = hasRole([ROLES.ADMIN]);
+  const canViewUsers = hasRole([
+    ROLES.ADMIN,
+    ROLES.PASTOR,
+    ROLES.ELDER,
+    ROLES.REP,
+    ROLES.FINANCE,
+    ROLES.LEADER,
+    ROLES.MEMBER,
+    ROLES.GUEST,
+  ]);
 
   // Ensure Members dropdown opens if activeView is inside Members
   useEffect(() => {
@@ -45,10 +59,10 @@ const Sidebar = () => {
   const handleParentClick = (view, route) => {
     if (view === "members") {
       setOpenDropdown("members");
-      navigate("/dashboard/register");
+      navigate("/dashboard/members");
     } else if (view === "users") {
       setOpenDropdown("users");
-      navigate("/dashboard/add-user");
+      navigate("/dashboard/user-table");
     } else {
       setOpenDropdown(null);
       navigate(route);
@@ -57,7 +71,7 @@ const Sidebar = () => {
 
   const handleChildClick = (childView, route) => {
     navigate(route);
-    setOpenDropdown("members"); // keep dropdown open
+    setOpenDropdown("members", "users"); // keep dropdown open
   };
 
   const linkClasses = (isActive) =>
@@ -103,124 +117,143 @@ const Sidebar = () => {
             </li>
 
             {/* Add User */}
-            <li
-              onClick={() => handleParentClick("users")}
-              className={`${
-                ["addUser", "userTable"].includes(activeView)
-                  ? "text-yellow-500 border-l-4 border-yellow-500"
-                  : "text-white hover:text-yellow-400"
-              }`}
-            >
-              <button
-                className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
-                  openDropdown === "users"
-                    ? "text-blue-900 rounded-lg bg-amber-300"
-                    : "text-white hover:text-yellow-400"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <UserRoundPlus className="w-5 h-5" />
-                  <span className="font-semibold family-DM-Sans">Users</span>
-                </div>
-                {openDropdown === "users" ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronRight className="w-4 h-4" />
+            {hasRole([ROLES.ADMIN]) && (
+              <>
+                <li
+                  onClick={() => handleParentClick("users")}
+                  className={`${
+                    activeView === "users" ||
+                    activeView === "addUser" ||
+                    activeView === "userTable"
+                      ? "text-yellow-500 border-l-4 border-yellow-500"
+                      : "text-white hover:text-yellow-400"
+                  }`}
+                >
+                  <button
+                    className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
+                      openDropdown === "users"
+                        ? "text-blue-900 rounded-lg bg-amber-300"
+                        : "text-white hover:text-yellow-400"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <UserRoundPlus className="w-5 h-5" />
+                      <span className="font-semibold family-DM-Sans">
+                        Users
+                      </span>
+                    </div>
+                    {isAdmin &&
+                      (openDropdown === "users" ? (
+                        <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4" />
+                      ))}
+                  </button>
+                </li>
+
+                {isAdmin && openDropdown === "users" && (
+                  <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
+                    <span className="absolute -left-0.5 top-1/6 w-4 h-9 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
+
+                    <li className="relative">
+                      <span className="absolute -left-3.5 top-1/9 w-4 h-3 border-l border-b border-yellow-300/60 rounded-bl-md"></span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleChildClick("addUser", "/dashboard/add-user");
+                        }}
+                        className={linkClasses(activeView === "addUser")}
+                      >
+                        Add users
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleChildClick(
+                            "userTable",
+                            "/dashboard/user-table",
+                          );
+                        }}
+                        className={linkClasses(activeView === "userTable")}
+                      >
+                        User Table
+                      </button>
+                    </li>
+                  </ul>
                 )}
-              </button>
-            </li>
-
-            {openDropdown === "users" && (
-              <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
-                <span className="absolute -left-0.5 top-1/6 w-6 h-10 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
-
-                <li className="relative">
-                  <span className="absolute -left-3.5 top-1/9 w-5 h-3 border-l border-b border-yellow-300/60 rounded-bl-md"></span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleChildClick("addUser", "/dashboard/add-user");
-                    }}
-                    className={linkClasses(activeView === "addUser")}
-                  >
-                    Add User
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleChildClick("userTable", "/dashboard/user-table");
-                    }}
-                    className={linkClasses(activeView === "userTable")}
-                  >
-                    User Table
-                  </button>
-                </li>
-              </ul>
+              </>
             )}
 
             {/* Members Dropdown */}
-            <li
-              onClick={() => handleParentClick("members")}
-              className={`${
-                activeView === "members" ||
-                activeView === "addMember" ||
-                activeView === "viewMembers"
-                  ? "text-yellow-500 border-l-4 border-yellow-500"
-                  : "text-white hover:text-yellow-400"
-              }`}
-            >
-              <button
-                className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
-                  openDropdown === "members"
-                    ? "text-blue-900 rounded-lg bg-amber-300"
-                    : "text-white hover:text-yellow-400"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5" />
-                  <span className="font-semibold family-DM-Sans">Members</span>
-                </div>
-                {openDropdown === "members" ? (
-                  <ChevronDown className="w-4 h-4" />
-                ) : (
-                  <ChevronRight className="w-4 h-4" />
+            {canViewUsers && (
+              <>
+                <li
+                  onClick={() => handleParentClick("members")}
+                  className={`${
+                    activeView === "members" ||
+                    activeView === "addMember" ||
+                    activeView === "viewMembers"
+                      ? "text-yellow-500 border-l-4 border-yellow-500"
+                      : "text-white hover:text-yellow-400"
+                  }`}
+                >
+                  <button
+                    className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
+                      openDropdown === "members"
+                        ? "text-blue-900 rounded-lg bg-amber-300"
+                        : "text-white hover:text-yellow-400"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Users className="w-5 h-5" />
+                      <span className="font-semibold family-DM-Sans">
+                        Members
+                      </span>
+                    </div>
+                    {isAdmin &&
+                      (openDropdown === "members" ? (
+                        <ChevronDown className="w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4" />
+                      ))}
+                  </button>
+                </li>
+
+                {openDropdown === "members" && (
+                  <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
+                    <span className="absolute -left-0.5 top-1/6 w-4 h-9 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
+
+                    <li className="relative">
+                      <span className="absolute -left-3.5 top-1/9 w-4 h-3 border-l border-b border-yellow-300/60 rounded-bl-md"></span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleChildClick("addMember", "/dashboard/register");
+                        }}
+                        className={linkClasses(activeView === "addMember")}
+                      >
+                        Add Members
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleChildClick("viewMembers", "/dashboard/members");
+                        }}
+                        className={linkClasses(activeView === "viewMembers")}
+                      >
+                        View Members
+                      </button>
+                    </li>
+                  </ul>
                 )}
-              </button>
-            </li>
-            {openDropdown === "members" && (
-              <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
-                <span className="absolute -left-0.5 top-1/6 w-6 h-10 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
-
-                <li className="relative">
-                  <span className="absolute -left-3.5 top-1/9 w-5 h-3 border-l border-b border-yellow-300/60  rounded-bl-md"></span>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleChildClick("addMember", "/dashboard/register");
-                    }}
-                    className={linkClasses(activeView === "addMember")}
-                  >
-                    Add Members
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleChildClick("viewMembers", "/dashboard/members");
-                    }}
-                    className={linkClasses(activeView === "viewMembers")}
-                  >
-                    View Members
-                  </button>
-                </li>
-              </ul>
+              </>
             )}
-
             {/* Attendance */}
             <li
               onClick={() =>

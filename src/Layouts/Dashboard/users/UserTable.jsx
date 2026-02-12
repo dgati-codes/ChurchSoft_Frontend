@@ -168,7 +168,7 @@ const UserTable = () => {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-gray-50 text-gray-600">
-                <th className="border px-3 py-2">Image</th>
+                <th className="border px-3 py-2">UserId </th>
                 <th className="border px-3 py-2">Full Name</th>
                 <th className="border px-3 py-2">Email</th>
                 <th className="border px-3 py-2">Phone</th>
@@ -191,7 +191,7 @@ const UserTable = () => {
                 users.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="border px-3 py-2">
-                      <UserImage imageId={user.image?.id} />
+                      {user.id}
                     </td>
                     <td className="border px-3 py-2">
                       {capitalize(user.firstName)} {capitalize(user.lastName)}
@@ -267,74 +267,98 @@ const UserTable = () => {
 
       {/* Edit Modal */}
       {editingUser && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center z-60 items-center">
-          <div className="bg-white p-8 rounded-lg w-150 shadow-lg">
+        <div className="absolute inset-0 bg-black/40 flex justify-center z-60 items-center">
+          <div className="bg-white p-8 rounded-lg w-180  shadow-lg">
             <h3 className="text-xl font-semibold mb-4 text-center">Edit User</h3>
             <div className="space-y-3">
+              <div className="flex  align-center justify-between">
+                <label htmlFor="" className="font-semibold whitespace-nowrap">First Name :</label>
               <input
                 type="text"
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleFormChange}
                 placeholder="First Name"
-                className="w-full border border-gray-100 p-2 rounded"
+                className="w-130 border text-blue-500 ml-6 border-gray-100 p-2 rounded"
               />
+              </div>
+              <div className="flex  align-center justify-between">
+                <label htmlFor="" className="font-semibold whitespace-nowrap">Last Name :</label>
               <input
                 type="text"
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleFormChange}
                 placeholder="Last Name"
-                className="w-full border border-gray-100 p-2 rounded"
+                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
               />
+              </div>
+              <div className="flex  align-center justify-between">
+                <label htmlFor="" className="font-semibold">User Name :</label>
               <input
                 type="text"
                 name="username"
                 value={formData.username}
                 onChange={handleFormChange}
                 placeholder="Username"
-                className="w-full border border-gray-100 p-2 rounded"
+                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
               />
+              </div>
+              <div className="flex  align-center justify-between">
+              <label htmlFor="" className="font-semibold ">Email :</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleFormChange}
                 placeholder="Email"
-                className="w-full border border-gray-100 p-2 rounded"
+                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
               />
+              </div>
+              <div className="flex  align-center justify-between">
+                <label htmlFor="" className="font-semibold whitespace-nowrap">Phone Number :</label>
               <input
                 type="text"
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleFormChange}
                 placeholder="Phone Number"
-                className="w-full border border-gray-100 p-2 rounded"
+                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
               />
+              </div>
+             <div className="flex  align-center justify-between">
+               <label htmlFor="" className="font-semibold whitespace-nowrap">Local Assembly :</label>
               <input
                 type="text"
                 name="localAssemblyName"
                 value={formData.localAssemblyName}
                 onChange={handleFormChange}
                 placeholder="Local Assembly"
-                className="w-full border border-gray-100 p-2 rounded"
+                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
               />
+             </div>
+              <div className="flex  align-center justify-between">
+                <label htmlFor="" className="font-semibold">Status :</label>
               <input
                 type="text"
                 name="status"
                 value={formData.status}
                 onChange={handleFormChange}
                 placeholder="Status"
-                className="w-full border border-gray-100 p-2 rounded"
+                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
               />
+              </div>
+              <div className="flex  align-center justify-between">
+                <label htmlFor="" className="font-semibold whitespace-nowrap">Role      :</label>
               <input
                 type="text"
                 name="roleName"
                 value={formData.roleName}
                 onChange={handleFormChange}
                 placeholder="Role Name"
-                className="w-full border border-gray-100 p-2 rounded"
+                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
               />
+              </div>
             </div>
             <div className="flex justify-end mt-4 space-x-2">
               <button

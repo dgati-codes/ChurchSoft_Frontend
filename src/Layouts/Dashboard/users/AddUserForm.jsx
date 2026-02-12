@@ -29,9 +29,9 @@ const AddUserForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageChange = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] || null });
-  };
+  // const handleImageChange = (e) => {
+  //   setFormData({ ...formData, image: e.target.files[0] || null });
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,7 +99,7 @@ const AddUserForm = () => {
           </p>
         </div>
 
-        <div className="flex justify-center mb-6">
+        {/* <div className="flex justify-center mb-6">
           <div className="relative">
             <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-200 shadow-md bg-gray-100">
               {formData.image ? (
@@ -122,7 +122,7 @@ const AddUserForm = () => {
               className="absolute inset-0 opacity-0 cursor-pointer"
             />
           </div>
-        </div>
+        </div> */}
 
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InputField
