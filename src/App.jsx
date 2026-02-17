@@ -16,13 +16,15 @@ import IncompleteAndNewRegister from "./Layouts/Dashboard/members/member-registr
 import MemberTable from "./Layouts/Dashboard/members/MemberRegistrationTable";
 import AddUserForm from "./Layouts/Dashboard/users/AddUserForm";
 import UserTable from "./Layouts/Dashboard/users/UserTable";
-import Contact from "./Layouts/profiles/Contact";
-import EducationWork from "./Layouts/profiles/education-work";
-import Membership from "./Layouts/profiles/Membership";
-import PersonalInfo from "./Layouts/profiles/PersonalInfo";
-import ProfileLayout from "./Layouts/profiles/ProfileLayout";
-import Skills from "./Layouts/profiles/Skills";
-import Welfare from "./Layouts/profiles/Welfare";
+import Contact from "./Layouts/profiles/member-profile/Contact";
+import EducationWork from "./Layouts/profiles/member-profile/education-work";
+import Membership from "./Layouts/profiles/member-profile/Membership";
+import PersonalInfo from "./Layouts/profiles/member-profile/PersonalInfo";
+import ProfileLayout from "./Layouts/profiles/member-profile/ProfileLayout";
+import Skills from "./Layouts/profiles/member-profile/Skills";
+import Welfare from "./Layouts/profiles/member-profile/Welfare";
+import UpdateUserProfile from "./Layouts/profiles/user-profile/updateUserProfile";
+import UserProfile from "./Layouts/profiles/user-profile/UserProfile";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
 
@@ -38,6 +40,15 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* 👤 PROFILE (NO SIDEBAR) */}
+        <Route
+          path="/user-profile"
+          element={
+            // <PrivateRoute allowedRoles={[ROLES.ADMIN]}>
+              <UserProfile />
+            // </PrivateRoute>
+          }
+        />
+        <Route path="/edit-user-profile" element={<UpdateUserProfile />} />
         <Route
           path="/profile"
           element={

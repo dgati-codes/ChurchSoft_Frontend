@@ -279,7 +279,7 @@ const UserTable = () => {
                 value={formData.firstName}
                 onChange={handleFormChange}
                 placeholder="First Name"
-                className="w-130 border text-blue-500 ml-6 border-gray-100 p-2 rounded"
+                className="w-130 border text-gray-500 ml-6 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -290,7 +290,7 @@ const UserTable = () => {
                 value={formData.lastName}
                 onChange={handleFormChange}
                 placeholder="Last Name"
-                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -301,7 +301,7 @@ const UserTable = () => {
                 value={formData.username}
                 onChange={handleFormChange}
                 placeholder="Username"
-                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -312,7 +312,7 @@ const UserTable = () => {
                 value={formData.email}
                 onChange={handleFormChange}
                 placeholder="Email"
-                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -323,7 +323,7 @@ const UserTable = () => {
                 value={formData.phoneNumber}
                 onChange={handleFormChange}
                 placeholder="Phone Number"
-                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
               />
               </div>
              <div className="flex  align-center justify-between">
@@ -334,7 +334,7 @@ const UserTable = () => {
                 value={formData.localAssemblyName}
                 onChange={handleFormChange}
                 placeholder="Local Assembly"
-                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
               />
              </div>
               <div className="flex  align-center justify-between">
@@ -345,7 +345,7 @@ const UserTable = () => {
                 value={formData.status}
                 onChange={handleFormChange}
                 placeholder="Status"
-                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -356,7 +356,7 @@ const UserTable = () => {
                 value={formData.roleName}
                 onChange={handleFormChange}
                 placeholder="Role Name"
-                className="w-130 border text-blue-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
               />
               </div>
             </div>

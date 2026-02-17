@@ -1,10 +1,10 @@
-import { CheckCircle, XCircle, Upload } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import { useState } from "react";
-import { registerUser } from "../../../api/services/userService";
 import {
-  uploadImage,
   assignImageToUser,
+  uploadImage,
 } from "../../../api/services/userImageService";
+import { registerUser } from "../../../api/services/userService";
 import InputField from "../modals/InputField";
 import SuccessModal from "../modals/successModal.jsx";
 
@@ -98,31 +98,6 @@ const AddUserForm = () => {
             Please fill out all sections to complete the addition of a new user
           </p>
         </div>
-
-        {/* <div className="flex justify-center mb-6">
-          <div className="relative">
-            <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-gray-200 shadow-md bg-gray-100">
-              {formData.image ? (
-                <img
-                  src={URL.createObjectURL(formData.image)}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-gray-400 text-sm">
-                  <p>Upload profile</p>
-                  <Upload className="mt-2" />
-                </div>
-              )}
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
-          </div>
-        </div> */}
 
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InputField

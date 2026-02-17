@@ -1,10 +1,10 @@
 import { Phone } from "lucide-react";
-import {Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 
 function Contact() {
+  const navigate = useNavigate();
   const { user, members, loading } = useAuth();
   
     if (loading) return <p>Loading...</p>;

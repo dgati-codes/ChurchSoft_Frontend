@@ -1,23 +1,20 @@
 import { User } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 function PersonalInfo() {
   const { user, members, loading } = useAuth();
-  
-    if (loading) return <p>Loading...</p>;
-  
-      if (!user) {
-        navigate("/login");
-        return null;
-      }
-  
-  
-    const member = members.find(
-      (m) => m.email === user.email
-    );
-  
-    if (!member) return <p>Member not found</p>;
-  
+
+  if (loading) return <p>Loading...</p>;
+
+  if (!user) {
+    navigate("/login");
+    return null;
+  }
+
+  const member = members.find((m) => m.email === user.email);
+
+  if (!member) return <p>Member not found</p>;
+
   return (
     <div className="bg-[#F9FAFB] border-[#E5E7EB] w-10/10 ml-3 rounded-lg shadow-sm border p-6">
       <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
@@ -34,10 +31,7 @@ function PersonalInfo() {
         <Info label="Hometown" value={member.hometown} />
         <Info label="Nationality" value={member.nationality} />
         <Info label="Ethnicity" value={member.ethnicity} />
-        <Info
-          label="Identification Type"
-          value={member.identificationType}
-        />
+        <Info label="Identification Type" value={member.identificationType} />
       </div>
     </div>
   );

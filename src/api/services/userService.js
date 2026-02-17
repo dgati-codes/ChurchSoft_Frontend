@@ -133,14 +133,29 @@ const UserService = {
   },
 
   // Update a user
-  updateUser: async (data) => {
-    try {
-      return await axiosInstance.put(`/users`, data);
-    } catch (error) {
-      console.error("Error updating user:", error);
-      throw error;
-    }
-  },
+  // Update logged-in user profile
+updateUser: async (data) => {
+  try {
+    const res = await axiosInstance.put("/users", data);
+
+    return {
+      success: true,
+      data: res.data,
+      message: res.data?.message || "Profile updated successfully",
+    };
+  } catch (error) {
+    console.error("Error updating user:", error);
+
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        "Failed to update profile. Please try again.",
+    };
+  }
+},
+
+
 };
 
 export default UserService;

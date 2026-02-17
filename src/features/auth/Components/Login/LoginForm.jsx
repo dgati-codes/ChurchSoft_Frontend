@@ -106,7 +106,7 @@ function LoginForm() {
                     <input
                       type="text"
                       id="username"
-                      value={credentials.username}
+                      value={credentials.username || ""}
                       onChange={handleChange}
                       placeholder="Enter your user ID"
                       required
@@ -126,7 +126,7 @@ function LoginForm() {
                   <input
                     type="password"
                     id="password"
-                    value={credentials.password}
+                    value={credentials.password || ""}
                     onChange={handleChange}
                     placeholder="Enter your password"
                     required

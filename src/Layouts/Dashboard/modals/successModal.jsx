@@ -8,7 +8,7 @@ const SuccessModal = ({ icon, message, onClose, buttonText, buttonColor }) => (
       <h2 className="text-lg font-semibold text-gray-800">{message}</h2>
       <button
         onClick={onClose}
-        className={`mt-6 w-full ${buttonColor} hover:opacity-90 text-white font-medium py-2 rounded`}
+        className={`mt-6 w-20 ${buttonColor} hover:opacity-90 text-white  font-medium py-2 rounded`}
       >
         {buttonText}
       </button>

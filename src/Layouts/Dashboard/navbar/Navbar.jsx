@@ -1,29 +1,52 @@
-import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
-
-
 const Navbar = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-   const { user,logout } = useAuth();
+  const dropdownRef = useRef(null);
+  // const { isAdmin } = useAuth();
+  const { user, logout } = useAuth();
 
+  const handleLogout = () => {
+    logout();
+    localStorage.clear();
+    navigate("/login");
+  };
 
-const handleLogout = () => {
-  logout();              
-  localStorage.clear();  
-  navigate("/login");   
-};
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
 
+    const handleMouseLeave = () => {
+      setOpen(false);
+    };
 
+    document.addEventListener("mousedown", handleClickOutside);
+    dropdownRef.current?.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      // dropdownRef.current?.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, []);
 
   return (
-    <header className="bg-white fixed font-[DM Sans] grid grid-cols-[40%_60%] p-8 shadow-sm w-full z-50">
+    <header className="bg-white fixed font-[DM Sans] grid grid-cols-[40%_60%] p-6 shadow-sm w-full z-50">
       <div>
         <div className="text-[20px] font-semibold text-[#0B1C2D]">
-            <h1>Hello <span className="">{user?.firstName} {user?.lastName}</span>!</h1>
+          <h1>
+            Hello{" "}
+            <span>
+              {user?.firstName} {user?.lastName}
+            </span>
+            !
+          </h1>
         </div>
         <p className="text-[13px] text-gray-500">
           Welcome back! Here’s what’s happening today
@@ -31,9 +54,9 @@ const handleLogout = () => {
       </div>
 
       <div className="flex justify-center">
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           <button
-            onClick={() => setOpen(!open)}
+            onClick={() => setOpen((prev) => !prev)}
             className="flex items-center gap-2 focus:outline-none"
           >
             <img
@@ -48,17 +71,22 @@ const handleLogout = () => {
           </button>
 
           {open && (
-            <div className="absolute left-0 mt-3 w-44 rounded-xl bg-white shadow-lg border border-gray-100 z-50">
+            <div className="absolute left-0 mt-2 w-50 rounded-xl bg-white shadow-lg border border-gray-100 z-50">
               <ul className="py-4 text-sm text-gray-700">
-                <li>
-                  <Link
-                    // to="/profile"
-                    className="block px-4 py-2 hover:bg-gray-100"
-                    onClick={() => setOpen(false)}
-                  >
-                    User Profile
-                  </Link>
-                </li>
+                {/* {isAdmin() && (
+                  <> */}
+                    <li>
+                      <Link
+                        to="/user-profile"
+                        className="block px-4 py-2 hover:bg-gray-100"
+                        onClick={() => setOpen(false)}
+                      >
+                        User Profile
+                      </Link>
+                    </li>
+                  {/* </>
+                )} */}
+
                 <li>
                   <Link
                     to="/profile"
