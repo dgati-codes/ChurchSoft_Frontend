@@ -73,10 +73,10 @@ function UpdateUserProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-6 px-6">
+    <div className="min-h-screen bg-[#031B6B] py-6 px-6">
       <div className="flex ml-10 items-center ">
         <Link
-          to="/dashboard"
+          to="/user-profile"
           className="flex bg-gray-200 rounded-sm p-2 items-center gap-2 font-bold text-blue-600"
         >
           <ArrowLeft size={16} />
@@ -84,7 +84,7 @@ function UpdateUserProfile() {
         </Link>
       </div>
 
-      <h1 className="text-xl font-bold text-center text-gray-900 mb-5">
+      <h1 className="text-xl font-bold text-center text-white mb-5">
         Personal Details
       </h1>
 
