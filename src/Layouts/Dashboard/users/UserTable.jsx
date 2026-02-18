@@ -144,20 +144,20 @@ const UserTable = () => {
       {/* FILTERS */}
       <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
         <h3 className="text-sm font-semibold mb-4">Filters</h3>
-        <div className="grid grid-cols-2 gap-20 min-w-full">
+        <div className="flex justify-end gap-5 min-w-full">
           <input
             name="localAssemblyName"
             value={filters.localAssemblyName}
             onChange={handleFilterChange}
             placeholder="Search by Assembly"
-            className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
+            className="border w-70 rounded-lg px-3 py-2 text-sm bg-gray-50"
           />
           <input
             name="search"
             value={filters.search}
             onChange={handleFilterChange}
             placeholder="Search by name or ID"
-            className="border rounded-lg px-3 py-2 text-sm bg-gray-50"
+            className="border w-70 rounded-lg px-3 py-2 text-sm bg-gray-50"
           />
         </div>
       </div>
@@ -279,7 +279,7 @@ const UserTable = () => {
                 value={formData.firstName}
                 onChange={handleFormChange}
                 placeholder="First Name"
-                className="w-130 border text-gray-500 ml-6 border-gray-100 p-2 rounded"
+                className="w-130 border text-gr-500 ml-6 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -290,7 +290,7 @@ const UserTable = () => {
                 value={formData.lastName}
                 onChange={handleFormChange}
                 placeholder="Last Name"
-                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -301,7 +301,7 @@ const UserTable = () => {
                 value={formData.username}
                 onChange={handleFormChange}
                 placeholder="Username"
-                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -312,7 +312,7 @@ const UserTable = () => {
                 value={formData.email}
                 onChange={handleFormChange}
                 placeholder="Email"
-                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -323,7 +323,7 @@ const UserTable = () => {
                 value={formData.phoneNumber}
                 onChange={handleFormChange}
                 placeholder="Phone Number"
-                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
               />
               </div>
              <div className="flex  align-center justify-between">
@@ -334,7 +334,7 @@ const UserTable = () => {
                 value={formData.localAssemblyName}
                 onChange={handleFormChange}
                 placeholder="Local Assembly"
-                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
               />
              </div>
               <div className="flex  align-center justify-between">
@@ -345,7 +345,7 @@ const UserTable = () => {
                 value={formData.status}
                 onChange={handleFormChange}
                 placeholder="Status"
-                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
               />
               </div>
               <div className="flex  align-center justify-between">
@@ -356,7 +356,7 @@ const UserTable = () => {
                 value={formData.roleName}
                 onChange={handleFormChange}
                 placeholder="Role Name"
-                className="w-130 border text-gray-600 border-gray-100 p-2 rounded"
+                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
               />
               </div>
             </div>

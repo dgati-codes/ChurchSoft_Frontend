@@ -1,15 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, Edit, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ChevronRight, Edit, Eye, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import memberService from "../../../api/services/memberService";
+import { useAuth } from "../../../context/AuthContext.jsx";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal";
 import EditMemberModal from "../modals/EditMemberModal";
 import LoadingSpinner from "../modals/LoadingSpinner";
 import MemberFullView from "./MemberFullView";
-
 export default function MemberTable() {
-  const queryClient = useQueryClient();
-
   const [filter, setFilter] = useState({
     jurisdiction: "All",
     district: "All",
@@ -24,59 +22,40 @@ export default function MemberTable() {
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
   const [successModal, setSuccessModal] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
 
+  const [searchName, setSearchName] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const queryClient = useQueryClient();
+  const { isAdmin } = useAuth();
   const pageSize = 10;
 
-  const {
-    data: members = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["members"],
-    queryFn: memberService.getAllMembers,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    staleTime: Infinity,
+  const { data: membersData, isLoading } = useQuery({
+    queryKey: ["members", currentPage, debouncedSearch],
+    queryFn: () =>
+      debouncedSearch
+        ? memberService.searchMembers(currentPage, pageSize, debouncedSearch)
+        : memberService.getAllMembers(currentPage, pageSize),
+
+    keepPreviousData: true,
   });
 
-  const sortedMembers = useMemo(
-    () => [...members].sort((a, b) => b.id - a.id),
-    [members]
-  );
+  const members = membersData?.content || [];
+  const totalPages = membersData?.totalPages || 0;
 
-  const filteredMembers = useMemo(() => {
-    return sortedMembers.filter((m) => {
-      return (
-        (filter.jurisdiction === "All" ||
-          m.jurisdiction === filter.jurisdiction) &&
-        (filter.maritalStatus === "All" ||
-          m.maritalStatus === filter.maritalStatus) &&
-        (filter.district === "All" || m.district === filter.district) &&
-        (filter.assembly === "All" || m.assembly === filter.assembly) &&
-        (filter.gender === "All" || m.gender === filter.gender) &&
-        (filter.nationality === "All" ||
-          m.nationality === filter.nationality) &&
-        (filter.search === "" ||
-          m.fullName?.toLowerCase().includes(filter.search.toLowerCase()) ||
-          m.memberId?.toLowerCase().includes(filter.search.toLowerCase()))
-      );
-    });
-  }, [filter, sortedMembers]);
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedSearch(searchName);
+    }, 500);
 
-  const totalPages = Math.ceil(filteredMembers.length / pageSize);
-  const paginatedMembers = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredMembers.slice(start, start + pageSize);
-  }, [currentPage, filteredMembers]);
+    return () => clearTimeout(timeout);
+  }, [searchName]);
 
   const deleteMutation = useMutation({
     mutationFn: memberService.deleteMember,
     onSuccess: (_, id) => {
-      queryClient.setQueryData(["members"], (old) =>
-        old.filter((m) => m.id !== id)
-      );
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+
       const deleted = members.find((m) => m.id === id);
       setSuccessModal({ fullName: deleted?.fullName, action: "deleted" });
       setDeletingMember(null);
@@ -90,10 +69,9 @@ export default function MemberTable() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }) => memberService.updateMember(id, payload),
-    onSuccess: (_, { id, payload }) => {
-      queryClient.setQueryData(["members"], (old) =>
-        old.map((m) => (m.id === id ? { ...m, ...payload } : m))
-      );
+    onSuccess: (_, { payload }) => {
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+
       setSuccessModal({ fullName: payload.fullName, action: "updated" });
       setEditingMember(null);
     },
@@ -118,6 +96,7 @@ export default function MemberTable() {
       phoneNumber: member.phoneNumber,
       status: member.status,
     };
+
     updateMutation.mutate({ id: member.id, payload });
   };
 
@@ -128,7 +107,7 @@ export default function MemberTable() {
       </div>
     );
 
-  if (isError)
+  if (members.length === 0)
     return (
       <div className="min-h-screen flex justify-center items-center text-red-500">
         Failed to load members.
@@ -222,13 +201,13 @@ export default function MemberTable() {
           <label className="text-sm font-medium mb-1">Search</label>
           <input
             type="text"
-            placeholder="Search by name or ID"
-            className="input"
-            value={filter.search}
+            placeholder="Search by name..."
+            value={searchName}
             onChange={(e) => {
-              setCurrentPage(1);
-              setFilter({ ...filter, search: e.target.value });
+              setSearchName(e.target.value);
+              setCurrentPage(0);
             }}
+            className="border px-3 py-2 rounded"
           />
         </div>
       </div>
@@ -269,7 +248,7 @@ export default function MemberTable() {
             </thead>
 
             <tbody>
-              {paginatedMembers.map((m) => (
+              {members.map((m) => (
                 <tr key={m.id} className="hover:bg-gray-50">
                   <td className="border px-3 py-2">{m.fullName}</td>
                   <td className="border px-3 py-2">{m.gender}</td>
@@ -290,12 +269,12 @@ export default function MemberTable() {
                         m.status === "ACTIVE"
                           ? "bg-green-600"
                           : m.status === "VISITOR"
-                          ? "bg-blue-600"
-                          : m.status === "INACTIVE"
-                          ? "bg-red-400"
-                          : m.status === "SUSPENDED"
-                          ? "bg-yellow-500"
-                          : "bg-gray-500"
+                            ? "bg-blue-600"
+                            : m.status === "INACTIVE"
+                              ? "bg-red-400"
+                              : m.status === "SUSPENDED"
+                                ? "bg-yellow-500"
+                                : "bg-gray-500"
                       }`}
                     >
                       {m.status}
@@ -304,19 +283,36 @@ export default function MemberTable() {
 
                   <td className="p-2 border whitespace-nowrap">
                     <div className="flex space-x-2">
-                      <button
-                        onClick={() => setEditingMember(m)}
-                        className="text-blue-500 hover:cursor-pointer"
-                      >
-                        <Edit className="w-5 h-5" />
-                      </button>
+                      <div className={!isAdmin() ? "ml-4" : ""}>
+                        <button
+                          onClick={() => setEditingMember(m)}
+                          className="text-blue-500 hover:cursor-pointer "
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                      </div>
 
-                      <button
-                        onClick={() => setDeletingMember(m)}
-                        className="text-red-500 hover:cursor-pointer"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
+                      {isAdmin() && (
+                        <>
+                          <button
+                            onClick={() => setEditingMember(m)}
+                            className="text-blue-500 hover:cursor-pointer"
+                          >
+                            <Edit className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
+
+                      {isAdmin() && (
+                        <>
+                          <button
+                            onClick={() => setDeletingMember(m)}
+                            className="text-red-500 hover:cursor-pointer"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -327,8 +323,8 @@ export default function MemberTable() {
           {/* Pagination */}
           <div className="flex justify-center m-4 gap-2 p-4">
             <button
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+              disabled={currentPage === 0}
               className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
             >
               Prev
@@ -336,12 +332,10 @@ export default function MemberTable() {
 
             {Array.from({ length: totalPages }, (_, i) => (
               <button
-                key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
+                key={i}
+                onClick={() => setCurrentPage(i)}
                 className={`px-3 py-1 rounded hover:bg-gray-300 ${
-                  currentPage === i + 1
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200"
+                  currentPage === i ? "bg-blue-600 text-white" : "bg-gray-200"
                 }`}
               >
                 {i + 1}
@@ -349,8 +343,10 @@ export default function MemberTable() {
             ))}
 
             <button
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
+              onClick={() =>
+                setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
+              }
+              disabled={currentPage === totalPages - 1}
               className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
             >
               Next
@@ -369,7 +365,7 @@ export default function MemberTable() {
       {deletingMember && (
         <DeleteConfirmModal
           member={deletingMember}
-          onClose={() => setDeletingMember(null)}
+          onCancel={() => setDeletingMember(null)}
           onConfirm={() => confirmDelete(deletingMember)}
         />
       )}

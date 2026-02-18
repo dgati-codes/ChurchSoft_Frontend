@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useAuth } from "../../../context/AuthContext.jsx";
 
 export default function EditMemberModal({ member, onClose, onSave }) {
-  // Do not render if no member is selected
-  if (!member) return null;
+ 
 
   // Initialize form state with all backend fields
   const [form, setForm] = useState({
@@ -23,7 +23,9 @@ export default function EditMemberModal({ member, onClose, onSave }) {
     phoneNumber: member.phoneNumber || "",
     status: member.status || "ACTIVE",
   });
-
+ const { isAdmin } = useAuth();
+  
+  
   // Update form when a new member is passed
   useEffect(() => {
     if (member) {
@@ -47,7 +49,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
       });
     }
   }, [member]);
-
+if (!member) return null;
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -59,7 +61,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
 
   return (
     <div className="fixed font-[DM Sans] inset-0 flex items-center justify-center bg-black/60 z-50">
-      <div className="bg-white rounded-lg w-96 p-6 overflow-y-auto max-h-[90vh]">
+      <div className="bg-white rounded-lg w-200 p-6 overflow-y-auto max-h-[100vh]">
         <h2 className="text-xl font-semibold mb-4">Edit Member</h2>
 
         {/* Full Name */}
@@ -68,6 +70,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
           <input
             className="input w-full"
             name="fullName"
+            
             value={form.fullName}
             onChange={handleChange}
           />
@@ -177,7 +180,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
             onChange={handleChange}
           />
         </div>
-          {/* Languages */}
+        {/* Languages */}
         <div className="mb-3">
           <label className="text-sm font-medium">Languages</label>
           <input
@@ -223,22 +226,38 @@ export default function EditMemberModal({ member, onClose, onSave }) {
             <option>INACTIVE</option>
           </select>
         </div>
-
-        {/* Buttons */}
-        <div className="flex justify-end mt-4 space-x-3">
+         {!isAdmin() && (
+          <>
+          <div className="flex justify-end mt-4 space-x-3">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-gray-400 text-white rounded"
           >
-            Cancel
+            back
           </button>
-          <button
-            onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded"
-          >
-            Save
-          </button>
+          
         </div>
+          </>)}
+        
+
+        {isAdmin() && (
+          <>
+            <div className="flex justify-end mt-4 space-x-3">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 bg-gray-400 text-white rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 bg-blue-600 text-white rounded"
+              >
+                Save
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

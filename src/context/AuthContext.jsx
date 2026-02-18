@@ -58,7 +58,6 @@ export const AuthProvider = ({ children }) => {
       } finally {
         setLoading(false);
       }
-      console.log("Normalized role:", user.role);
     };
 
     restoreSession();

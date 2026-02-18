@@ -3,29 +3,52 @@ import axiosInstance from "../axiosInstance";
 
 const memberService = {
   // Fetch ALL members by looping through all pages
-  getAllMembers: async () => {
-    let allMembers = [];
-    let page = 0;
-    const size = 10; // backend default
+  getAllMembers: async (page = 0, size = 10, filters = {}) => {
+  try {
+    const res = await axiosInstance.get("/members", {
+      params: {
+        page,
+        size,
+        search: filters.search,
+        assembly: filters.assembly !== "ALL" ? filters.assembly : undefined,
+      },
+    });
 
-    while (true) {
-      const res = await axiosInstance.get(`/members?page=${page}&size=${size}`);
+    const payload = res?.data;
+
+    // ✅ normalize response
+    if (payload?.data) return payload.data;
+    if (payload?.content) return payload;
+    if (payload?.data?.content) return payload.data;
+
+    return payload;
+  } catch (error) {
+    console.error("Error fetching members:", error.response || error);
+    throw error;
+  }
+},
+
+searchMembers: async (page = 0, size = 10, name = "") => {
+    try {
+      const res = await axiosInstance.get("/members/search-name", {
+        params: {
+          name,
+          page,
+          size,
+        },
+      });
 
       const payload = res?.data;
 
-      const currentPageData = Array.isArray(payload?.content)
-        ? payload.content
-        : [];
+      if (payload?.data) return payload.data;
+      if (payload?.content) return payload;
+      if (payload?.data?.content) return payload.data;
 
-      allMembers = [...allMembers, ...currentPageData];
-
-      // stop when last page is reached
-      if (page >= payload?.totalPages - 1) break;
-
-      page++;
+      return payload;
+    } catch (error) {
+      console.error("Error searching Members:", error.response || error);
+      throw error;
     }
-
-    return allMembers;
   },
 
   deleteMember: async (id) => {
@@ -47,7 +70,7 @@ const memberService = {
     return res.data;
   },
 
-  createMember: async (memberData, payload) => {
+  createMember: async (memberData) => {
     // POST to create a new member
     const res = await axiosInstance.post("/members", memberData);
     return res.data;

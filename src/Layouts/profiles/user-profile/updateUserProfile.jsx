@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UserService from "../../../api/services/userService";
 import { useAuth } from "../../../context/AuthContext";
 import SuccessModal from "../../Dashboard/modals/successModal.jsx";
@@ -20,6 +20,7 @@ function UpdateUserProfile() {
   });
 
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -41,9 +42,6 @@ function UpdateUserProfile() {
     }));
   };
 
-  const handleSuccessModalClose = () => {
-    setShowSuccessModal(false);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,7 +53,6 @@ function UpdateUserProfile() {
       lastName: formData.lastName,
       username: user.username,
       email: formData.email,
-      // profileImage: user.profileImage,
       phoneNumber: formData.phoneNumber,
       localAssemblyName: formData.localAssemblyName,
       status: user.status,
@@ -65,12 +62,23 @@ function UpdateUserProfile() {
 
     if (result.success) {
       updateUser(payload);
-      setSuccessMessage(result.message || "Profile updated successfully");
-      setShowSuccessModal(true);
+      setSuccessMessage(result.message || "Profile updated ");
+      setShowSuccessModal(true); 
+      
     }
 
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (!showSuccessModal) return;
+
+    const timer = setTimeout(() => {
+      navigate("/user-profile");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [showSuccessModal, navigate]);
 
   return (
     <div className="min-h-screen bg-[#031B6B] py-6 px-6">
@@ -137,9 +145,9 @@ function UpdateUserProfile() {
               Local Assembly <span className="text-red-500">*</span>
             </label>
             <input
-            name="localAssemblyName"
+              name="localAssemblyName"
               value={formData.localAssemblyName}
-               onChange={handleChange}
+              onChange={handleChange}
               type="text"
               className="w-full border border-gray-300 rounded-md px-4 py-3 text-lg focus:outline-none"
             />
@@ -186,9 +194,7 @@ function UpdateUserProfile() {
         <SuccessModal
           show={showSuccessModal}
           message={successMessage}
-          onClose={handleSuccessModalClose}
-          buttonText="Close"
-          buttonColor="bg-blue-500"
+          
         />
       )}
     </div>

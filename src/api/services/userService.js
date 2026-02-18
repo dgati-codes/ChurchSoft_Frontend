@@ -55,9 +55,6 @@ const UserService = {
         params: {
           page,
           size,
-          country: filters.country,
-          region: filters.region,
-          ageGroup: filters.ageGroup,
           search: filters.search,
           assembly: filters.assembly !== "ALL" ? filters.assembly : undefined,
         },
@@ -132,30 +129,27 @@ const UserService = {
     }
   },
 
-  // Update a user
-  // Update logged-in user profile
-updateUser: async (data) => {
-  try {
-    const res = await axiosInstance.put("/users", data);
+  
+  updateUser: async (data) => {
+    try {
+      const res = await axiosInstance.put("/users", data);
 
-    return {
-      success: true,
-      data: res.data,
-      message: res.data?.message || "Profile updated successfully",
-    };
-  } catch (error) {
-    console.error("Error updating user:", error);
+      return {
+        success: true,
+        data: res.data,
+        message: res.data?.message || "Profile updated",
+      };
+    } catch (error) {
+      console.error("Error updating user:", error);
 
-    return {
-      success: false,
-      message:
-        error.response?.data?.message ||
-        "Failed to update profile. Please try again.",
-    };
-  }
-},
-
-
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          "Failed to update profile. Please try again.",
+      };
+    }
+  },
 };
 
 export default UserService;
