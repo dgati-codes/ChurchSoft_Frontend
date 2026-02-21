@@ -8,7 +8,7 @@ function IncompleteAndNewRegister() {
   return (
     <div className=" w-full">
       {/* <div className="fixed pt-15 left-70 top-1 bg-white z-50  "> */}
-        <div className="fixed pt-7 top-9.5 z-50 left-70  flex gap-2 bg-white   ">
+        <div className="fixed pt-12 top-1 z-50 left-70  flex gap-2 bg-white   ">
           <button
             onClick={() => setActiveTab("new")}
             className={`p-3 rounded-tl-md rounded-tr-md text-md transition-all duration-200
