@@ -62,9 +62,7 @@ const UserTable = () => {
       return UserService.getAllUsers(page, PAGE_SIZE, filters);
     },
     keepPreviousData: true,
-    staleTime: 0,
-    refetchInterval: 30000,
-    refetchOnWindowFocus: true,
+   
   });
 
   /* ===================== NORMALIZED DATA ===================== */

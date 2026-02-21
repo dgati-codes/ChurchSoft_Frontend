@@ -7,6 +7,7 @@ import {
   UserCheck,
   UserRoundPlus,
   Users,
+  User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -28,6 +29,7 @@ const Sidebar = () => {
     if (location.pathname === "/dashboard/countries") return "countries";
     if (location.pathname === "/dashboard/configuration")
       return "configuration";
+    if (location.pathname === "/profile") return "profile";
     return "dashboard";
   };
   const activeView = getActiveView();
@@ -330,6 +332,29 @@ const Sidebar = () => {
                   <Settings className="w-5 h-5" />
                   <span className="font-semibold family-DM-Sans">
                     Configuration
+                  </span>
+                </div>
+              </button>
+            </li>
+            <li
+              onClick={() => handleParentClick("profile", "/profile")}
+              className={`${
+                activeView === "profile"
+                  ? "text-yellow-500 border-l-4 border-yellow-500"
+                  : "text-white hover:text-yellow-400"
+              }`}
+            >
+              <button
+                className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
+                  activeView === "profile"
+                    ? "text-blue-900 rounded-lg bg-amber-300"
+                    : "text-white hover:text-yellow-400"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5" />
+                  <span className="font-semibold family-DM-Sans">
+                    My Profile
                   </span>
                 </div>
               </button>

@@ -1,5 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, Edit, Eye, Trash2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Edit,
+  Eye,
+  Trash2,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import memberService from "../../../api/services/memberService";
 import { useAuth } from "../../../context/AuthContext.jsx";
@@ -12,9 +20,11 @@ export default function MemberTable() {
     jurisdiction: "All",
     district: "All",
     maritalStatus: "All",
+    ministry: "",
     assembly: "All",
     gender: "All",
     nationality: "All",
+    ageGroup: "",
     search: "",
   });
 
@@ -30,22 +40,27 @@ export default function MemberTable() {
   const { isAdmin } = useAuth();
   const pageSize = 10;
 
-  const { data: membersData, isLoading } = useQuery({
-    queryKey: ["members", currentPage, debouncedSearch],
-    queryFn: () =>
-      debouncedSearch
-        ? memberService.searchMembers(currentPage, pageSize, debouncedSearch)
-        : memberService.getAllMembers(currentPage, pageSize),
-
-    keepPreviousData: true,
-  });
+ const { data: membersData, isLoading } = useQuery({
+  queryKey: ["members", currentPage, debouncedSearch, filter.ministry],
+  queryFn: () =>
+    memberService.fetchMembers(currentPage, pageSize, {
+      name: debouncedSearch,
+      ministry: filter.ministry,
+    }),
+  keepPreviousData: true,
+  refetchInterval: 3000,
+   staleTime: 0,
+    refetchOnWindowFocus: true,
+});
 
   const members = membersData?.content || [];
   const totalPages = membersData?.totalPages || 0;
+  const totalElements = membersData?.totalElements || 0;
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(searchName);
+      setCurrentPage(0);
     }, 500);
 
     return () => clearTimeout(timeout);
@@ -100,20 +115,6 @@ export default function MemberTable() {
     updateMutation.mutate({ id: member.id, payload });
   };
 
-  if (isLoading)
-    return (
-      <div className="h-screen flex items-center justify-center bg-gray-100">
-        <LoadingSpinner text="Members loading..." />
-      </div>
-    );
-
-  if (members.length === 0)
-    return (
-      <div className="min-h-screen flex justify-center items-center text-red-500">
-        Failed to load members.
-      </div>
-    );
-
   if (showDashboard)
     return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
@@ -134,68 +135,75 @@ export default function MemberTable() {
 
       {/* Filters */}
       <div className="bg-white border border-gray-300 shadow-md rounded-xl p-6 mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
-        {[
-          {
-            label: "Region",
-            key: "jurisdiction",
-            options: [
-              "All",
-              "NORTHERN",
-              "EST",
-              "CENTRAL",
-              "WEST",
-              "SOUTH",
-              "GREATER_ACCRA",
-              "VOLTA",
-            ],
-          },
-          {
-            label: "District",
-            key: "district",
-            options: [
-              "All",
-              "North District",
-              "Ga District",
-              "Volta1 District",
-            ],
-          },
-          {
-            label: "Assembly",
-            key: "assembly",
-            options: [
-              "All",
-              "Breakthrough Assembly",
-              "Legon Assembly",
-              "Marranatha Assembly",
-            ],
-          },
-          {
-            label: "Gender",
-            key: "gender",
-            options: ["All", "MALE", "FEMALE"],
-          },
-          {
-            label: "Marital Status",
-            key: "maritalStatus",
-            options: ["All", "SINGLE", "MARRIED", "DIVORCED"],
-          },
-        ].map((f) => (
-          <div key={f.key} className="flex flex-col">
-            <label className="text-sm font-medium mb-1">{f.label}</label>
-            <select
-              className="input"
-              value={filter[f.key]}
-              onChange={(e) => {
-                setCurrentPage(1);
-                setFilter({ ...filter, [f.key]: e.target.value });
-              }}
-            >
-              {f.options.map((opt) => (
-                <option key={opt}>{opt}</option>
-              ))}
-            </select>
-          </div>
-        ))}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Region</label>
+          <input
+            type="text"
+            placeholder="Search by region"
+            value={filter.jurisdiction}
+            onChange={(e) => {
+              setFilter({ ...filter, jurisdiction: e.target.value });
+              setCurrentPage(0);
+            }}
+            className="input"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">District</label>
+          <input
+            type="text"
+            placeholder="Search by district"
+            value={filter.district}
+            onChange={(e) => {
+              setFilter({ ...filter, district: e.target.value });
+              setCurrentPage(0);
+            }}
+            className="input"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Local Assembly</label>
+          <input
+            type="text"
+            placeholder="Search by assembly"
+            value={filter.assembly}
+            onChange={(e) => {
+              setFilter({ ...filter, assembly: e.target.value });
+              setCurrentPage(0);
+            }}
+            className="input"
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium mb-1" htmlFor="">All Ministries</label>
+        <select
+
+          value={filter.ministry}
+          onChange={(e) => {
+            setFilter({ ...filter, ministry: e.target.value });
+            setCurrentPage(0);
+          }}
+          className="input"
+        >
+          <option value="">All Ministries</option>
+          <option value="MEN">MEN</option>
+          <option value="WOMEN">WOMEN</option>
+          <option value="YOUTH">YOUTH</option>
+        </select>
+        </div>
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Age Group</label>
+          <input
+            type="text"
+            placeholder="Search by gender"
+            value={filter.gender}
+            onChange={(e) => {
+              setFilter({ ...filter, gender: e.target.value });
+              setCurrentPage(0);
+            }}
+            className="input"
+          />
+        </div>
 
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Search</label>
@@ -207,7 +215,7 @@ export default function MemberTable() {
               setSearchName(e.target.value);
               setCurrentPage(0);
             }}
-            className="border px-3 py-2 rounded"
+            className="input"
           />
         </div>
       </div>
@@ -248,109 +256,123 @@ export default function MemberTable() {
             </thead>
 
             <tbody>
-              {members.map((m) => (
-                <tr key={m.id} className="hover:bg-gray-50">
-                  <td className="border px-3 py-2">{m.fullName}</td>
-                  <td className="border px-3 py-2">{m.gender}</td>
-                  <td className="border px-3 py-2">{m.dateOfBirth}</td>
-                  <td className="border px-3 py-2">{m.maritalStatus}</td>
-                  <td className="border px-3 py-2">{m.nationality}</td>
-                  <td className="border px-3 py-2">{m.jurisdiction}</td>
-                  <td className="border px-3 py-2">{m.preferredLanguages}</td>
-                  <td className="border px-3 py-2">{m.district}</td>
-                  <td className="border px-3 py-2">{m.assembly}</td>
-                  <td className="border px-3 py-2">{m.ethnicity}</td>
-                  <td className="border px-3 py-2">{m.email}</td>
-                  <td className="border px-3 py-2">{m.phoneNumber}</td>
-
-                  <td className="border px-3 py-2">
-                    <span
-                      className={`px-1 py-1 rounded text-white ${
-                        m.status === "ACTIVE"
-                          ? "bg-green-600"
-                          : m.status === "VISITOR"
-                            ? "bg-blue-600"
-                            : m.status === "INACTIVE"
-                              ? "bg-red-400"
-                              : m.status === "SUSPENDED"
-                                ? "bg-yellow-500"
-                                : "bg-gray-500"
-                      }`}
-                    >
-                      {m.status}
-                    </span>
-                  </td>
-
-                  <td className="p-2 border whitespace-nowrap">
-                    <div className="flex space-x-2">
-                      <div className={!isAdmin() ? "ml-4" : ""}>
-                        <button
-                          onClick={() => setEditingMember(m)}
-                          className="text-blue-500 hover:cursor-pointer "
-                        >
-                          <Eye className="w-5 h-5" />
-                        </button>
-                      </div>
-
-                      {isAdmin() && (
-                        <>
-                          <button
-                            onClick={() => setEditingMember(m)}
-                            className="text-blue-500 hover:cursor-pointer"
-                          >
-                            <Edit className="w-5 h-5" />
-                          </button>
-                        </>
-                      )}
-
-                      {isAdmin() && (
-                        <>
-                          <button
-                            onClick={() => setDeletingMember(m)}
-                            className="text-red-500 hover:cursor-pointer"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                        </>
-                      )}
-                    </div>
+              {isLoading ? (
+                <tr>
+                  <td colSpan="100%" className="  text-clip">
+                    <LoadingSpinner text="Loading members..." />
                   </td>
                 </tr>
-              ))}
+              ) : members.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="100%"
+                    className="py-10 text-center text-xl text-gray-500"
+                  >
+                    No members found.
+                  </td>
+                </tr>
+              ) : (
+                members.map((m) => (
+                  <tr key={m.id} className="hover:bg-gray-50">
+                    <td className="border px-3 py-2">{m.fullName}</td>
+                    <td className="border px-3 py-2">{m.gender}</td>
+                    <td className="border px-3 py-2">{m.dateOfBirth}</td>
+                    <td className="border px-3 py-2">{m.maritalStatus}</td>
+                    <td className="border px-3 py-2">{m.nationality}</td>
+                    <td className="border px-3 py-2">{m.jurisdiction}</td>
+                    <td className="border px-3 py-2">{m.preferredLanguages}</td>
+                    <td className="border px-3 py-2">{m.district}</td>
+                    <td className="border px-3 py-2">{m.assembly}</td>
+                    <td className="border px-3 py-2">{m.ethnicity}</td>
+                    <td className="border px-3 py-2">{m.email}</td>
+                    <td className="border px-3 py-2">{m.phoneNumber}</td>
+
+                    <td className="border px-3 py-2">
+                      <span
+                        className={`px-1 py-1 rounded text-white ${
+                          m.status === "ACTIVE"
+                            ? "bg-green-600"
+                            : m.status === "VISITOR"
+                              ? "bg-blue-600"
+                              : m.status === "INACTIVE"
+                                ? "bg-red-400"
+                                : m.status === "SUSPENDED"
+                                  ? "bg-yellow-500"
+                                  : "bg-gray-500"
+                        }`}
+                      >
+                        {m.status}
+                      </span>
+                    </td>
+
+                    <td className="p-2 border whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        {!isAdmin() && (
+                          <>
+                            <button
+                              onClick={() => setEditingMember(m)}
+                              className="text-blue-500 ml-4 hover:cursor-pointer"
+                            >
+                              <Eye className="w-5 h-5" />
+                            </button>
+                          </>
+                        )}
+
+                        {isAdmin() && (
+                          <>
+                            <button
+                              onClick={() => setEditingMember(m)}
+                              className="text-blue-500 hover:cursor-pointer"
+                            >
+                              <Edit className="w-5 h-5" />
+                            </button>
+                          </>
+                        )}
+
+                        {isAdmin() && (
+                          <>
+                            <button
+                              onClick={() => setDeletingMember(m)}
+                              className="text-red-500 hover:cursor-pointer"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
 
           {/* Pagination */}
-          <div className="flex justify-center m-4 gap-2 p-4">
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
-              disabled={currentPage === 0}
-              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              Prev
-            </button>
 
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i)}
-                className={`px-3 py-1 rounded hover:bg-gray-300 ${
-                  currentPage === i ? "bg-blue-600 text-white" : "bg-gray-200"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            <button
-              onClick={() =>
-                setCurrentPage((p) => Math.min(totalPages - 1, p + 1))
-              }
-              disabled={currentPage === totalPages - 1}
-              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-            >
-              Next
-            </button>
+          <div className="flex items-center justify-center gap-6 m-6 text-sm text-gray-600">
+            <span>
+              Page {currentPage + 1} of {totalPages} ({totalElements} members)
+            </span>
+            <div className="flex items-center gap-2">
+              <ChevronsLeft
+                onClick={() => setCurrentPage(0)}
+                className="w-4 h-4 cursor-pointer"
+              />
+              <ChevronLeft
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 0))}
+                className="w-4 h-4 cursor-pointer"
+              />
+              <ChevronRight
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages - 1))
+                }
+                className="w-4 h-4 cursor-pointer"
+              />
+              <ChevronsRight
+                onClick={() => setCurrentPage(totalPages - 1)}
+                className="w-4 h-4 cursor-pointer"
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -10,21 +10,11 @@ import {
 } from "lucide-react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { getInitials } from "../../../utils/getInitials";
 
 function ProfileLayout() {
   const navigate = useNavigate();
-  const { user} = useAuth();
-
-  // if (loading) return <p>Loading...</p>;
-
-  // if (!user) {
-  //   navigate("/login");
-  //   return null;
-  // }
-
-  // const member = members.find((m) => m.email === user.email);
-
-  // if (!member) return <p>Member not found</p>;
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen w-full  ">
@@ -32,7 +22,7 @@ function ProfileLayout() {
         <div className="flex items-center">
           <button
             onClick={() => navigate("/dashboard")}
-            className="flex items-center gap-2 text-sm"
+            className="flex items-center gap-2 text-sm font-bold"
           >
             <ArrowLeft size={16} />
             Back
@@ -40,11 +30,9 @@ function ProfileLayout() {
         </div>
 
         <div className="flex items-center gap-4">
-          <img
-            src="https://tse2.mm.bing.net/th/id/OIP.QTD-DEW7Iablt1WXp0csOQHaE8?w=1060&h=707&rs=1&pid=ImgDetMain&o=7&rm=3"
-            alt="Profile"
-            className="w-16 h-16 rounded-full border-2 border-white object-cover"
-          />
+          <div className="w-16 h-16 rounded-full border-2 border-white bg-blue-600 text-white flex items-center justify-center text-xl font-bold">
+            {getInitials(user)}
+          </div>
           <div>
             <h2 className="text-lg font-semibold">
               {user?.firstName} {user?.lastName}

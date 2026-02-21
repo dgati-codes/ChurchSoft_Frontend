@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 
@@ -6,19 +6,34 @@ function UserProfile() {
   const { user } = useAuth();
   return (
     <>
-      <div className="min-h-screen bg-[#031B6B] py-6 px-6">
-        <div className="flex ml-10 items-center ">
-          <Link to="/dashboard" className="flex bg-gray-200 rounded-sm p-2 items-center gap-2 font-bold text-blue-600">
-            <ArrowLeft size={16} />
-            Back
+      <div className="h-100vh w-100vw  grid grid-rows-[20%_80%]">
+        <div className="bg-[#031B6B] w-full h-full grid grid-cols-[20%_60%_20%]">
+          <div className="flex pt-4 ml-10 items-center ">
+            <Link
+              to="/dashboard"
+              className="flex rounded-sm p-2 items-center gap-2 font-bold text-white"
+            >
+              <ArrowLeft size={16} />
+              Back
+            </Link>
+          </div>
+
+          <div className="flex items-center justify-center">
+            <h1 className="text-3xl font-bold text-center text-white mb-5">
+            Personal Details
+          </h1>
+          </div>
+          <div className="flex items-center p-8 justify-end">
+            <Link to="/edit-user-profile">
+          <button className="bg-white text-blue-700 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium">
+            <Pencil size={14} />
+            Edit Profile
+          </button>
           </Link>
         </div>
+        </div>
 
-        <h1 className="text-xl font-bold text-center text-white mb-5">
-          Personal Details
-        </h1>
-
-        <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-md p-7">
+        <div className="max-w-9xl mx-10 bg-white shadow-xl rounded-md p-7">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
             <div>
               <label className="block text-lg font-medium text-gray-800 mb-2">
@@ -91,20 +106,15 @@ function UserProfile() {
               <input
                 value={user?.roleName || ""}
                 type="text"
-               readOnly
+                readOnly
                 className="w-full border border-gray-300 rounded-md px-4 py-3 text-lg focus:outline-none"
               />
             </div>
+            <div>
+              
+            </div>
           </div>
-
-          {/* Button */}
-          <div  className="flex justify-end-safe mt-6">
-            <Link to="/edit-user-profile">
-            <button className="bg-blue-500 hover:bg-blue-700 cursor-pointer text-white font-bold py-2 px-8 rounded focus:outline-none focus:shadow-outline">
-              Update
-            </button>
-            </Link>
-          </div>
+  
         </div>
       </div>
     </>

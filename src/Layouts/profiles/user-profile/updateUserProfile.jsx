@@ -42,7 +42,6 @@ function UpdateUserProfile() {
     }));
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -63,8 +62,7 @@ function UpdateUserProfile() {
     if (result.success) {
       updateUser(payload);
       setSuccessMessage(result.message || "Profile updated ");
-      setShowSuccessModal(true); 
-      
+      setShowSuccessModal(true);
     }
 
     setLoading(false);
@@ -81,24 +79,31 @@ function UpdateUserProfile() {
   }, [showSuccessModal, navigate]);
 
   return (
-    <div className="min-h-screen bg-[#031B6B] py-6 px-6">
-      <div className="flex ml-10 items-center ">
-        <Link
-          to="/user-profile"
-          className="flex bg-gray-200 rounded-sm p-2 items-center gap-2 font-bold text-blue-600"
-        >
-          <ArrowLeft size={16} />
-          Back
-        </Link>
-      </div>
+    <div className="h-100vh w-100vw  grid grid-rows-[20%_80%]">
+        <div className="bg-[#031B6B] w-full h-full grid grid-cols-[20%_60%_20%]">
+          <div className="flex pt-4 ml-10 items-center ">
+            <Link
+              to="/user-profile"
+              className="flex rounded-sm p-2 items-center gap-2 font-bold text-white"
+            >
+              <ArrowLeft size={16} />
+              Back
+            </Link>
+          </div>
 
-      <h1 className="text-xl font-bold text-center text-white mb-5">
-        Personal Details
-      </h1>
+          <div className="flex items-center justify-center">
+            <h1 className="text-3xl font-bold text-center text-white mb-5">
+            Personal Details
+          </h1>
+          </div>
+          <div className="flex items-center  justify-end">
+           
+        </div>
+        </div>
 
       <form
         onSubmit={handleSubmit}
-        className="max-w-6xl mx-auto bg-white shadow-lg rounded-md p-7"
+        className="max-w-9xl mx-10 bg-white shadow-xl rounded-md p-7"
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
           <div>
@@ -179,7 +184,7 @@ function UpdateUserProfile() {
           </div>
         </div>
 
-        <div className="flex justify-end-safe mt-6">
+        <div className="flex justify-end-safe p-8 mt-2">
           <button
             type="submit"
             disabled={loading}
@@ -191,11 +196,7 @@ function UpdateUserProfile() {
       </form>
 
       {showSuccessModal && (
-        <SuccessModal
-          show={showSuccessModal}
-          message={successMessage}
-          
-        />
+        <SuccessModal show={showSuccessModal} message={successMessage} />
       )}
     </div>
   );

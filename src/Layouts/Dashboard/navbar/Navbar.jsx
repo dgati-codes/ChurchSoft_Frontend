@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { getInitials } from "../../../utils/getInitials";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -59,11 +60,9 @@ const Navbar = () => {
             onClick={() => setOpen((prev) => !prev)}
             className="flex items-center gap-2 focus:outline-none"
           >
-            <img
-              src="https://tse2.mm.bing.net/th/id/OIP.QTD-DEW7Iablt1WXp0csOQHaE8?w=1060&h=707&rs=1&pid=ImgDetMain&o=7&rm=3"
-              alt="User"
-              className="w-10 h-10 rounded-full object-cover"
-            />
+            <div className="w-10 h-10 rounded-full border-2 border-white bg-blue-600 text-white flex items-center justify-center text-xl font-bold">
+              {getInitials(user)}
+            </div>
             <span className="text-sm font-medium text-gray-700">
               {user?.firstName} {user?.lastName}
             </span>
@@ -75,27 +74,17 @@ const Navbar = () => {
               <ul className="py-4 text-sm text-gray-700">
                 {/* {isAdmin() && (
                   <> */}
-                    <li>
-                      <Link
-                        to="/user-profile"
-                        className="block px-4 py-2 hover:bg-gray-100"
-                        onClick={() => setOpen(false)}
-                      >
-                        User Profile
-                      </Link>
-                    </li>
-                  {/* </>
-                )} */}
-
                 <li>
                   <Link
-                    to="/profile"
+                    to="/user-profile"
                     className="block px-4 py-2 hover:bg-gray-100"
                     onClick={() => setOpen(false)}
                   >
-                    Member Profile
+                    Profile
                   </Link>
                 </li>
+                {/* </>
+                )} */}
 
                 <li>
                   <button
