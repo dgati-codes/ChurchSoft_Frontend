@@ -3,7 +3,7 @@ import IncompleteRegistrations from "./IncompleteRegistrations";
 import Register from "./register";
 
 function IncompleteAndNewRegister() {
-  const [activeTab, setActiveTab] = useState("incomplete");
+  const [activeTab, setActiveTab] = useState("new");
 
   return (
     <div className=" w-full">

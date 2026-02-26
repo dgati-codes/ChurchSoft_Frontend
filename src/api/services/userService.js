@@ -2,11 +2,9 @@
 import axios from "axios";
 import axiosInstance from "../axiosInstance";
 
-const BASE_URL = "https://churchsoft-backend.onrender.com/church-soft/v1.0";
-
 export const loginUser = async (credentials) => {
   try {
-    const response = await axios.post(`${BASE_URL}/users/login`, credentials, {
+    const response = await axios.post(`${axiosInstance.BASE_URL}/users/login`, credentials, {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -34,7 +32,7 @@ export const loginUser = async (credentials) => {
  */
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/users/register`, userData, {
+    const response = await axios.post(`${axiosInstance.BASE_URL}/users/register`, userData, {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -48,7 +46,6 @@ export const registerUser = async (userData) => {
 };
 
 const UserService = {
-  // Fetch all users (standardized)
   getAllUsers: async (page = 0, size = 10, filters = {}) => {
     try {
       const res = await axiosInstance.get("/users/all", {

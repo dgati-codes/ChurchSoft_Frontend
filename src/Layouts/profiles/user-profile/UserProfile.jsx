@@ -7,8 +7,8 @@ function UserProfile() {
   return (
     <>
       <div className="h-100vh w-100vw  grid grid-rows-[20%_80%]">
-        <div className="bg-[#031B6B] w-full h-full grid grid-cols-[20%_60%_20%]">
-          <div className="flex pt-4 ml-10 items-center ">
+        <div className="bg-[#031B6B]  grid grid-cols-[20%_60%_20%]">
+          <div className="flex p-4 ml-10 items-center ">
             <Link
               to="/dashboard"
               className="flex rounded-sm p-2 items-center gap-2 font-bold text-white"

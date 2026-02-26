@@ -56,7 +56,7 @@ const UserTable = () => {
         return UserService.getUsersByAssembly(
           page,
           PAGE_SIZE,
-          filters.localAssemblyName,
+          filters.localAssemblyName,       
         );
       }
       return UserService.getAllUsers(page, PAGE_SIZE, filters);

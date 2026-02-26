@@ -34,6 +34,20 @@ function UpdateUserProfile() {
     }
   }, [user]);
 
+  const handleRegisterClick = () => {
+  navigate("/dashboard/register", {
+    state: {
+      prefill: {
+        fullName: `${user.firstName} ${user.lastName}`,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        localAssemblyName: user.localAssemblyName,
+        // any other fields you want to prefill
+      },
+      userId: user.id, // for linking member
+    },
+  });
+};
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -72,7 +86,7 @@ function UpdateUserProfile() {
     if (!showSuccessModal) return;
 
     const timer = setTimeout(() => {
-      navigate("/user-profile");
+      navigate("/dashboard");
     }, 3000);
 
     return () => clearTimeout(timer);
@@ -80,26 +94,31 @@ function UpdateUserProfile() {
 
   return (
     <div className="h-100vh w-100vw  grid grid-rows-[20%_80%]">
-        <div className="bg-[#031B6B] w-full h-full grid grid-cols-[20%_60%_20%]">
-          <div className="flex pt-4 ml-10 items-center ">
-            <Link
-              to="/user-profile"
-              className="flex rounded-sm p-2 items-center gap-2 font-bold text-white"
-            >
-              <ArrowLeft size={16} />
-              Back
-            </Link>
-          </div>
+      <div className="bg-[#031B6B]  grid grid-cols-[20%_60%_20%]">
+        <div className="flex p-4 ml-10 items-center ">
+          <Link
+            to="/dashboard"
+            className="flex rounded-sm p-2 items-center gap-2 font-bold text-white"
+          >
+            <ArrowLeft size={16} />
+            Back
+          </Link>
+        </div>
 
-          <div className="flex items-center justify-center">
-            <h1 className="text-3xl font-bold text-center text-white mb-5">
+        <div className="flex items-center justify-center">
+          <h1 className="text-3xl font-bold text-center text-white mb-5">
             Personal Details
           </h1>
-          </div>
-          <div className="flex items-center  justify-end">
-           
         </div>
+        <div className="flex items-center p-8 justify-end">
+          <button
+            onClick={handleRegisterClick}
+            className="bg-white text-blue-700 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium"
+          >
+            Register as Member
+          </button>
         </div>
+      </div>
 
       <form
         onSubmit={handleSubmit}
@@ -188,7 +207,7 @@ function UpdateUserProfile() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-blue-500 hover:bg-blue-700 cursor-pointer text-white font-bold py-2 px-8 rounded focus:outline-none focus:shadow-outline"
+            className="bg-blue-800 hover:bg-blue-500 cursor-pointer text-white font-bold py-2 px-8 rounded focus:outline-none focus:shadow-outline"
           >
             {loading ? "Saving..." : "Save"}
           </button>

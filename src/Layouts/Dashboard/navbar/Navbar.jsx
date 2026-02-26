@@ -76,7 +76,7 @@ const Navbar = () => {
                   <> */}
                 <li>
                   <Link
-                    to="/user-profile"
+                    to="/edit-user-profile"
                     className="block px-4 py-2 hover:bg-gray-100"
                     onClick={() => setOpen(false)}
                   >

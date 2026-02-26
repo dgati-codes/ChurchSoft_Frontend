@@ -50,7 +50,7 @@ function App() {
         />
         <Route path="/edit-user-profile" element={<UpdateUserProfile />} />
         <Route
-          path="/profile"
+          path="/memberProfile"
           element={
             <PrivateRoute>
               <ProfileLayout />

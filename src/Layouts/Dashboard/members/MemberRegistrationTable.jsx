@@ -40,31 +40,36 @@ export default function MemberTable() {
   const { isAdmin } = useAuth();
   const pageSize = 10;
 
- const { data: membersData, isLoading } = useQuery({
-  queryKey: ["members", currentPage, debouncedSearch, filter.ministry],
-  queryFn: () =>
-    memberService.fetchMembers(currentPage, pageSize, {
-      name: debouncedSearch,
-      ministry: filter.ministry,
-    }),
-  keepPreviousData: true,
-  refetchInterval: 3000,
-   staleTime: 0,
-    refetchOnWindowFocus: true,
-});
+  const { data: membersData, isLoading } = useQuery({
+    queryKey: ["members", currentPage, debouncedSearch],
+    queryFn: () => {
+      if (debouncedSearch) {
+        return memberService.searchMembers(
+          currentPage,
+          pageSize,
+          debouncedSearch,
+        );
+      }
 
-  const members = membersData?.content || [];
-  const totalPages = membersData?.totalPages || 0;
-  const totalElements = membersData?.totalElements || 0;
+      return memberService.getAllMembers(currentPage, pageSize);
+    },
+    keepPreviousData: true,
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setDebouncedSearch(searchName);
+      setDebouncedSearch(searchName.trim());
       setCurrentPage(0);
     }, 500);
 
     return () => clearTimeout(timeout);
   }, [searchName]);
+
+  const members = membersData?.content ?? [];
+  const totalPages = membersData?.totalPages ?? 0;
+  const totalElements = membersData?.totalElements ?? 0;
 
   const deleteMutation = useMutation({
     mutationFn: memberService.deleteMember,
@@ -175,21 +180,22 @@ export default function MemberTable() {
           />
         </div>
         <div>
-          <label className="text-sm font-medium mb-1" htmlFor="">All Ministries</label>
-        <select
-
-          value={filter.ministry}
-          onChange={(e) => {
-            setFilter({ ...filter, ministry: e.target.value });
-            setCurrentPage(0);
-          }}
-          className="input"
-        >
-          <option value="">All Ministries</option>
-          <option value="MEN">MEN</option>
-          <option value="WOMEN">WOMEN</option>
-          <option value="YOUTH">YOUTH</option>
-        </select>
+          <label className="text-sm font-medium mb-1" htmlFor="">
+            All Ministries
+          </label>
+          <select
+            value={filter.ministry}
+            onChange={(e) => {
+              setFilter({ ...filter, ministry: e.target.value });
+              setCurrentPage(0);
+            }}
+            className="input"
+          >
+            <option value="">All </option>
+            <option value="MEN">MEN</option>
+            <option value="WOMEN">WOMEN</option>
+            <option value="YOUTH">YOUTH</option>
+          </select>
         </div>
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Age Group</label>
