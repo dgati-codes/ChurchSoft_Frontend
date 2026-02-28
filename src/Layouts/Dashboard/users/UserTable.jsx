@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import UserService from "../../../api/services/userService.js";
 import useDebounce from "../../../hooks/useDebounce";
+import LoadingSpinner from "../modals/LoadingSpinner.jsx";
 
 const PAGE_SIZE = 10;
 
@@ -177,12 +178,19 @@ const UserTable = () => {
               </tr>
             </thead>
             <tbody>
-              {users.length === 0 ? (
+              {isFetching ? (
                 <tr>
-                  <td colSpan="8" className="text-center py-6 border">
-                    <p className="text-xs text-center text-gray-400 mt-2">
-                      No users found
-                    </p>
+                  <td colSpan="100%" className="  text-clip">
+                    <LoadingSpinner text="Loading Users..." />
+                  </td>
+                </tr>
+              ) : users.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="100%"
+                    className="py-10 text-center text-xl text-gray-500"
+                  >
+                    No members found.
                   </td>
                 </tr>
               ) : (
@@ -255,12 +263,6 @@ const UserTable = () => {
           </div>
         </div>
 
-        {/* BACKGROUND FETCH */}
-        {isFetching && (
-          <p className="text-xs text-center text-gray-400 mt-2">
-            Updating Users...
-          </p>
-        )}
       </div>
 
       {/* Edit Modal */}

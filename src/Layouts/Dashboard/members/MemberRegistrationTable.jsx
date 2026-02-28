@@ -17,23 +17,21 @@ import LoadingSpinner from "../modals/LoadingSpinner";
 import MemberFullView from "./MemberFullView";
 export default function MemberTable() {
   const [filter, setFilter] = useState({
-    jurisdiction: "All",
-    district: "All",
-    maritalStatus: "All",
+    jurisdiction: "",
+    district: "",
+    maritalStatus: "",
     ministry: "",
-    assembly: "All",
-    gender: "All",
-    nationality: "All",
+    assembly: "",
+    gender: "",
+    nationality: "",
     ageGroup: "",
     search: "",
   });
-
   const [showDashboard, setShowDashboard] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [deletingMember, setDeletingMember] = useState(null);
   const [successModal, setSuccessModal] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
-
   const [searchName, setSearchName] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const queryClient = useQueryClient();
@@ -41,22 +39,43 @@ export default function MemberTable() {
   const pageSize = 10;
 
   const { data: membersData, isLoading } = useQuery({
-    queryKey: ["members", currentPage, debouncedSearch],
-    queryFn: () => {
-      if (debouncedSearch) {
-        return memberService.searchMembers(
-          currentPage,
-          pageSize,
-          debouncedSearch,
-        );
-      }
+  queryKey: ["members", currentPage, debouncedSearch, filter.ministry, filter.assembly],
 
-      return memberService.getAllMembers(currentPage, pageSize);
-    },
-    keepPreviousData: true,
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
-  });
+  queryFn: () => {
+    if (debouncedSearch) {
+      return memberService.searchMembers(
+        currentPage,
+        pageSize,
+        debouncedSearch
+      );
+    }
+
+    if (filter.ministry) {
+      return memberService.getMembersByMinistry(
+        filter.ministry,
+        currentPage,
+        pageSize
+      );
+    }
+
+    // if(filter.assembly){
+    //   return memberService.getMembersByAssembly(
+    //     filter.assembly,
+    //     currentPage,
+    //     pageSize
+    //   );
+    // }
+
+    return memberService.getAllMembers(
+      currentPage,
+      pageSize
+    );
+  },
+
+  keepPreviousData: true,
+  staleTime: 1000 * 60 * 5,
+  refetchOnWindowFocus: false,
+});
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -168,17 +187,36 @@ export default function MemberTable() {
         </div>
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Local Assembly</label>
+         <select
+            // value={filter.assembly}
+            // onChange={(e) => {
+            //   setFilter({ ...filter, assembly: e.target.value });
+            //   setCurrentPage(0);
+            // }}
+            className="input"
+          >
+            <option value="">All </option>
+            <option value="PEACE_TEMPLE">PEACE Temple</option>
+            <option value="TEMA">TEMA</option>
+            <option value="BONOU_N">BONOU_N</option>
+            <option value="	GALILEY">	GALILEY</option>
+          </select>
+        </div>
+        
+        <div className="flex flex-col">
+          <label className="text-sm font-medium mb-1">Age Group</label>
           <input
             type="text"
-            placeholder="Search by assembly"
-            value={filter.assembly}
+            placeholder="Search by gender"
+            value={filter.gender}
             onChange={(e) => {
-              setFilter({ ...filter, assembly: e.target.value });
+              setFilter({ ...filter, gender: e.target.value });
               setCurrentPage(0);
             }}
             className="input"
           />
         </div>
+
         <div>
           <label className="text-sm font-medium mb-1" htmlFor="">
             All Ministries
@@ -194,21 +232,10 @@ export default function MemberTable() {
             <option value="">All </option>
             <option value="MEN">MEN</option>
             <option value="WOMEN">WOMEN</option>
-            <option value="YOUTH">YOUTH</option>
+            <option value="SENIOR_YOUTH">SENIOR_YOUTH</option>
+            <option value="JUNIOR_YOUTH">JUNIOR_YOUTH</option>
+            <option value="CHILDREN">CHILDREN</option>
           </select>
-        </div>
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Age Group</label>
-          <input
-            type="text"
-            placeholder="Search by gender"
-            value={filter.gender}
-            onChange={(e) => {
-              setFilter({ ...filter, gender: e.target.value });
-              setCurrentPage(0);
-            }}
-            className="input"
-          />
         </div>
 
         <div className="flex flex-col">

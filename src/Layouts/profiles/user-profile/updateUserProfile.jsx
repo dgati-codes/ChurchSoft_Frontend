@@ -46,7 +46,9 @@ function UpdateUserProfile() {
       },
       userId: user.id, // for linking member
     },
+    
   });
+ 
 };
   const handleChange = (e) => {
     const { name, value } = e.target;

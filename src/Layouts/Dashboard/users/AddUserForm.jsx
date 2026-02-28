@@ -4,7 +4,7 @@ import {
   assignImageToUser,
   uploadImage,
 } from "../../../api/services/userImageService";
-import { registerUser } from "../../../api/services/userService";
+import  UserService  from "../../../api/services/userService";
 import InputField from "../modals/InputField";
 import SuccessModal from "../modals/successModal.jsx";
 
@@ -51,7 +51,7 @@ const AddUserForm = () => {
       }
 
       const payload = { ...formData, image: undefined };
-      const result = await registerUser(payload);
+      const result = await UserService.registerUser(payload);
 
       if (!result?.success) {
         setMessage(result?.message || "Failed to add user.");

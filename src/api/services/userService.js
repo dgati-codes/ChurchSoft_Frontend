@@ -1,38 +1,17 @@
-// src/api/userService.js
-import axios from "axios";
 import axiosInstance from "../axiosInstance";
+const BASE_URL = "https://churchsoft-backend.onrender.com/church-soft/v1.0";
 
-export const loginUser = async (credentials) => {
-  try {
-    const response = await axios.post(`${axiosInstance.BASE_URL}/users/login`, credentials, {
-      headers: { "Content-Type": "application/json" },
-    });
-
-    const { token, user, message } = response.data;
-
-    return {
-      success: true,
-      token,
-      user,
-      message: message || "Login successful",
-    };
-  } catch (error) {
-    console.error("Login error:", error);
-    return {
-      success: false,
-      message:
-        error.response?.data?.message ||
-        "Login failed. Please check your credentials.",
-    };
-  }
-};
 
 /**
  * ✅ Register user (optional, if used elsewhere)
  */
-export const registerUser = async (userData) => {
+
+
+const UserService = {
+
+  registerUser : async (userData) => {
   try {
-    const response = await axios.post(`${axiosInstance.BASE_URL}/users/register`, userData, {
+    const response = await axiosInstance.post("/users/register", userData, {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -43,9 +22,7 @@ export const registerUser = async (userData) => {
       error.response?.data?.message || "Failed to add user. Please try again.";
     return { success: false, message };
   }
-};
-
-const UserService = {
+},
   getAllUsers: async (page = 0, size = 10, filters = {}) => {
     try {
       const res = await axiosInstance.get("/users/all", {

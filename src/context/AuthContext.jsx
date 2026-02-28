@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance.js";
 import MemberService from "../api/services/memberService.js";
-import { getCurrentUser, loginUser } from "../api/services/userService.js";
+import { getCurrentUser } from "../api/services/userService.js";
+import {loginUser} from "../api/services/auth.js";
 
 const AuthContext = createContext(null);
 

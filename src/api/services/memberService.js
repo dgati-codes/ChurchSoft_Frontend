@@ -1,12 +1,6 @@
 // src/api/memberService.js
 import axiosInstance from "../axiosInstance";
 
-// const normalizeResponse = (payload) => {
-//   if (payload?.data) return payload.data;
-//   if (payload?.content) return payload;
-//   if (payload?.data?.content) return payload.data;
-//   return payload;
-// };
 const normalizeResponse = (payload) => {
   if (!payload?.content) return payload;
 
@@ -35,71 +29,136 @@ const memberService = {
     }
   },
 
- getMembersByAssembly: async (page = 0, size = 10, assembly) => {
-    try {
-      const res = await axiosInstance.get(`/members/assembly/${assembly}`, {
-        params: { page, size },
-      });
-
-      const payload = res?.data;
-
-      if (payload?.content) return payload;
-      if (payload?.data?.content) return payload.data;
-      if (payload?.data?.content === 0) return "No members found";
-
-      return normalizeResponse(payload);
-    } catch (error) {
-      console.error(
-        "Error fetching members by assembly:",
-        error.response || error,
-      );
-      throw error;
-    }
-  },
-
-
-  // 🔹 Filter by Ministry
-  getMembersByMinistry: async (ministry, page = 0, size = 10) => {
-    try {
-      const res = await axiosInstance.get(
-        `/members/ministry/${ministry}`,
-        {
-          params: { page, size },
-        }
-      );
-
-      return normalizeResponse(res?.data);
-    } catch (error) {
-        console.error(
-        "Error fetching members by ministry:",
-        error.response?.data || error
-      );
-      throw error;
-    }
-  },
-
-  // 🔹 Smart Fetch (Auto Decides What To Call)
-  // fetchMembers: async (
-  //   page = 0,
-  //   size = 10,
-  //   { name = "", ministry = "" } = {}
-  // ) => {
-  //   if (ministry) {
-  //     return memberService.getMembersByMinistry(ministry, page, size);
-  //   }
-
-  //   if (name) {
-  //     return memberService.searchMembers(page, size, name);
-  //   }
-
-  //   return memberService.getAllMembers(page, size);
-  // },
-
-searchMembers: async (page = 0, size = 10, name = "") => {
+ getMembersByAssembly: async (assembly, page = 0, size = 10) => {
   try {
-    const trimmed = name?.trim();
+    if (!assembly) {
+      throw new Error("Assembly is required");
+    }
 
-    if (!trimmed) {
+    const res = await axiosInstance.get(
+      `/members/assembly/${encodeURIComponent(assembly)}`,
+      {
+        params: { page, size },
+      }
+    );
+
+    const payload = res?.data;
+
+    // Most common Spring Boot pagination structure
+    if (payload?.content) return payload;
+
+    // If wrapped inside data
+    if (payload?.data?.content) return payload.data;
+console.log(res.payload)
+    // Fallback normalization
+    return normalizeResponse(payload);
+
+  } catch (error) {
+    console.error(
+      "Error fetching members by assembly:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+},
+
+  // 🔹 Filter by district
+//   getMembersByDistrict: async (district, page = 0, size = 10) => {
+//   try {
+//     const res = await axiosInstance.get(
+//       `/members/district/${encodeURIComponent(district)}`,
+//       { params: { page, size } }
+//     );
+
+//     const payload = res?.data;
+
+//     if (payload?.content) return payload;
+//     if (payload?.data?.content) return payload.data;
+
+//     return normalizeResponse(payload);
+
+//   } catch (error) {
+//     console.error(
+//       "Error fetching members by district:",
+//       error.response?.data || error.message
+//     );
+//     throw error;
+//   }
+// },
+
+//   getMembersByRegion: async (region, page = 0, size = 10) => {
+//   try {
+//     const res = await axiosInstance.get(
+//       `/members/region/${encodeURIComponent(region)}`,
+//       { params: { page, size } }
+//     );
+
+//     const payload = res?.data;
+
+//     if (payload?.content) return payload;
+//     if (payload?.data?.content) return payload.data;
+
+//     return normalizeResponse(payload);
+
+//   } catch (error) {
+//     console.error(
+//       "Error fetching members by region:",
+//       error.response?.data || error.message
+//     );
+//     throw error;
+//   }
+// },
+
+// getMembersByMinistry: async (ministry, page = 0, size = 10) => {
+//   try {
+//     const res = await axiosInstance.get(
+//       `/members/ministry/${encodeURIComponent(ministry)}`,
+//       { params: { page, size } }
+//     );
+
+//     const payload = res?.data;
+
+//     if (payload?.content) return payload;
+//     if (payload?.data?.content) return payload.data;
+
+//     return normalizeResponse(payload);
+
+//   } catch (error) {
+//     console.error(
+//       "Error fetching members by ministry:",
+//       error.response?.data || error.message
+//     );
+//     throw error;
+//   }
+// },
+
+
+getMembersByMinistry: async (ministry, page = 0, size = 10) => {
+  try {
+    const res = await axiosInstance.get(
+      `/members/ministry/${encodeURIComponent(ministry)}`,
+      { params: { page, size } }
+    );
+
+    const payload = res?.data;
+
+    if (payload?.content) return payload;
+    if (payload?.data?.content) return payload.data;
+
+    return payload;
+  } catch (error) {
+    console.error(
+      "Error fetching members by ministry:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+},
+searchMembers: async (page = 0, size = 10, query = "") => {
+  try {
+    const trimmedQuery = query?.trim();
+
+    if (!trimmedQuery) {
       return {
         content: [],
         totalPages: 0,
@@ -107,15 +166,27 @@ searchMembers: async (page = 0, size = 10, name = "") => {
       };
     }
 
-    const res = await axiosInstance.get("/members/search-name", {
+    const { data } = await axiosInstance.get("/members/search-name", {
       params: {
-        query: trimmed,
+        query: trimmedQuery,
         page,
         size,
       },
     });
 
-    return normalizeResponse(res?.data);
+    // If backend returns plain array
+    if (Array.isArray(data)) {
+      return {
+        content: data,
+        totalPages: 1,
+        totalElements: data.length,
+      };
+    }
+
+    // If backend returns paginated structure
+    return normalizeResponse(data);
+    
+
   } catch (error) {
     console.error(
       "Error searching members:",
@@ -123,31 +194,9 @@ searchMembers: async (page = 0, size = 10, name = "") => {
     );
     throw error;
   }
+  
 },
-fetchMembers: async (page = 0, size = 10, filters = {}) => {
-  try {
-    const searchValue = filters.query?.trim();
 
-    if (searchValue) {
-      const res = await axiosInstance.get("/members/search-name", {
-        params: { query: searchValue, page, size },
-      });
-      return normalizeResponse(res?.data);
-    }
-
-    const params = { page, size };
-
-    if (filters.ministry && filters.ministry !== "All") {
-      params.ministry = filters.ministry;
-    }
-
-    const res = await axiosInstance.get("/members", { params });
-    return normalizeResponse(res?.data);
-  } catch (error) {
-    console.error("Error fetching members:", error.response?.data || error);
-    throw error;
-  }
-},
 
 
 

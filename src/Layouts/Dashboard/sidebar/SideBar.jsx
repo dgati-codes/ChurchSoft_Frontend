@@ -36,16 +36,16 @@ const Sidebar = () => {
   const { hasRole } = useAuth();
 
   const isAdmin = hasRole([ROLES.ADMIN]);
-  const canViewUsers = hasRole([
-    ROLES.ADMIN,
-    ROLES.PASTOR,
-    ROLES.ELDER,
-    ROLES.REP,
-    ROLES.FINANCE,
-    ROLES.LEADER,
-    ROLES.MEMBER,
-    ROLES.GUEST,
-  ]);
+  // const canViewUsers = hasRole([
+  //   ROLES.ADMIN,
+  //   ROLES.PASTOR,
+  //   ROLES.ELDER,
+  //   ROLES.REP,
+  //   ROLES.FINANCE,
+  //   ROLES.LEADER,
+  //   ROLES.MEMBER,
+  //   ROLES.GUEST,
+  // ]);
 
   // Ensure Members dropdown opens if activeView is inside Members
   useEffect(() => {
@@ -196,8 +196,7 @@ const Sidebar = () => {
             )}
 
             {/* Members Dropdown */}
-            {canViewUsers && (
-              <>
+           
                 <li
                   onClick={() => handleParentClick("members")}
                   className={`${
@@ -221,12 +220,12 @@ const Sidebar = () => {
                         Members
                       </span>
                     </div>
-                    {isAdmin &&
-                      (openDropdown === "members" ? (
+                    
+                      {openDropdown === "members" ? (
                         <ChevronDown className="w-4 h-4" />
                       ) : (
                         <ChevronRight className="w-4 h-4" />
-                      ))}
+                      )}
                   </button>
                 </li>
 
@@ -260,8 +259,7 @@ const Sidebar = () => {
                     </li>
                   </ul>
                 )}
-              </>
-            )}
+              
             {/* Attendance */}
             <li
               onClick={() =>
@@ -316,61 +314,10 @@ const Sidebar = () => {
               </button>
             </li>
 
-            {/* Configuration */}
-            {/* <li
-              onClick={() =>
-                handleParentClick("configuration", "/dashboard/configuration")
-              }
-              className={`${
-                activeView === "configuration"
-                  ? "text-yellow-500 border-l-4 border-yellow-500"
-                  : "text-white hover:text-yellow-400"
-              }`}
-            >
-              <button
-                className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
-                  activeView === "configuration"
-                    ? "text-blue-900 rounded-lg bg-amber-300"
-                    : "text-white hover:text-yellow-400"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Settings className="w-5 h-5" />
-                  <span className="font-semibold family-DM-Sans">
-                    Configuration
-                  </span>
-                </div>
-              </button>
-            </li> */}
+           
+            
 
-            {/* My Profile */}
-            {/* <li
-              onClick={() => handleParentClick("profile", "/profile")}
-              className={`${
-                activeView === "profile"
-                  ? "text-yellow-500 border-l-4 border-yellow-500"
-                  : "text-white hover:text-yellow-400"
-              }`}
-            >
-              <button
-                className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
-                  activeView === "profile"
-                    ? "text-blue-900 rounded-lg bg-amber-300"
-                    : "text-white hover:text-yellow-400"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <User className="w-5 h-5" />
-                  <span className="font-semibold family-DM-Sans">
-                    My Profile
-                  </span>
-                </div>
                 
-              </button>
-            </li> */}
-
-                {hasRole([ROLES.ADMIN]) && (
-              <>
                 <li
                   onClick={() => handleParentClick("memberProfile")}
                   className={`${
@@ -394,16 +341,16 @@ const Sidebar = () => {
                         Configuration
                       </span>
                     </div>
-                    {isAdmin &&
-                      (openDropdown === "memberProfile" ? (
+                    
+                      {openDropdown === "memberProfile" ? (
                         <ChevronDown className="w-4 h-4" />
                       ) : (
                         <ChevronRight className="w-4 h-4" />
-                      ))}
+                      )}
                   </button>
                 </li>
 
-                {isAdmin && openDropdown === "memberProfile" && (
+                {openDropdown === "memberProfile" && (
                   <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
                     <span className="absolute -left-0.5 top-1/6 w-4 h-9 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
 
@@ -438,8 +385,8 @@ const Sidebar = () => {
                     </li>
                   </ul>
                 )}
-              </>
-            )}
+              
+            
             
           </ul>
         </nav>
