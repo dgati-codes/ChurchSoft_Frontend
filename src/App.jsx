@@ -23,7 +23,7 @@ import PersonalInfo from "./Layouts/profiles/member-profile/PersonalInfo";
 import ProfileLayout from "./Layouts/profiles/member-profile/ProfileLayout";
 import Skills from "./Layouts/profiles/member-profile/Skills";
 import Welfare from "./Layouts/profiles/member-profile/Welfare";
-import UpdateUserProfile from "./Layouts/profiles/user-profile/updateUserProfile";
+// import UpdateUserProfile from "./Layouts/profiles/user-profile/updateUserProfile";
 import UserProfile from "./Layouts/profiles/user-profile/UserProfile";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
@@ -39,16 +39,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* 👤 PROFILE (NO SIDEBAR) */}
-        <Route
-          path="/user-profile"
-          element={
-            // <PrivateRoute allowedRoles={[ROLES.ADMIN]}>
-              <UserProfile />
-            // </PrivateRoute>
-          }
-        />
-        <Route path="/edit-user-profile" element={<UpdateUserProfile />} />
+        <Route path="/user_profile" element={<UserProfile />} />
         <Route
           path="/memberProfile"
           element={

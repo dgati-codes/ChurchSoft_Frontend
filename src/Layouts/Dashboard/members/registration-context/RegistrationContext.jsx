@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 const RegistrationContext = createContext();
 
@@ -9,62 +9,63 @@ export const RegistrationProvider = ({ children }) => {
 
   const [formData, setFormData] = useState({
     // Step 1 - Personal & Identity Info
-      fullName: "",
-      dateOfBirth: "",
-      gender: "",
-      maritalStatus: "",
-      hometown: "",
-      nationality: "",
-      jurisdiction: "",
-      district: "",
-      assembly: "",
-      ethnicity: "",
-      identificationType: "",
-      identificationNumber: "",
-      fathersName: "",
-      mothersName: "",
-      preferredLanguages: [],
-      ministryAffiliation: "",
-      consentForCommunication: false,
+    userId: "",
+    fullName: "",
+    dateOfBirth: "",
+    gender: "",
+    maritalStatus: "",
+    hometown: "",
+    nationality: "",
+    jurisdiction: "",
+    district: "",
+    assembly: "",
+    ethnicity: "",
+    identificationType: "",
+    identificationNumber: "",
+    fathersName: "",
+    mothersName: "",
+    preferredLanguages: [],
+    ministryAffiliation: "",
+    consentForCommunication: false,
 
-      phoneNumber: "",
-      whatsappAvailable: false,
-      email: "",
-      residentialAddress: "",
+    phoneNumber: "",
+    whatsappAvailable: false,
+    email: "",
+    residentialAddress: "",
 
-     nextOfKin: {
+    nextOfKin: {
       name: "",
       relationship: "",
       contactInformation: "",
     },
 
-      status: "",
-      baptismStatus: "",
-      baptismLocation: "",
-      dateJoinedChurch: "",
-      firstVisitDate: "",
-      invitedBy: "",
-      baptismType: "",
-      salvationStatus: "",
-      baptismDate: "",
-      fellowshipGroup: "",
-      churchExperienceRating: "",
-      educationalLevel: "",
-      occupation: "",
-      employmentSector: "",
-      employmentType: "",
+    status: "",
+    baptismStatus: "",
+    baptismLocation: "",
+    dateJoinedChurch: "",
+    firstVisitDate: "",
+    invitedBy: "",
+    baptismType: "",
+    salvationStatus: "",
+    baptismDate: "",
+    fellowshipGroup: "",
+    churchExperienceRating: "",
+    educationalLevel: "",
+    occupation: "",
+    employmentSector: "",
+    employmentType: "",
 
-      ministries: [],
-      reason: "",
-      
-      healthCondition: false, 
-      specialNeeds: "",
-      reasonForNonParticipation: "",
-      leadershipRole: "",
-      skillsTalents: [],
-      spiritualGifts: [],
-      hasHealthIssues: false,
-      specialNeedsOrMedicalConditions: "",
+    ministries: [],
+    reason: "",
+
+    healthCondition: false,
+    specialNeeds: "",
+    reasonForNonParticipation: "",
+    leadershipRole: "",
+    skillsTalents: [],
+    spiritualGifts: [],
+    hasHealthIssues: false,
+    specialNeedsOrMedicalConditions: "",
   });
 
   // Navigate steps
@@ -79,6 +80,7 @@ export const RegistrationProvider = ({ children }) => {
   // Reset form
   const resetForm = () => {
     setFormData({
+      userId: "",
       fullName: "",
       dateOfBirth: "",
       gender: "",
@@ -126,8 +128,8 @@ export const RegistrationProvider = ({ children }) => {
 
       ministries: [],
       reason: "",
-      
-      healthCondition: false, 
+
+      healthCondition: false,
       specialNeeds: "",
       reasonForNonParticipation: "",
       leadershipRole: "",
@@ -135,7 +137,7 @@ export const RegistrationProvider = ({ children }) => {
       spiritualGifts: [],
       hasHealthIssues: false,
       specialNeedsOrMedicalConditions: "",
-        });
+    });
     setStep(1);
   };
 

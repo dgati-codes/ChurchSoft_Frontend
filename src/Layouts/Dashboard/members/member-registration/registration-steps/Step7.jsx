@@ -96,7 +96,7 @@ const Step7ReviewSubmit = () => {
       // ✅ Update React Query cache so new member appears on top
       queryClient.setQueryData(["members"], (old = []) => [newMember, ...old]);
 
-      alert("Registration successful!");
+      alert("Submission successful!");
       resetForm(); // optional: reset registration form
     } catch (error) {
       console.error(error);
@@ -112,6 +112,7 @@ const Step7ReviewSubmit = () => {
       title: "Personal & Identity Information",
       icon: <User className="w-5 h-5 text-white" />,
       fields: [
+        "userId",
         "fullName",
         "dateOfBirth",
         "gender",
@@ -119,7 +120,7 @@ const Step7ReviewSubmit = () => {
         "hometown",
         "jurisdiction",
         "district",
-        "assembly",
+        "localAssemblyName",
         "nationality",
         "ethnicity",
         "identificationType",

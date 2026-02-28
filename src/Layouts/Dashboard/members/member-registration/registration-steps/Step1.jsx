@@ -1,6 +1,8 @@
 import { User } from "lucide-react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useRegistration } from "../../registration-context/RegistrationContext";
+import { useLocation } from "react-router-dom";
+
 
 // ENUM maps (UI → Backend)
 const genderMap = {
@@ -28,6 +30,7 @@ const Step1PersonalInfo = () => {
   const { formData, updateForm, nextStep } = useRegistration();
 
   const [localData, setLocalData] = useState({
+    userId: formData.userId || "",
     fullName: formData.fullName || "",
     dateOfBirth: formData.dateOfBirth || "",
     gender: formData.gender || "",
@@ -35,7 +38,6 @@ const Step1PersonalInfo = () => {
     hometown: formData.hometown || "",
     district: formData.district || "",
     jurisdiction: formData.jurisdiction || "",
-    assembly: formData.assembly || "",
     nationality: formData.nationality || "",
     ethnicity: formData.ethnicity || "",
     identificationType: formData.identificationType || "",
@@ -45,9 +47,21 @@ const Step1PersonalInfo = () => {
     ministryAffiliation: formData.ministryAffiliation || "",
     preferredLanguages: Array.isArray(formData.preferredLanguages)
       ? formData.preferredLanguages
-      : [], // FIXED
+      : [], 
   });
 
+console.log(localData);
+const location = useLocation();
+
+useEffect(() => {
+  if (location.state?.prefill) {
+    setLocalData((prev) => ({
+      ...prev,
+      ...location.state.prefill,
+       userId: location.state.userId, 
+    }));
+  }
+}, [location.state]);
   // GENERIC HANDLER
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -118,6 +132,7 @@ const Step1PersonalInfo = () => {
             </label>
             <input
               name="fullName"
+              // type="text"
               value={localData.fullName}
               onChange={handleChange}
               placeholder="Full Name"
@@ -230,8 +245,8 @@ const Step1PersonalInfo = () => {
           <div>
             <label className="text-gray-600 font-bold">Assembly</label>
             <input
-              name="assembly"
-              value={localData.assembly}
+              name="localAssemblyName"
+              value={localData.localAssemblyName}
               onChange={handleChange}
               className="input"
               placeholder="Assembly"

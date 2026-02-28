@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useRegistration } from "../../registration-context/RegistrationContext";
+import { useLocation } from "react-router-dom";
 
 const Step2ContactInfo = () => {
   const { formData, updateForm, nextStep, prevStep } = useRegistration();
@@ -19,6 +20,18 @@ const Step2ContactInfo = () => {
     },
   });
 
+
+
+  const location = useLocation();
+  
+  useEffect(() => {
+    if (location.state?.prefill) {
+      setLocalData((prev) => ({
+        ...prev,
+        ...location.state.prefill, // fullName, email, phoneNumber, etc.
+      }));
+    }
+  }, [location.state]);
   // Handle input and checkbox changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
