@@ -12,7 +12,7 @@ const Step2ContactInfo = () => {
     email: formData.email || "",
     whatsappAvailable: formData.whatsappAvailable || false,
     consentForCommunication: formData.consentForCommunication || false,
-    residentialAddress: formData.residentialAddress || "",
+    physicalAddress: formData.physicalAddress || "",
     nextOfKin: {
       name: formData.nextOfKin?.name || "",
       relationship: formData.nextOfKin?.relationship || "",
@@ -135,8 +135,8 @@ const Step2ContactInfo = () => {
 
           <div className="mt-4">
             <input
-              name="residentialAddress"
-              value={localData.residentialAddress}
+              name="physicalAddress"
+              value={localData.physicalAddress}
               onChange={handleChange}
               placeholder="Area of Residence / Physical Address*"
               className="w-full bg-gray-100 rounded px-4 py-2"

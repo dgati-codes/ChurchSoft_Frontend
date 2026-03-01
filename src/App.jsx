@@ -27,6 +27,7 @@ import Welfare from "./Layouts/profiles/member-profile/Welfare";
 import UserProfile from "./Layouts/profiles/user-profile/UserProfile";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
+import EditMemberModal from "./Layouts/Dashboard/modals/EditMemberModal";
 
 function App() {
   return (
@@ -49,13 +50,13 @@ function App() {
           }
         >
           <Route index element={<PersonalInfo />} />
-          <Route path="contact" element={<Contact />} />
-          <Route path="membership" element={<Membership />} />
-          <Route path="education" element={<EducationWork />} />
-          <Route path="skills" element={<Skills />} />
-          <Route path="welfare" element={<Welfare />} />
+          <Route path="memberProfile-contact" element={<Contact />} />
+          <Route path="memberProfile-membership" element={<Membership />} />
+          <Route path="memberProfile-education" element={<EducationWork />} />
+          <Route path="memberProfile-skills" element={<Skills />} />
+          <Route path="memberProfile-welfare" element={<Welfare />} />
         </Route>
-
+          <Route path="editMemberModal" element={<EditMemberModal />} />
         {/* 📊 DASHBOARD */}
         <Route
           path="/dashboard"

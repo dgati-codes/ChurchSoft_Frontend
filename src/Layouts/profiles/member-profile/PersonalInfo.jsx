@@ -2,18 +2,7 @@ import { User } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 
 function PersonalInfo() {
-  const { user, members, loading } = useAuth();
-
-  if (loading) return <p>Loading...</p>;
-
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
-
-  const member = members.find((m) => m.email === user.email);
-
-  if (!member) return <p>Member not found</p>;
+  const { member } = useAuth();
 
   return (
     <div className="bg-[#F9FAFB] border-[#E5E7EB] w-10/10 ml-3 rounded-lg shadow-sm border p-6">

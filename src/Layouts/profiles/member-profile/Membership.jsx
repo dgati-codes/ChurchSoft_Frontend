@@ -2,18 +2,7 @@ import { Church } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 
 function Membership() {
-  const { user, members, loading } = useAuth();
-
-  if (loading) return <p>Loading...</p>;
-
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
-
-  const member = members.find((m) => m.email === user.email);
-
-  if (!member) return <p>Member not found</p>;
+  const { member } = useAuth();
 
   return (
     <div className="min-h-screen fixed ">
@@ -27,36 +16,16 @@ function Membership() {
         <br />
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <label htmlFor="" className="text-gray-500">
-              Date Joined
-            </label>
-            <input
-              type="text"
-              className="font-semibold"
-              value={member.dateJoinedChurch}
-            />
+            <p className="text-gray-500">Date Joined</p>
+            <p>{member.dateJoinedChurch}</p>
           </div>
           <div className="flex flex-col">
-            <label htmlFor="" className="text-gray-500">
-              Baptism Status
-            </label>
-            <input
-              type="text"
-              className="font-semibold"
-              value={member.baptismStatus}
-            />
+            <p className="text-gray-500">Baptism Status</p>
+            <p className="font-semibold">{member.baptismStatus}</p>
           </div>
           <div className="flex flex-col">
-            <label htmlFor="" className="text-gray-500">
-              Salvation/Born Again
-            </label>
-            <input
-              type="text"
-              className="font-semibold"
-              value={member.salvationStatus}
-              name=""
-              id=""
-            />
+            <p className="text-gray-500">Salvation/Born Again</p>
+            <p className="font-semibold">{member.salvationStatus}</p>
           </div>
         </div>
       </div>

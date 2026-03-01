@@ -37,14 +37,13 @@ function UserProfile() {
  const handleRegisterClick = () => {
   const navigationData = {
     prefill: {
-      fullName: `${user.firstName} ${user.lastName}`,
+      fullName: `${user.firstName.trim()} ${user.lastName.trim()}`,
       email: user.email,
       phoneNumber: user.phoneNumber,
-      localAssemblyName: user.localAssemblyName,
+      assembly: user.localAssemblyName, 
     },
     userId: user.id,
   };
-
   console.log("User object:", user);
 console.log("Full navigation payload:", JSON.stringify(navigationData, null, 2));
 

@@ -38,8 +38,8 @@ const Step7ReviewSubmit = () => {
             .map((v) => v.trim())
             .filter(Boolean)
         : Array.isArray(value)
-        ? value
-        : []
+          ? value
+          : []
       : value;
 
     if (subObject) {
@@ -87,7 +87,7 @@ const Step7ReviewSubmit = () => {
 
       // Remove empty strings
       Object.keys(localData).forEach(
-        (key) => localData[key] === "" && (localData[key] = null)
+        (key) => localData[key] === "" && (localData[key] = null),
       );
 
       // ✅ Create member via API
@@ -120,7 +120,7 @@ const Step7ReviewSubmit = () => {
         "hometown",
         "jurisdiction",
         "district",
-        "localAssemblyName",
+        "assembly",
         "nationality",
         "ethnicity",
         "identificationType",
@@ -139,7 +139,7 @@ const Step7ReviewSubmit = () => {
         "phoneNumber",
         "email",
         "whatsappAvailable",
-        "residentialAddress",
+        "physicalAddress",
       ],
       subTitle: "Next of Kin Details",
       subFields: ["name", "relationship", "contactInformation"],
@@ -155,9 +155,7 @@ const Step7ReviewSubmit = () => {
         "baptismLocation",
         "baptismType",
         "dateJoinedChurch",
-        "firstVisitDate",
         "invitedBy",
-        "fellowshipGroup",
         "salvationStatus",
         "churchExperienceRating",
       ],
@@ -298,7 +296,7 @@ const Step7ReviewSubmit = () => {
                             handleFieldChange(
                               sub,
                               e.target.value,
-                              section.subObject
+                              section.subObject,
                             )
                           }
                           className="w-full border rounded px-2 py-1 text-sm"

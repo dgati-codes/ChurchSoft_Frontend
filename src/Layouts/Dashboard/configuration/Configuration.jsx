@@ -123,10 +123,10 @@ export default function Configuration() {
                     {c.type}
                   </span>
                  
-                    <p className="font-semibold mt-1">
+                    <div className="font-semibold mt-1">
                     {c.name}{" "}
                     <p className="text-gray-500 text-sm">({c.code})</p>
-                  </p>
+                  </div>
                   
                   <p className="text-sm ml-30 text-gray-600">
                     {c.parent} Parent • {c.child} Child

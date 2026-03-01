@@ -39,6 +39,7 @@ const Step1PersonalInfo = () => {
     district: formData.district || "",
     jurisdiction: formData.jurisdiction || "",
     nationality: formData.nationality || "",
+    assembly: formData.assembly || "",
     ethnicity: formData.ethnicity || "",
     identificationType: formData.identificationType || "",
     identificationNumber: formData.identificationNumber || "",
@@ -50,7 +51,6 @@ const Step1PersonalInfo = () => {
       : [], 
   });
 
-console.log(localData);
 const location = useLocation();
 
 useEffect(() => {
@@ -245,8 +245,8 @@ useEffect(() => {
           <div>
             <label className="text-gray-600 font-bold">Assembly</label>
             <input
-              name="localAssemblyName"
-              value={localData.localAssemblyName}
+              name="assembly"
+              value={localData.assembly}
               onChange={handleChange}
               className="input"
               placeholder="Assembly"
@@ -373,7 +373,7 @@ useEffect(() => {
             <input
               type="text"
               placeholder="Enter language"
-              value={localData.preferredLanguages.join(", ")}
+              value={localData.preferredLanguages.join(",  ")}
               onChange={(e) =>
                 setLocalData((prev) => ({
                   ...prev,

@@ -1,8 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 import axiosInstance from "../api/axiosInstance.js";
+import { loginUser } from "../api/services/auth.js";
 import MemberService from "../api/services/memberService.js";
 import { getCurrentUser } from "../api/services/userService.js";
-import {loginUser} from "../api/services/auth.js";
 
 const AuthContext = createContext(null);
 
@@ -16,93 +16,62 @@ export const ROLES = {
   MEMBER: "MEMBER",
   GUEST: "GUEST",
   LEADER: "LEADER",
-  
 };
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  // const [loading, setLoading] = useState(true);
+  const [member, setMember] = useState(null);
   /* =========================
      Restore Session On Refresh
   ========================== */
-  useEffect(() => {
-    const restoreSession = async () => {
-      const token = localStorage.getItem("accessToken");
-
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-
-      axiosInstance.defaults.headers.Authorization = `Bearer ${token}`;
-
-      try {
-        const userData = await getCurrentUser();
-        setUser({
-          ...userData,
-          role: userData.roleName,
-        });
-
-      
-
-
-        // ✅ Fetch members ONLY for allowed roles
-        if ([ROLES.ADMIN, ROLES.PASTOR, ROLES.ELDER, ROLES.REP, ROLES.FINANCE, ROLES.LEADER, ROLES.MEMBER, ROLES.GUEST].includes(userData.role)) {
-          const membersData = await MemberService.getAllMembers();
-          setMembers(membersData);
-        }
-      } catch (error) {
-        console.error("Session restore failed:", error);
-        logout(); // cleanup properly
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    restoreSession();
-  }, []);
-
+  
   /* =========================
      Login
   ========================== */
-  const login = async (credentials) => {
-    try {
-      const result = await loginUser(credentials);
+ const login = async (credentials) => {
+  try {
+    const result = await loginUser(credentials);
+    if (!result.success) return result;
 
-      if (!result.success) return result;
+    localStorage.setItem("accessToken", result.token);
+    axiosInstance.defaults.headers.Authorization = `Bearer ${result.token}`;
 
-      localStorage.setItem("accessToken", result.token);
-      axiosInstance.defaults.headers.Authorization = `Bearer ${result.token}`;
+    const userData = await getCurrentUser();
+    const formattedUser = { ...userData, role: userData.roleName };
 
-      const userData = await getCurrentUser();
-      setUser({
-        ...userData,
-        role: userData.roleName,
-      });
+    setUser(formattedUser);
+    localStorage.setItem("user", JSON.stringify(formattedUser));
 
-     
+    const member = await MemberService.getMemberByUserId(userData.id);
+    setMember(member);
+    localStorage.setItem("member", JSON.stringify(member));
 
-      return { success: true };
-    } catch (error) {
-      console.error("Login failed:", error);
-      return { success: false, message: "Login failed" };
-    }
-  };
+    const message = member
+      ? null
+      : "You are logged in but not yet registered as a member. Please register your member profile.";
 
+    return { success: true, message };
+  } catch (error) {
+    console.error("Login failed:", error);
+    return { success: false, message: "Login failed" };
+  }
+};
 
   const updateUser = (updatedUser) => {
-  setUser((prev) => ({
-    ...prev,
-    ...updatedUser,
-  }));
+    setUser((prev) => ({
+      ...prev,
+      ...updatedUser,
+    }));
 
-  localStorage.setItem("user", JSON.stringify({
-    ...user,
-    ...updatedUser,
-  }));
-};
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        ...user,
+        ...updatedUser,
+      }),
+    );
+  };
 
   /* =========================
      Logout
@@ -111,7 +80,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("accessToken");
     delete axiosInstance.defaults.headers.Authorization;
     setUser(null);
-    setMembers([]);
+    // setMembers([]);
   };
 
   /* =========================
@@ -132,16 +101,15 @@ export const AuthProvider = ({ children }) => {
   const isFinance = () => user?.role === ROLES.FINANCE;
   const isGuest = () => user?.role === ROLES.GUEST;
 
-
   return (
     <AuthContext.Provider
       value={{
-
         user,
+
+        updateUser,
        
-        updateUser ,
-        members,
-        loading,
+        member,
+        // loading,
         login,
         logout,
         hasRole,
@@ -152,7 +120,7 @@ export const AuthProvider = ({ children }) => {
         isMember,
         isLeader,
         isFinance,
-        isGuest
+        isGuest,
       }}
     >
       {children}

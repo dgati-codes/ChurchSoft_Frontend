@@ -31,7 +31,7 @@ export const RegistrationProvider = ({ children }) => {
     phoneNumber: "",
     whatsappAvailable: false,
     email: "",
-    residentialAddress: "",
+    physicalAddress: "",
 
     nextOfKin: {
       name: "",
@@ -102,12 +102,12 @@ export const RegistrationProvider = ({ children }) => {
       phoneNumber: "",
       whatsappAvailable: false,
       email: "",
-      residentialAddress: "",
+      physicalAddress: "",
 
       nextOfKin: {
-        name: formData.nextOfKinName,
-        relationship: formData.nextOfKinRelationship,
-        contactInformation: formData.nextOfKinContact,
+        name: formData.nextOfKin.name,
+        relationship: formData.nextOfKin.relationship,
+        contactInformation: formData.nextOfKin.contact,
       },
 
       status: "",
