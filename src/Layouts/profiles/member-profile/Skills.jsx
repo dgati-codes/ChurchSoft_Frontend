@@ -16,48 +16,20 @@ function Skills() {
         <br />
         <div className="flex items-center gap-8 flex-wrap justify-between">
           <div className="flex flex-col ">
-            <label htmlFor="" className="text-gray-500">
-              Ministries/Group
-            </label>
-            <input
-              type="text"
-              className="font-semibold"
-              value={member.ministries}
-            />
+            <p className="text-gray-500">Ministries/Group</p>
+            <p className="font-semibold">{member.ministries}</p>
           </div>
           <div className="flex flex-col">
-            <label htmlFor="" className="text-gray-500">
-              Leadership Roles
-            </label>
-            <input
-              type="text"
-              className="font-semibold"
-              value={member.leadershipRole}
-            />
+            <p className="text-gray-500">Leadership Roles</p>
+            <p className="font-semibold"> {member.leadershipRole}</p>
           </div>
           <div className="flex flex-col">
-            <label htmlFor="" className="text-gray-500">
-              Skills/Talent
-            </label>
-            <input
-              type="text"
-              className="font-semibold"
-              value={member.skillsTalents}
-              name=""
-              id=""
-            />
+            <p className="text-gray-500">Skills/Talent</p>
+            <p className="font-semibold">{member.skillsTalents}</p>
           </div>
           <div className="flex flex-col">
-            <label htmlFor="" className="text-gray-500">
-              Spiritual Gift
-            </label>
-            <input
-              type="text"
-              className="font-semibold"
-              value={member.spiritualGifts}
-              name=""
-              id=""
-            />
+            <p className="text-gray-500">Spiritual Gift</p>
+            <p className="font-semibold">{member.spiritualGifts}</p>
           </div>
         </div>
       </div>

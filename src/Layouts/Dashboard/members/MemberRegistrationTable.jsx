@@ -90,6 +90,10 @@ export default function MemberTable() {
   const totalPages = membersData?.totalPages ?? 0;
   const totalElements = membersData?.totalElements ?? 0;
 
+
+  const sortedMembers = [...members].sort(
+  (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+);
   const deleteMutation = useMutation({
     mutationFn: memberService.deleteMember,
     onSuccess: (_, id) => {
@@ -305,7 +309,7 @@ export default function MemberTable() {
                   </td>
                 </tr>
               ) : (
-                members.map((m) => (
+                sortedMembers.map((m) => (
                   <tr key={m.id} className="hover:bg-gray-50">
                     <td className="border px-3 py-2">{m.fullName}</td>
                     <td className="border px-3 py-2">{m.gender}</td>

@@ -1,7 +1,7 @@
 import { Heart } from "lucide-react";
 import { useAuth } from "../../../context/AuthContext";
 function welfare() {
- const { member } = useAuth();
+  const { member } = useAuth();
 
   return (
     <div className="min-h-screen fixed bg-white">
@@ -15,26 +15,16 @@ function welfare() {
         <br />
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <label htmlFor="" className="text-gray-500">
-              Any Health Condition(s)
-            </label>
-            <input
-              type="text"
-              className="font-semibold"
-              value={member.hasHealthIssues}
-            />
+            <p className="text-gray-500">Any Health Condition(s)</p>
+            <p className="font-semibold">{member.hasHealthIssues}</p>
           </div>
           <div className="flex flex-col">
-            <label htmlFor="" className="text-gray-500">
+            <p className="text-gray-500">
               Any special needs or medical conditions
-            </label>
-            <input
-              type="text"
-              className="font-semibold"
-              value={member.specialNeedsOrMedicalConditions}
-              name=""
-              id=""
-            />
+            </p>
+            <p className="font-semibold">
+              {member.specialNeedsOrMedicalConditions}
+            </p>
           </div>
         </div>
       </div>

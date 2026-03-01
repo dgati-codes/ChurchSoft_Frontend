@@ -19,7 +19,10 @@ const memberService = {
   getAllMembers: async (page = 0, size = 10) => {
     try {
       const res = await axiosInstance.get("/members", {
-        params: { page, size },
+        params: { 
+          page, 
+          size,
+         },
       });
 
       return normalizeResponse(res?.data);
@@ -44,10 +47,8 @@ const memberService = {
 
       const payload = res?.data;
 
-      // Most common Spring Boot pagination structure
       if (payload?.content) return payload;
 
-      // If wrapped inside data
       if (payload?.data?.content) return payload.data;
       console.log(res.payload);
       // Fallback normalization
@@ -172,7 +173,6 @@ const memberService = {
         },
       });
 
-      // If backend returns plain array
       if (Array.isArray(data)) {
         return {
           content: data,
@@ -181,7 +181,6 @@ const memberService = {
         };
       }
 
-      // If backend returns paginated structure
       return normalizeResponse(data);
     } catch (error) {
       console.error("Error searching members:", error.response?.data || error);
@@ -190,25 +189,23 @@ const memberService = {
   },
 
   getMemberByUserId: async (userId) => {
-  try {
-    const response = await axiosInstance.get(`/members/by-user-id/${userId}`);
-    const payload = response?.data;
+    try {
+      const response = await axiosInstance.get(`/members/by-user-id/${userId}`);
+      const payload = response?.data;
 
-    // Adjust based on backend response structure
-    if (payload?.data) return payload.data;
-    if (payload) return payload;
+      if (payload?.data) return payload.data;
+      if (payload) return payload;
 
-    return null;
-  } catch (error) {
-    // Handle "not a member" case gracefully
-    if (error.response?.status === 400) {
-      console.log("User is not registered as a member.");
-      return null; // instead of throwing
+      return null;
+    } catch (error) {
+      if (error.response?.status === 400) {
+        console.log("User is not registered as a member.");
+        return null;
+      }
+      console.error("Error fetching member by userId:", error);
+      throw error;
     }
-    console.error("Error fetching member by userId:", error);
-    throw error; // only throw unexpected errors
-  }
-},
+  },
 
   // 🔹 Delete Member
   deleteMember: async (id) => {
