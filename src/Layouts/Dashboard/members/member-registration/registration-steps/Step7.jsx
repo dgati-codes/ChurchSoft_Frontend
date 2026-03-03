@@ -89,7 +89,7 @@ const Step7ReviewSubmit = () => {
       Object.keys(localData).forEach(
         (key) => localData[key] === "" && (localData[key] = null),
       );
-
+      console.log("Sending data:", localData);
       // ✅ Create member via API
       const newMember = await memberService.createMember(localData);
 
@@ -135,12 +135,7 @@ const Step7ReviewSubmit = () => {
     {
       title: "Contact & Location Details",
       icon: <MapPin className="w-5 h-5 text-white" />,
-      fields: [
-        "phoneNumber",
-        "email",
-        "whatsappAvailable",
-        "physicalAddress",
-      ],
+      fields: ["phoneNumber", "email", "whatsappAvailable", "physicalAddress"],
       subTitle: "Next of Kin Details",
       subFields: ["name", "relationship", "contactInformation"],
       subObject: "nextOfKin",

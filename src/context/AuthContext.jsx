@@ -22,13 +22,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   // const [loading, setLoading] = useState(true);
   const [member, setMember] = useState(null);
-  /* =========================
-     Restore Session On Refresh
-  ========================== */
   
-  /* =========================
-     Login
-  ========================== */
  const login = async (credentials) => {
   try {
     const result = await loginUser(credentials);

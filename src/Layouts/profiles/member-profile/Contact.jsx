@@ -7,7 +7,7 @@ function Contact() {
 
   return (
     <div className="min-h-screen fixed">
-      <div className="w-15/8 ml-12">
+      <div className="w-13/10 ml-15">
         <div className="bg-[#F9FAFB] border-[#E5E7EB] rounded-lg shadow-sm border p-6">
           <h2 className="text-sm font-bold mb-4 flex items-center gap-2">
             <Phone className="h-5 w-5 text-blue-500" />
