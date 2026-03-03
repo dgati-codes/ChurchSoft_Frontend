@@ -224,6 +224,11 @@ if (!member) return null;
             <option>ACTIVE</option>
             <option>VISITOR</option>
             <option>INACTIVE</option>
+            <option>DECEASED</option>
+            <option>SUSPENDED</option>
+            <option>EXPELLED</option>
+            <option>TRANSFER</option>
+            <option>OTHER</option>
           </select>
         </div>
          {!isAdmin() && (
