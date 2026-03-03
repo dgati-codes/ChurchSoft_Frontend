@@ -57,13 +57,12 @@ const UserTable = () => {
         return UserService.getUsersByAssembly(
           page,
           PAGE_SIZE,
-          filters.localAssemblyName,       
+          filters.localAssemblyName,
         );
       }
       return UserService.getAllUsers(page, PAGE_SIZE, filters);
     },
     keepPreviousData: true,
-   
   });
 
   /* ===================== NORMALIZED DATA ===================== */
@@ -196,9 +195,7 @@ const UserTable = () => {
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="border px-3 py-2">
-                      {user.id}
-                    </td>
+                    <td className="border px-3 py-2">{user.id}</td>
                     <td className="border px-3 py-2">
                       {capitalize(user.firstName)} {capitalize(user.lastName)}
                     </td>
@@ -213,14 +210,16 @@ const UserTable = () => {
                           user.status === "ACTIVE"
                             ? "bg-green-600"
                             : user.status === "INACTIVE"
-                            ? "bg-gray-500"
-                            : "bg-red-500"
+                              ? "bg-gray-500"
+                              : "bg-red-500"
                         }`}
                       >
                         {user.status}
                       </span>
                     </td>
-                    <td className="border text-xs px-3 py-2">{user.roleName}</td>
+                    <td className="border text-xs px-3 py-2">
+                      {user.roleName}
+                    </td>
                     <td className="border p-2 text-center space-x-2">
                       <Edit
                         className="inline w-4 h-4 cursor-pointer"
@@ -262,102 +261,125 @@ const UserTable = () => {
             />
           </div>
         </div>
-
       </div>
 
       {/* Edit Modal */}
       {editingUser && (
         <div className="absolute inset-0 bg-black/40 flex justify-center z-60 items-center">
           <div className="bg-white p-8 rounded-lg w-180  shadow-lg">
-            <h3 className="text-xl font-semibold mb-4 text-center">Edit User</h3>
+            <h3 className="text-xl font-semibold mb-4 text-center">
+              Edit User
+            </h3>
             <div className="space-y-3">
               <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold whitespace-nowrap">First Name :</label>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleFormChange}
-                placeholder="First Name"
-                className="w-130 border text-gr-500 ml-6 border-gray-100 p-2 rounded"
-              />
+                <label htmlFor="" className="font-semibold whitespace-nowrap">
+                  First Name :
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleFormChange}
+                  placeholder="First Name"
+                  className="w-130 border text-gr-500 ml-6 border-gray-100 p-2 rounded"
+                />
               </div>
               <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold whitespace-nowrap">Last Name :</label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleFormChange}
-                placeholder="Last Name"
-                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-              />
+                <label htmlFor="" className="font-semibold whitespace-nowrap">
+                  Last Name :
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleFormChange}
+                  placeholder="Last Name"
+                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
+                />
               </div>
               <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold">User Name :</label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleFormChange}
-                placeholder="Username"
-                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-              />
+                <label htmlFor="" className="font-semibold">
+                  User Name :
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleFormChange}
+                  placeholder="Username"
+                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
+                />
               </div>
               <div className="flex  align-center justify-between">
-              <label htmlFor="" className="font-semibold ">Email :</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleFormChange}
-                placeholder="Email"
-                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-              />
+                <label htmlFor="" className="font-semibold ">
+                  Email :
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleFormChange}
+                  placeholder="Email"
+                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
+                />
               </div>
               <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold whitespace-nowrap">Phone Number :</label>
-              <input
-                type="text"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={handleFormChange}
-                placeholder="Phone Number"
-                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-              />
-              </div>
-             <div className="flex  align-center justify-between">
-               <label htmlFor="" className="font-semibold whitespace-nowrap">Local Assembly :</label>
-              <input
-                type="text"
-                name="localAssemblyName"
-                value={formData.localAssemblyName}
-                onChange={handleFormChange}
-                placeholder="Local Assembly"
-                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-              />
-             </div>
-              <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold">Status :</label>
-              <input
-                type="text"
-                name="status"
-                value={formData.status}
-                onChange={handleFormChange}
-                placeholder="Status"
-                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-              />
+                <label htmlFor="" className="font-semibold whitespace-nowrap">
+                  Phone Number :
+                </label>
+                <input
+                  type="text"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleFormChange}
+                  placeholder="Phone Number"
+                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
+                />
               </div>
               <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold whitespace-nowrap">Role      :</label>
-              <input
-                type="text"
-                name="roleName"
-                value={formData.roleName}
-                onChange={handleFormChange}
-                placeholder="Role Name"
-                className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-              />
+                <label htmlFor="" className="font-semibold whitespace-nowrap">
+                  Local Assembly :
+                </label>
+                <input
+                  type="text"
+                  name="localAssemblyName"
+                  value={formData.localAssemblyName}
+                  onChange={handleFormChange}
+                  placeholder="Local Assembly"
+                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
+                />
+              </div>
+              <div className="flex  align-center justify-between">
+                <label className="font-semibold whitespace-nowrap">
+                  Status<span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="status"
+                  value={formData.status}
+                  onChange={handleFormChange}
+                  placeholder="status"
+                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
+                  required
+                >
+                  <option value="">Select Status</option>
+                  <option value="ACTIVE">ACTIVE</option>
+                  <option value="INACTIVE">INACTIVE</option>
+                  <option value="SUSPENDED">SUSPENDED</option>
+                </select>
+              </div>
+              <div className="flex  align-center justify-between">
+                <label htmlFor="" className="font-semibold whitespace-nowrap">
+                  Role :
+                </label>
+                <input
+                readOnly
+                  type="text"
+                  name="roleName"
+                  value={formData.roleName}
+                  onChange={handleFormChange}
+                  placeholder="Role Name"
+                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
+                />
               </div>
             </div>
             <div className="flex justify-end mt-4 space-x-2">
@@ -417,8 +439,8 @@ const UserTable = () => {
                   successModal.action === "deleted"
                     ? "text-red-600"
                     : successModal.action === "updated"
-                    ? "text-green-600"
-                    : "text-gray-600"
+                      ? "text-green-600"
+                      : "text-gray-600"
                 }`}
               >
                 {successModal.firstName} {successModal.lastName}
@@ -426,8 +448,8 @@ const UserTable = () => {
               {successModal.action === "updated"
                 ? "Updated"
                 : successModal.action === "deleted"
-                ? "Deleted"
-                : "Done"}
+                  ? "Deleted"
+                  : "Done"}
             </h2>
             <button
               onClick={() => setSuccessModal(null)}
