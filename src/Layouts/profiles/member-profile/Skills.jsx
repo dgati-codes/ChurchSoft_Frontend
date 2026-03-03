@@ -5,8 +5,8 @@ function Skills() {
   const { member } = useAuth();
 
   return (
-    <div className="min-h-screen fixed bg-gray-50">
-      <div className=" w-10/14 ml-50 border-[#E5E7EB] bg-[#F9FAFB] rounded-lg shadow-sm border p-6">
+    <div className="min-h-screen fixed">
+      <div className=" w-15/9 ml-20 border-[#E5E7EB] bg-[#F9FAFB] rounded-lg shadow-sm border p-6">
         <div className="flex gap-1 mb-2">
           <Shield className="h-5 w-5 text-blue-500" />
           <h1>Ministry Invlovement & Skills</h1>
