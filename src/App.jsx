@@ -28,108 +28,112 @@ import UserProfile from "./Layouts/profiles/user-profile/UserProfile";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
 import EditMemberModal from "./Layouts/Dashboard/modals/EditMemberModal";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* 🔁 ROOT REDIRECT */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+    <>
+      <Toaster position="top-right" />
+      <Router>
+        <Routes>
+          {/*  ROOT REDIRECT */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* 🔐 AUTH */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+          {/*  AUTH */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        <Route path="/user_profile" element={<UserProfile />} />
-        <Route
-          path="/memberProfile"
-          element={
-            <PrivateRoute>
-              <ProfileLayout />
-            </PrivateRoute>
-          }
-        >
-          <Route index element={<PersonalInfo />} />
-          <Route path="memberProfile-contact" element={<Contact />} />
-          <Route path="memberProfile-membership" element={<Membership />} />
-          <Route path="memberProfile-education" element={<EducationWork />} />
-          <Route path="memberProfile-skills" element={<Skills />} />
-          <Route path="memberProfile-welfare" element={<Welfare />} />
-        </Route>
+          <Route path="/user_profile" element={<UserProfile />} />
+          <Route
+            path="/memberProfile"
+            element={
+              <PrivateRoute>
+                <ProfileLayout />
+              </PrivateRoute>
+            }
+          >
+            <Route index element={<PersonalInfo />} />
+            <Route path="memberProfile-contact" element={<Contact />} />
+            <Route path="memberProfile-membership" element={<Membership />} />
+            <Route path="memberProfile-education" element={<EducationWork />} />
+            <Route path="memberProfile-skills" element={<Skills />} />
+            <Route path="memberProfile-welfare" element={<Welfare />} />
+          </Route>
           <Route path="editMemberModal" element={<EditMemberModal />} />
-        {/* 📊 DASHBOARD */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <DashboardLayout />
-            </PrivateRoute>
-          }
-        >
-          <Route index element={<Dashboard2 />} />
+          {/*  DASHBOARD */}
           <Route
-            path="add-user"
+            path="/dashboard"
             element={
-              <PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.PASTOR]}>
-                <AddUserForm />
+              <PrivateRoute>
+                <DashboardLayout />
               </PrivateRoute>
             }
-          />
-          <Route
-            path="user-table"
-            element={
-              <PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.PASTOR]}>
-                <UserTable />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="members"
-            element={
-              <PrivateRoute
-                allowedRoles={[
-                  ROLES.ADMIN,
-                  ROLES.PASTOR,
-                  ROLES.ELDER,
-                  ROLES.REP,
-                  ROLES.FINANCE,
-                  ROLES.LEADER,
-                  ROLES.MEMBER,
-                  ROLES.GUEST,
-                ]}
-              >
-                <MemberTable />
-              </PrivateRoute>
-            }
-          />
-          <Route path="attendance" element={<AttendanceTracking />} />
-          <Route path="countries" element={<CountriesOverview />} />
-          <Route path="configuration" element={<Configuration />} />
-          <Route
-            path="register"
-            element={
-              <PrivateRoute
-                allowedRoles={[
-                  ROLES.ADMIN,
-                  ROLES.PASTOR,
-                  ROLES.ELDER,
-                  ROLES.REP,
-                  ROLES.FINANCE,
-                  ROLES.LEADER,
-                  ROLES.MEMBER,
-                  ROLES.GUEST,
-                ]}
-              >
-                <IncompleteAndNewRegister />
-              </PrivateRoute>
-            }
-          />
-        </Route>
+          >
+            <Route index element={<Dashboard2 />} />
+            <Route
+              path="add-user"
+              element={
+                <PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.PASTOR]}>
+                  <AddUserForm />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="user-table"
+              element={
+                <PrivateRoute allowedRoles={[ROLES.ADMIN, ROLES.PASTOR]}>
+                  <UserTable />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="members"
+              element={
+                <PrivateRoute
+                  allowedRoles={[
+                    ROLES.ADMIN,
+                    ROLES.PASTOR,
+                    ROLES.ELDER,
+                    ROLES.REP,
+                    ROLES.FINANCE,
+                    ROLES.LEADER,
+                    ROLES.MEMBER,
+                    ROLES.GUEST,
+                  ]}
+                >
+                  <MemberTable />
+                </PrivateRoute>
+              }
+            />
+            <Route path="attendance" element={<AttendanceTracking />} />
+            <Route path="countries" element={<CountriesOverview />} />
+            <Route path="configuration" element={<Configuration />} />
+            <Route
+              path="register"
+              element={
+                <PrivateRoute
+                  allowedRoles={[
+                    ROLES.ADMIN,
+                    ROLES.PASTOR,
+                    ROLES.ELDER,
+                    ROLES.REP,
+                    ROLES.FINANCE,
+                    ROLES.LEADER,
+                    ROLES.MEMBER,
+                    ROLES.GUEST,
+                  ]}
+                >
+                  <IncompleteAndNewRegister />
+                </PrivateRoute>
+              }
+            />
+          </Route>
 
-        {/* ❌ 404 (ALWAYS LAST) */}
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
-    </Router>
+          {/*  404 (ALWAYS LAST) */}
+          <Route path="*" element={<PageNotFound />} />
+        </Routes>
+      </Router>
+    </>
   );
 }
 
