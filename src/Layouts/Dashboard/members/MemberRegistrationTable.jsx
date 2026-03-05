@@ -13,6 +13,7 @@ import memberService from "../../../api/services/memberService";
 import { useAuth } from "../../../context/AuthContext.jsx";
 import DeleteConfirmModal from "../modals/DeleteConfirmModal";
 import EditMemberModal from "../modals/EditMemberModal";
+import SuccessModal from "../modals/successModal.jsx";
 import LoadingSpinner from "../modals/LoadingSpinner";
 import MemberFullView from "./MemberFullView";
 export default function MemberTable() {
@@ -94,6 +95,9 @@ export default function MemberTable() {
   const sortedMembers = [...members].sort(
   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
 );
+
+const capitalize = (str = "") =>
+    str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   const deleteMutation = useMutation({
     mutationFn: memberService.deleteMember,
     onSuccess: (_, id) => {
@@ -311,7 +315,7 @@ export default function MemberTable() {
               ) : (
                 sortedMembers.map((m) => (
                   <tr key={m.id} className="hover:bg-gray-50">
-                    <td className="border px-3 py-2">{m.fullName}</td>
+                    <td className="border px-3 py-2">{capitalize(m.fullName)}</td>
                     <td className="border px-3 py-2">{m.gender}</td>
                     <td className="border px-3 py-2">{m.dateOfBirth}</td>
                     <td className="border px-3 py-2">{m.maritalStatus}</td>
@@ -348,9 +352,9 @@ export default function MemberTable() {
                           <>
                             <button
                               onClick={() => setEditingMember(m)}
-                              className="text-blue-500 ml-4 hover:cursor-pointer"
+                              className=" ml-4 hover:cursor-pointer"
                             >
-                              <Eye className="w-5 h-5" />
+                              <Eye className="w-5 h-5 text-gray-700" />
                             </button>
                           </>
                         )}
@@ -359,9 +363,9 @@ export default function MemberTable() {
                           <>
                             <button
                               onClick={() => setEditingMember(m)}
-                              className="text-blue-500 hover:cursor-pointer"
+                              className="  hover:cursor-pointer"
                             >
-                              <Edit className="w-5 h-5" />
+                              <Edit className="w-5 h-5 text-gray-700" />
                             </button>
                           </>
                         )}
@@ -430,25 +434,10 @@ export default function MemberTable() {
       )}
 
       {successModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96 text-center">
-            <h2 className="text-xl font-semibold mb-4">
-              Member {successModal.action === "updated" ? "Updated" : "Deleted"}
-            </h2>
-            <p className="mb-6">
-              <span className="font-semibold text-green-600">
-                {successModal.fullName}
-              </span>{" "}
-              has been successfully {successModal.action}.
-            </p>
-            <button
-              onClick={() => setSuccessModal(null)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        <SuccessModal 
+        successModal={successModal}
+        setSuccessModal={setSuccessModal}
+        />
       )}
     </div>
   );

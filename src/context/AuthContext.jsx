@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState,useEffect } from "react";
 import axiosInstance from "../api/axiosInstance.js";
 import { loginUser } from "../api/services/auth.js";
 import MemberService from "../api/services/memberService.js";
@@ -19,7 +19,10 @@ export const ROLES = {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+ const [user, setUser] = useState(() => {
+  const storedUser = localStorage.getItem("user");
+  return storedUser ? JSON.parse(storedUser) : null;
+});
   // const [loading, setLoading] = useState(true);
   const [member, setMember] = useState(null);
   
@@ -52,6 +55,21 @@ export const AuthProvider = ({ children }) => {
   }
 };
 
+
+ useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("accessToken");
+    const storedMember = localStorage.getItem("member");
+
+    if (storedUser && token) {
+      setUser(JSON.parse(storedUser));
+      axiosInstance.defaults.headers.Authorization = `Bearer ${token}`;
+    }
+
+    if (storedMember) {
+      setMember(JSON.parse(storedMember));
+    }
+  }, []);
   const updateUser = (updatedUser) => {
     setUser((prev) => ({
       ...prev,
@@ -72,6 +90,8 @@ export const AuthProvider = ({ children }) => {
   ========================== */
   const logout = () => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+localStorage.removeItem("member");
     delete axiosInstance.defaults.headers.Authorization;
     setUser(null);
     // setMembers([]);

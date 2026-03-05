@@ -11,6 +11,9 @@ import { useState } from "react";
 import UserService from "../../../api/services/userService.js";
 import useDebounce from "../../../hooks/useDebounce";
 import LoadingSpinner from "../modals/LoadingSpinner.jsx";
+import DeleteUserModal from "../modals/DeleteUserModal.jsx";
+import SuccessUserModal from "../modals/SuccessUserModal.jsx";
+import EditUserModal from "../modals/EditUserModal.jsx";  
 
 const PAGE_SIZE = 10;
 
@@ -48,22 +51,27 @@ const UserTable = () => {
 
   /* ===================== DATA FETCH ===================== */
   const { data, isFetching, isError, error } = useQuery({
-    queryKey: ["users", page, filters.localAssemblyName, debouncedSearch],
-    queryFn: () => {
-      if (isSearching) {
-        return UserService.searchUsers(page, PAGE_SIZE, debouncedSearch);
-      }
-      if (hasAssembly) {
-        return UserService.getUsersByAssembly(
-          page,
-          PAGE_SIZE,
-          filters.localAssemblyName,
-        );
-      }
-      return UserService.getAllUsers(page, PAGE_SIZE, filters);
-    },
-    keepPreviousData: true,
-  });
+  queryKey: ["users", page, filters.localAssemblyName, debouncedSearch],
+  queryFn: () => {
+    if (isSearching) {
+      return UserService.searchUsers(page, PAGE_SIZE, debouncedSearch);
+    }
+    if (hasAssembly) {
+      return UserService.getUsersByAssembly(
+        page,
+        PAGE_SIZE,
+        filters.localAssemblyName,
+      );
+      
+    }
+    return UserService.getAllUsers(page, PAGE_SIZE, filters);
+  },
+
+  keepPreviousData: true,          
+  staleTime: 3 * 60 * 1000,        
+  refetchInterval: 3 * 60 * 1000,  
+  refetchOnWindowFocus: false,     
+});
 
   /* ===================== NORMALIZED DATA ===================== */
   const users = Array.isArray(data?.content)
@@ -116,6 +124,7 @@ const UserTable = () => {
       lastName: formData.lastName,
       action: "deleted",
     });
+    setSuccessModal(null);
     setDeleteModal(null);
     queryClient.invalidateQueries(["users"]);
   };
@@ -264,202 +273,24 @@ const UserTable = () => {
       </div>
 
       {/* Edit Modal */}
-      {editingUser && (
-        <div className="absolute inset-0 bg-black/40 flex justify-center z-60 items-center">
-          <div className="bg-white p-8 rounded-lg w-180  shadow-lg">
-            <h3 className="text-xl font-semibold mb-4 text-center">
-              Edit User
-            </h3>
-            <div className="space-y-3">
-              <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold whitespace-nowrap">
-                  First Name :
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleFormChange}
-                  placeholder="First Name"
-                  className="w-130 border text-gr-500 ml-6 border-gray-100 p-2 rounded"
-                />
-              </div>
-              <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold whitespace-nowrap">
-                  Last Name :
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleFormChange}
-                  placeholder="Last Name"
-                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-                />
-              </div>
-              <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold">
-                  User Name :
-                </label>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleFormChange}
-                  placeholder="Username"
-                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-                />
-              </div>
-              <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold ">
-                  Email :
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleFormChange}
-                  placeholder="Email"
-                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-                />
-              </div>
-              <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold whitespace-nowrap">
-                  Phone Number :
-                </label>
-                <input
-                  type="text"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleFormChange}
-                  placeholder="Phone Number"
-                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-                />
-              </div>
-              <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold whitespace-nowrap">
-                  Local Assembly :
-                </label>
-                <input
-                  type="text"
-                  name="localAssemblyName"
-                  value={formData.localAssemblyName}
-                  onChange={handleFormChange}
-                  placeholder="Local Assembly"
-                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-                />
-              </div>
-              <div className="flex  align-center justify-between">
-                <label className="font-semibold whitespace-nowrap">
-                  Status<span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleFormChange}
-                  placeholder="status"
-                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-                  required
-                >
-                  <option value="">Select Status</option>
-                  <option value="ACTIVE">ACTIVE</option>
-                  <option value="INACTIVE">INACTIVE</option>
-                  <option value="SUSPENDED">SUSPENDED</option>
-                </select>
-              </div>
-              <div className="flex  align-center justify-between">
-                <label htmlFor="" className="font-semibold whitespace-nowrap">
-                  Role :
-                </label>
-                <input
-                readOnly
-                  type="text"
-                  name="roleName"
-                  value={formData.roleName}
-                  onChange={handleFormChange}
-                  placeholder="Role Name"
-                  className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
-                />
-              </div>
-            </div>
-            <div className="flex justify-end mt-4 space-x-2">
-              <button
-                onClick={() => setEditingUser(null)}
-                className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleUpdate}
-                className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-green-700"
-              >
-                Update
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+     <EditUserModal
+  editingUser={editingUser}
+  formData={formData}
+  handleFormChange={handleFormChange}
+  handleUpdate={handleUpdate}
+  setEditingUser={setEditingUser}
+/>
 
-      {/* Delete Modal */}
-      {deleteModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center z-60 justify-center">
-          <div className="bg-white p-6 rounded-lg w-96 text-center">
-            <p className="mb-4 font-semibold">
-              Delete{" "}
-              <span className="text-red-500">
-                {deleteModal.firstName} {deleteModal.lastName}
-              </span>
-              ?
-            </p>
-            <div className="flex justify-center gap-4">
-              <button
-                onClick={() => setDeleteModal(null)}
-                className="bg-gray-400 text-white px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => confirmDelete(deleteModal.id)}
-                className="bg-red-600 text-white px-4 py-2 cursor-pointer rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+<DeleteUserModal
+  deleteModal={deleteModal}
+  setDeleteModal={setDeleteModal}
+  confirmDelete={confirmDelete}
+/>
 
-      {/* Success Modal */}
-      {successModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96 text-center">
-            <h2 className="text-xl font-semibold mb-4">
-              <span
-                className={`font-semibold ${
-                  successModal.action === "deleted"
-                    ? "text-red-600"
-                    : successModal.action === "updated"
-                      ? "text-green-600"
-                      : "text-gray-600"
-                }`}
-              >
-                {successModal.firstName} {successModal.lastName}
-              </span>{" "}
-              {successModal.action === "updated"
-                ? "Updated"
-                : successModal.action === "deleted"
-                  ? "Deleted"
-                  : "Done"}
-            </h2>
-            <button
-              onClick={() => setSuccessModal(null)}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+<SuccessUserModal
+  successModal={successModal}
+  setSuccessModal={setSuccessModal}
+/>
     </div>
   );
 };
