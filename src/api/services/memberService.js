@@ -232,6 +232,16 @@ const memberService = {
     const res = await axiosInstance.post("/members", memberData);
     return res.data;
   },
+
+
+  
 };
 
 export default memberService;
+export const getIncompleteMembers = async () => {
+  const response = await axiosInstance.get("/members");
+
+  return response.data.data.filter(
+    (member) => member.isCompleted === false
+  );
+};

@@ -1,3 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
+import { getIncompleteMembers } from "../../../../api/services/memberService.js";
+import { data } from "react-router-dom";
+
+
+
+
 const registrations = [
   {
     name: "Sandra Adom",
@@ -24,6 +31,39 @@ const registrations = [
 ];
 
 export default function IncompleteRegistrations() {
+
+const { data: registrations = [], isLoading } = useQuery({
+  
+  queryKey: ["incompleteMembers"],
+  queryFn: getIncompleteMembers,
+  
+ 
+}
+);
+const formattedRegistrations = registrations.map((member) => {
+  const initials = member.fullName
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2);
+
+  return {
+    name: member.fullName,
+    email: member.email,
+    id: member.memberId,
+    progress: 50, // placeholder until backend provides progress
+    started: new Date(member.createdAt).toLocaleDateString(),
+    updated: new Date(member.updatedAt).toLocaleDateString(),
+    initials,
+    avatarBg: "bg-blue-100",
+    avatarText: "text-blue-600",
+  };
+});
+
+if (isLoading) {
+  return <div className="p-6">Loading registrations...</div>;
+}
+
   return (
     <div className="w-full min-h-screen bg-gray-100 ">
       {/* Tabs */}
@@ -42,7 +82,7 @@ export default function IncompleteRegistrations() {
 
       {/* Cards */}
       <div className="space-y-6">
-        {registrations.map((item, index) => (
+        {formattedRegistrations.map((item, index) => (
           <div
             key={index}
             className="bg-white rounded-xl shadow-sm p-6 flex justify-between"

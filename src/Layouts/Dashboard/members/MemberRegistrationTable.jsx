@@ -73,9 +73,10 @@ export default function MemberTable() {
     );
   },
 
-  keepPreviousData: true,
-  staleTime: 1000 * 60 * 5,
-  refetchOnWindowFocus: false,
+  keepPreviousData: true,          
+  staleTime: 3 * 60 * 1000,        
+  refetchInterval: 3 * 60 * 1000,  
+  refetchOnWindowFocus: false,     
 });
 
   useEffect(() => {
@@ -96,8 +97,16 @@ export default function MemberTable() {
   (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
 );
 
-const capitalize = (str = "") =>
+const capitalizeFullName = (name = "") =>
+  name
+    .trim()
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+
+     const capitalize = (str = "") =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
   const deleteMutation = useMutation({
     mutationFn: memberService.deleteMember,
     onSuccess: (_, id) => {
@@ -315,16 +324,16 @@ const capitalize = (str = "") =>
               ) : (
                 sortedMembers.map((m) => (
                   <tr key={m.id} className="hover:bg-gray-50">
-                    <td className="border px-3 py-2">{capitalize(m.fullName)}</td>
+                    <td className="border px-3 py-2">{capitalizeFullName(m.fullName)}</td>
                     <td className="border px-3 py-2">{m.gender}</td>
                     <td className="border px-3 py-2">{m.dateOfBirth}</td>
                     <td className="border px-3 py-2">{m.maritalStatus}</td>
-                    <td className="border px-3 py-2">{m.nationality}</td>
+                    <td className="border px-3 py-2">{capitalize(m.nationality)}</td>
                     <td className="border px-3 py-2">{m.jurisdiction}</td>
                     <td className="border px-3 py-2">{m.preferredLanguages}</td>
-                    <td className="border px-3 py-2">{m.district}</td>
-                    <td className="border px-3 py-2">{m.assembly}</td>
-                    <td className="border px-3 py-2">{m.ethnicity}</td>
+                    <td className="border px-3 py-2">{capitalize(m.district)}</td>
+                    <td className="border px-3 py-2">{capitalize(m.assembly)}</td>
+                    <td className="border px-3 py-2">{capitalize(m.ethnicity)}</td>
                     <td className="border px-3 py-2">{m.email}</td>
                     <td className="border px-3 py-2">{m.phoneNumber}</td>
 
