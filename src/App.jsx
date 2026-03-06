@@ -10,8 +10,8 @@ import Login from "./features/auth/Components/Login/LoginForm";
 import AttendanceTracking from "./Layouts/Dashboard/attendance/Attendance";
 import Configuration from "./Layouts/Dashboard/configuration/Configuration";
 import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
-import Dashboard2 from "./Layouts/Dashboard/dashboard-layouts/Dashboard";
-import DashboardLayout from "./Layouts/Dashboard/dashboard-layouts/DashboardLayout";
+import Dashboard from "./Layouts/Dashboard/Dashboard";
+import DashboardLayout from "./Layouts/Dashboard/DashboardLayout";
 import IncompleteAndNewRegister from "./Layouts/Dashboard/members/member-registration/IncompleteAndNewRegister";
 import MemberTable from "./Layouts/Dashboard/members/MemberRegistrationTable";
 import AddUserForm from "./Layouts/Dashboard/users/AddUserForm";
@@ -69,7 +69,7 @@ function App() {
               </PrivateRoute>
             }
           >
-            <Route index element={<Dashboard2 />} />
+            <Route index element={<Dashboard />} />
             <Route
               path="add-user"
               element={

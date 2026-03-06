@@ -245,3 +245,8 @@ export const getIncompleteMembers = async () => {
     (member) => member.isCompleted === false
   );
 };
+export const getBirthdaysThisWeek = async () => {
+  const response = await axiosInstance.get("/members/birthdays-this-week");
+  return response.data;
+  
+};

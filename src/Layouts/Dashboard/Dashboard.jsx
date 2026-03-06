@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import {
   Banknote,
   BookOpen,
@@ -10,8 +11,16 @@ import {
   User,
   Users,
 } from "lucide-react";
+import { getBirthdaysThisWeek } from "../../api/services/memberService.js";
 
 export default function Dashboard() {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["birthdays-this-week"],
+    queryFn: getBirthdaysThisWeek,
+  });
+  const birthdays = data?.content || data || [];
+  console.log("Birthdays:", birthdays);
+
   return (
     <div className="flex min-h-screen bg-[#F6F8FC] font-[DM Sans]">
       <main className="flex-1 mt-10">
@@ -55,24 +64,28 @@ export default function Dashboard() {
           {/* BIRTHDAYS */}
           <div className="bg-white rounded-2xl p-6">
             <div className="grid grid-cols-3 gap-4">
-              <BirthdayCard
-                name="Kofi Annan"
-                age="26"
-                role="Worship Team"
-                image="https://thumbs.dreamstime.com/b/portrait-view-regular-happy-smiling-niger-man-ultra-realistic-candid-social-media-avatar-image-plain-solid-background-338037856.jpg"
-              />
-              <BirthdayCard
-                name="Rhoda Tuckson"
-                age="22"
-                role="Junior Youth"
-                image="https://tse2.mm.bing.net/th/id/OIP.-OD0dCrXXOQenE_Y6CaiXQHaJQ?w=1440&h=1800&rs=1&pid=ImgDetMain&o=7&rm=3"
-              />
-              <BirthdayCard
-                name="Gloria Pamela"
-                age="25"
-                role="Worship Team"
-                image="https://tse1.mm.bing.net/th/id/OIP.bjD1_yD-tJ6aJyCAjPfaBwHaLG?w=1707&h=2560&rs=1&pid=ImgDetMain&o=7&rm=3"
-              />
+              {isLoading && (
+                <p className="text-sm text-gray-400">Loading birthdays...</p>
+              )}
+
+              {isError && (
+                <p className="text-sm text-red-400">Failed to load birthdays</p>
+              )}
+
+              {birthdays.slice(0, 3).map((member, index) => (
+                <BirthdayCard
+                  key={index}
+                  name={member.fullName}
+                  age={member.ageTurning}
+                  role={member.ministries?.[0] || "Member"}
+                  daysRemaining={member.daysRemaining}
+                  image={
+                    member.imageId
+                      ? `https://churchsoft-backend.onrender.com/church-soft/v1.0/images/${member.imageId}`
+                      : "https://i0.wp.com/fembi.com/wp-content/uploads/2019/05/Fembi_Mortgage_join_our_team.jpg?w=1273&ssl=1"
+                  }
+                />
+              ))}
             </div>
           </div>
 
@@ -188,15 +201,31 @@ function Stat({ title, icon, value, color }) {
   );
 }
 
-function BirthdayCard({ name, age, role, image }) {
+function BirthdayCard({ name, age, role, image, daysRemaining }) {
+  const getBirthdayText = () => {
+    if (daysRemaining === 0) return "Today 🎉";
+    if (daysRemaining === 1) return "Tomorrow";
+    return `In ${daysRemaining} days`;
+  };
+
   return (
-    <div className="bg-[#F6F8FC] rounded-2xl py-5 text-center">
-      {/* IMAGE */}
+    <div className=" relative bg-[#F6F8FC] rounded-2xl text-center">
+      <div>
+        <span
+        className={`absolute top-2 right-2 text-[11px] font-semibold px-2 py-[2px] rounded-full bg-white shadow ${
+          daysRemaining === 0 ? "text-green-600" : "text-purple-600"
+        }`}
+      >
+        {getBirthdayText()}
+      </span>
       <img
         src={image}
         alt={name}
-        className="h-32 w-full object-cover rounded-xl mb-3"
+        className="h-40 w-full object-cover rounded-xl mb-3"
       />
+      </div>
+      {/* IMAGE */}
+      
 
       <h4 className="text-[15px] font-semibold">{name}</h4>
       <p className="text-[13px] text-pink-500">Turning {age}</p>
