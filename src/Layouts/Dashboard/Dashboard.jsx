@@ -270,7 +270,7 @@ function BirthdayCard({ name, age, role, image, daysRemaining }) {
       <div>
         <span
           className={`absolute top-2 right-2 text-[11px] font-semibold px-2 py-2 rounded-full bg-white shadow ${
-            daysRemaining === 0 ? "text-green-600" : "text-purple-600"
+            daysRemaining === 0 ? "text-green-600" : "text-blue-600" } ${daysRemaining === +2 ? "text-red-500" : ""
           }`}
         >
           {getBirthdayText()}
