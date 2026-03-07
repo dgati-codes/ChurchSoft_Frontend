@@ -2,61 +2,50 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext.jsx";
 
 export default function EditMemberModal({ member, onClose, onSave }) {
- 
+  const { isAdmin } = useAuth();
 
-  // Initialize form state with all backend fields
-  const [form, setForm] = useState({
-    id: member.id,
-    memberId: member.memberId,
-    fullName: member.fullName || "",
-    dateOfBirth: member.dateOfBirth || "",
-    gender: member.gender || "MALE",
-    maritalStatus: member.maritalStatus || "SINGLE",
-    hometown: member.hometown || "",
-    nationality: member.nationality || "",
-    jurisdiction: member.jurisdiction || "",
-    assembly: member.assembly || "",
-    district: member.district || "",
-    ethnicity: member.ethnicity || "",
-    preferredLanguages: member.preferredLanguages || "",
-    email: member.email || "",
-    phoneNumber: member.phoneNumber || "",
-    status: member.status || "ACTIVE",
-  });
- const { isAdmin } = useAuth();
-  
-  
-  // Update form when a new member is passed
+  // Store original member to preserve hidden/backend fields
+  const [originalMember, setOriginalMember] = useState({});
+  // Store editable form values
+  const [form, setForm] = useState({});
+
+  // Sync form whenever a new member is passed
   useEffect(() => {
     if (member) {
-      setForm({
-        id: member.id,
-        memberId: member.memberId,
-        fullName: member.fullName || "",
-        dateOfBirth: member.dateOfBirth || "",
-        gender: member.gender || "MALE",
-        maritalStatus: member.maritalStatus || "SINGLE",
-        hometown: member.hometown || "",
-        nationality: member.nationality || "",
-        jurisdiction: member.jurisdiction || "",
-        assembly: member.assembly || "",
-        district: member.district || "",
-        ethnicity: member.ethnicity || "",
-        preferredLanguages: member.preferredLanguages || "",
-        email: member.email || "",
-        phoneNumber: member.phoneNumber || "",
-        status: member.status || "ACTIVE",
-      });
+      setOriginalMember(member);
+      setForm(member);
     }
   }, [member]);
-if (!member) return null;
+
+  if (!member) return null;
+
+  // Generic change handler for inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
+  // Submit handler: merge original + edited fields, safely handle arrays and nested objects
   const handleSubmit = () => {
-    onSave(form); // pass entire object to saveEdit
+    const payload = {
+      ...originalMember, // preserve all backend-required fields
+      ...form,           // override only edited fields
+      preferredLanguages: Array.isArray(form.preferredLanguages)
+        ? form.preferredLanguages
+        : [form.preferredLanguages].filter(Boolean),
+      ministries: form.ministries || [],
+      skillsTalents: form.skillsTalents || [],
+      spiritualGifts: form.spiritualGifts || [],
+      nextOfKin: form.nextOfKin || { name: "", relationship: "", contactInformation: "" },
+      consentForCommunication: form.consentForCommunication ?? false,
+      whatsappAvailable: form.whatsappAvailable ?? false,
+      hasHealthIssues: form.hasHealthIssues ?? false,
+    };
+
+  onSave(payload); 
   };
 
   return (
@@ -70,8 +59,7 @@ if (!member) return null;
           <input
             className="input w-full"
             name="fullName"
-            
-            value={form.fullName}
+            value={form.fullName || ""}
             onChange={handleChange}
           />
         </div>
@@ -83,7 +71,7 @@ if (!member) return null;
             type="date"
             className="input w-full"
             name="dateOfBirth"
-            value={form.dateOfBirth}
+            value={form.dateOfBirth || ""}
             onChange={handleChange}
           />
         </div>
@@ -94,7 +82,7 @@ if (!member) return null;
           <select
             className="input w-full"
             name="gender"
-            value={form.gender}
+            value={form.gender || ""}
             onChange={handleChange}
           >
             <option>MALE</option>
@@ -108,7 +96,7 @@ if (!member) return null;
           <select
             className="input w-full"
             name="maritalStatus"
-            value={form.maritalStatus}
+            value={form.maritalStatus || ""}
             onChange={handleChange}
           >
             <option>SINGLE</option>
@@ -123,7 +111,7 @@ if (!member) return null;
           <input
             className="input w-full"
             name="hometown"
-            value={form.hometown}
+            value={form.hometown || ""}
             onChange={handleChange}
           />
         </div>
@@ -134,7 +122,7 @@ if (!member) return null;
           <input
             className="input w-full"
             name="nationality"
-            value={form.nationality}
+            value={form.nationality || ""}
             onChange={handleChange}
           />
         </div>
@@ -145,7 +133,7 @@ if (!member) return null;
           <input
             className="input w-full"
             name="assembly"
-            value={form.assembly}
+            value={form.assembly || ""}
             onChange={handleChange}
           />
         </div>
@@ -156,7 +144,7 @@ if (!member) return null;
           <input
             className="input w-full"
             name="jurisdiction"
-            value={form.jurisdiction}
+            value={form.jurisdiction || ""}
             onChange={handleChange}
           />
         </div>
@@ -165,7 +153,7 @@ if (!member) return null;
           <input
             className="input w-full"
             name="district"
-            value={form.district}
+            value={form.district || ""}
             onChange={handleChange}
           />
         </div>
@@ -176,7 +164,18 @@ if (!member) return null;
           <input
             className="input w-full"
             name="ethnicity"
-            value={form.ethnicity}
+            value={form.ethnicity || ""}
+            onChange={handleChange}
+          />
+        </div>
+        {/* Date of joined church */}
+        <div className="mb-3">
+          <label className="text-sm font-medium">Date Joined Church</label>
+          <input
+            type="date"
+            className="input w-full"
+            name="dateJoinedChurch"
+            value={form.dateJoinedChurch || ""}
             onChange={handleChange}
           />
         </div>
@@ -186,7 +185,7 @@ if (!member) return null;
           <input
             className="input w-full"
             name="preferredLanguages"
-            value={form.preferredLanguages}
+            value={form.preferredLanguages || ""}
             onChange={handleChange}
           />
         </div>
@@ -197,7 +196,7 @@ if (!member) return null;
           <input
             className="input w-full"
             name="phoneNumber"
-            value={form.phoneNumber}
+            value={form.phoneNumber || ""}
             onChange={handleChange}
           />
         </div>
@@ -207,7 +206,7 @@ if (!member) return null;
           <input
             className="input w-full"
             name="email"
-            value={form.email}
+            value={form.email || ""}
             onChange={handleChange}
           />
         </div>
@@ -218,7 +217,7 @@ if (!member) return null;
           <select
             className="input w-full"
             name="status"
-            value={form.status}
+            value={form.status || ""}
             onChange={handleChange}
           >
             <option>ACTIVE</option>
@@ -231,32 +230,31 @@ if (!member) return null;
             <option>OTHER</option>
           </select>
         </div>
-         {!isAdmin() && (
-          <>
-          <div className="flex justify-end mt-4 space-x-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-400 text-white rounded"
-          >
-            back
-          </button>
-          
-        </div>
-          </>)}
-        
-
-        {isAdmin() && (
+        {!isAdmin() && (
           <>
             <div className="flex justify-end mt-4 space-x-3">
               <button
                 onClick={onClose}
                 className="px-4 py-2 bg-gray-400 text-white rounded"
               >
+                back
+              </button>
+            </div>
+          </>
+        )}
+
+        {isAdmin() && (
+          <>
+            <div className="flex justify-end mt-4 space-x-3">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 bg-gray-400 text-white rounded cursor-pointer"
+              >
                 Cancel
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
+                className="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer"
               >
                 Save
               </button>

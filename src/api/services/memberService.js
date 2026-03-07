@@ -238,6 +238,10 @@ const memberService = {
 };
 
 export default memberService;
+
+
+
+
 export const getIncompleteMembers = async () => {
   const response = await axiosInstance.get("/members");
 
@@ -249,4 +253,13 @@ export const getBirthdaysThisWeek = async () => {
   const response = await axiosInstance.get("/members/birthdays-this-week");
   return response.data;
   
+};
+
+export const getTotalMembers = async () => {
+  const response = await axiosInstance.get("/members/total-members");
+  return response.data;
+};
+export const getNewMembers = async () => {
+  const response = await axiosInstance.get("/members/new-members");
+  return response.data;
 };

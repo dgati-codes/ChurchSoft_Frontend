@@ -123,39 +123,42 @@ export default function MemberTable() {
     deleteMutation.mutate(member.id);
   };
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, payload }) => memberService.updateMember(id, payload),
-    onSuccess: (_, { payload }) => {
-      queryClient.invalidateQueries({ queryKey: ["members"] });
+  // MemberTable.jsx
 
-      setSuccessModal({ fullName: payload.fullName, action: "updated" });
-      setEditingMember(null);
-    },
-  });
+// 1️⃣ Mutation to update member
+const updateMutation = useMutation({
+  mutationFn: ({ id, payload }) => memberService.updateMember(id, payload),
+  onSuccess: (_, { payload }) => {
+    // Refresh the members list
+    queryClient.invalidateQueries({ queryKey: ["members"] });
 
-  const saveEdit = (member) => {
-    const payload = {
-      id: member.id,
-      memberId: member.memberId,
-      fullName: member.fullName,
-      dateOfBirth: member.dateOfBirth,
-      gender: member.gender,
-      maritalStatus: member.maritalStatus,
-      hometown: member.hometown,
-      nationality: member.nationality,
-      assembly: member.assembly,
-      jurisdiction: member.jurisdiction,
-      preferredLanguages: member.preferredLanguages,
-      district: member.district,
-      ethnicity: member.ethnicity,
-      email: member.email,
-      phoneNumber: member.phoneNumber,
-      status: member.status,
-    };
+    // Show success modal
+    setSuccessModal({ fullName: payload.fullName, action: "updated" });
 
-    updateMutation.mutate({ id: member.id, payload });
+    // Close edit modal
+    setEditingMember(null);
+  },
+});
+
+// 2️⃣ Save edited member
+const saveEdit = (payload) => {
+  // Ensure arrays and nested objects exist
+  const finalPayload = {
+    ...payload,
+    preferredLanguages: Array.isArray(payload.preferredLanguages)
+      ? payload.preferredLanguages
+      : [payload.preferredLanguages].filter(Boolean),
+    ministries: payload.ministries || [],
+    skillsTalents: payload.skillsTalents || [],
+    spiritualGifts: payload.spiritualGifts || [],
+    nextOfKin: payload.nextOfKin || { name: "", relationship: "", contactInformation: "" },
+    consentForCommunication: payload.consentForCommunication ?? false,
+    whatsappAvailable: payload.whatsappAvailable ?? false,
+    hasHealthIssues: payload.hasHealthIssues ?? false,
   };
 
+  updateMutation.mutate({ id: finalPayload.id, payload: finalPayload });
+};
   if (showDashboard)
     return <MemberFullView onBack={() => setShowDashboard(false)} />;
 

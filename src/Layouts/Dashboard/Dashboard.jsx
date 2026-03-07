@@ -11,15 +11,50 @@ import {
   User,
   Users,
 } from "lucide-react";
-import { getBirthdaysThisWeek } from "../../api/services/memberService.js";
+import { useRef } from "react";
+import {
+  getBirthdaysThisWeek,
+  getNewMembers,
+  getTotalMembers,
+} from "../../api/services/memberService.js";
 
 export default function Dashboard() {
-  const { data, isLoading, isError } = useQuery({
+  const { data: totalMembers } = useQuery({
+    queryKey: ["total-members"],
+    queryFn: getTotalMembers,
+  });
+  const { data: newMembersData } = useQuery({
+    queryKey: ["new-members"],
+    queryFn: getNewMembers,
+  });
+
+  const {
+    data: birthdaysData,
+    isLoading: birthdaysLoading,
+    isError: birthdaysError,
+  } = useQuery({
     queryKey: ["birthdays-this-week"],
     queryFn: getBirthdaysThisWeek,
   });
-  const birthdays = data?.content || data || [];
-  console.log("Birthdays:", birthdays);
+
+  const newMembers = newMembersData?.content || newMembersData || [];
+  const birthdays = birthdaysData?.content || birthdaysData || [];
+  console.log(totalMembers);
+
+  const birthdayRef = useRef(null);
+  const scrollLeft = () => {
+    birthdayRef.current.scrollBy({
+      left: -250,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollRight = () => {
+    birthdayRef.current.scrollBy({
+      left: 250,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FC] font-[DM Sans]">
@@ -30,15 +65,16 @@ export default function Dashboard() {
               <Users className="w-7 h-7 text-[#43A501] bg-green-100 p-1.5 rounded-lg" />
             }
             title="Total Members"
-            value="25,000"
+            value={totalMembers ?? 0}
             color="green"
           />
+
           <Stat
             icon={
               <User className="w-7 h-7 text-[#06A6DB] bg-blue-100 p-1.5 rounded-lg" />
             }
             title="New Members"
-            value="300"
+            value={newMembers.length}
             color="blue"
           />
           <Stat
@@ -62,30 +98,51 @@ export default function Dashboard() {
         {/* BIRTHDAYS + EVENTS */}
         <div className="grid grid-cols-[1.3fr_1fr] gap-6 mb-4">
           {/* BIRTHDAYS */}
-          <div className="bg-white rounded-2xl p-6">
+          <div className=" bg-white rounded-2xl p-6">
+            <div className="flex relative w-full gap-2">
+              <button
+                onClick={scrollLeft}
+                className=" absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 top-30"
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              <button
+                onClick={scrollRight}
+                className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 right-0 top-30"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
             <div className="grid grid-cols-3 gap-4">
-              {isLoading && (
+              {birthdaysLoading && (
                 <p className="text-sm text-gray-400">Loading birthdays...</p>
               )}
 
-              {isError && (
+              {birthdaysError && (
                 <p className="text-sm text-red-400">Failed to load birthdays</p>
               )}
 
-              {birthdays.slice(0, 3).map((member, index) => (
-                <BirthdayCard
-                  key={index}
-                  name={member.fullName}
-                  age={member.ageTurning}
-                  role={member.ministries?.[0] || "Member"}
-                  daysRemaining={member.daysRemaining}
-                  image={
-                    member.imageId
-                      ? `https://churchsoft-backend.onrender.com/church-soft/v1.0/images/${member.imageId}`
-                      : "https://i0.wp.com/fembi.com/wp-content/uploads/2019/05/Fembi_Mortgage_join_our_team.jpg?w=1273&ssl=1"
-                  }
-                />
-              ))}
+              <div
+                ref={birthdayRef}
+                className="flex gap-4 overflow-hidden  w-125"
+              >
+                {birthdays.map((member, index) => (
+                  <div key={index} className="min-w-[180px] overflow-hidden">
+                    <BirthdayCard
+                      name={member.fullName}
+                      age={member.ageTurning}
+                      role={member.ministries?.[0] || "Member"}
+                      daysRemaining={member.daysRemaining}
+                      image={
+                        member.imageId
+                          ? `https://churchsoft-backend.onrender.com/church-soft/v1.0/images/${member.imageId}`
+                          : "https://i0.wp.com/fembi.com/wp-content/uploads/2019/05/Fembi_Mortgage_join_our_team.jpg?w=1273&ssl=1"
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -196,7 +253,7 @@ function Stat({ title, icon, value, color }) {
         <p className="text-[13px] text-gray-500">{title} </p>
         {icon}
       </div>
-      <h3 className="text-[24px] font-semibold mt-2">{value}</h3>
+      <p className="text-[24px] font-semibold mt-2">{value}</p>
     </div>
   );
 }
@@ -212,20 +269,19 @@ function BirthdayCard({ name, age, role, image, daysRemaining }) {
     <div className=" relative bg-[#F6F8FC] rounded-2xl text-center">
       <div>
         <span
-        className={`absolute top-2 right-2 text-[11px] font-semibold px-2 py-[2px] rounded-full bg-white shadow ${
-          daysRemaining === 0 ? "text-green-600" : "text-purple-600"
-        }`}
-      >
-        {getBirthdayText()}
-      </span>
-      <img
-        src={image}
-        alt={name}
-        className="h-40 w-full object-cover rounded-xl mb-3"
-      />
+          className={`absolute top-2 right-2 text-[11px] font-semibold px-2 py-2 rounded-full bg-white shadow ${
+            daysRemaining === 0 ? "text-green-600" : "text-purple-600"
+          }`}
+        >
+          {getBirthdayText()}
+        </span>
+        <img
+          src={image}
+          alt={name}
+          className="h-40 w-full object-cover rounded-xl mb-3"
+        />
       </div>
       {/* IMAGE */}
-      
 
       <h4 className="text-[15px] font-semibold">{name}</h4>
       <p className="text-[13px] text-pink-500">Turning {age}</p>

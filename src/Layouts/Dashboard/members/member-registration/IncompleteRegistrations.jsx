@@ -1,34 +1,34 @@
 import { useQuery } from "@tanstack/react-query";
 import { getIncompleteMembers } from "../../../../api/services/memberService.js";
-import { data } from "react-router-dom";
+// import { data } from "react-router-dom";
 
 
 
 
-const registrations = [
-  {
-    name: "Sandra Adom",
-    email: "Sandra@gmail.com",
-    id: "Us001",
-    progress: 70,
-    started: "1/15/2024",
-    updated: "1/15/2024",
-    initials: "SA",
-    avatarBg: "bg-red-100",
-    avatarText: "text-red-600",
-  },
-  {
-    name: "Nii Tackie Jnr",
-    email: "Niitr@gmail.com",
-    id: "Us001",
-    progress: 40,
-    started: "1/15/2024",
-    updated: "1/15/2024",
-    initials: "NT",
-    avatarBg: "bg-cyan-100",
-    avatarText: "text-cyan-600",
-  },
-];
+// const registrations = [
+//   {
+//     name: "Sandra Adom",
+//     email: "Sandra@gmail.com",
+//     id: "Us001",
+//     progress: 70,
+//     started: "1/15/2024",
+//     updated: "1/15/2024",
+//     initials: "SA",
+//     avatarBg: "bg-red-100",
+//     avatarText: "text-red-600",
+//   },
+//   {
+//     name: "Nii Tackie Jnr",
+//     email: "Niitr@gmail.com",
+//     id: "Us001",
+//     progress: 40,
+//     started: "1/15/2024",
+//     updated: "1/15/2024",
+//     initials: "NT",
+//     avatarBg: "bg-cyan-100",
+//     avatarText: "text-cyan-600",
+//   },
+// ];
 
 export default function IncompleteRegistrations() {
 
