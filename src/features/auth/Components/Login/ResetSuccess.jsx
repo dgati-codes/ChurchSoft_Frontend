@@ -36,7 +36,7 @@ function ResetSuccess() {
             />
           </div>
 
-          <div className="w-[300px] mx-auto p-10 flex flex-col border border-blue-600 rounded-lg items-center justify-center m-12">
+          <div className="w-75 mx-auto p-10 flex flex-col border border-blue-600 rounded-lg items-center justify-center m-12">
             <div className="text-center mb-8">
               <Check className='w-25 h-25 text-green-600 border rounded-full bg-green-100 ml-18'/>
               <h1 className="text-3xl font-bold text-gray-800 mt-4">

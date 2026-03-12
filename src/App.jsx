@@ -11,7 +11,7 @@ import AttendanceTracking from "./Layouts/Dashboard/attendance/Attendance";
 import Configuration from "./Layouts/Dashboard/configuration/Configuration";
 import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
 import Dashboard from "./Layouts/Dashboard/Dashboard";
-import DashboardLayout from "./Layouts/Dashboard/DashboardLayout";
+import DashboardLayout from "./Layouts/DashboardLayout";
 import IncompleteAndNewRegister from "./Layouts/Dashboard/members/member-registration/IncompleteAndNewRegister";
 import MemberTable from "./Layouts/Dashboard/members/MemberRegistrationTable";
 import AddUserForm from "./Layouts/Dashboard/users/AddUserForm";

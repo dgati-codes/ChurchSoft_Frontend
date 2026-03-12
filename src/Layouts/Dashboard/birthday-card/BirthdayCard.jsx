@@ -1,16 +1,28 @@
-import React from 'react'
+export function BirthdayCard({ name, age, role, image, daysRemaining }) {
+  const getBirthdayText = () => {
+    if (daysRemaining === 0) return "Today 🎉";
+    if (daysRemaining === 1) return "Tomorrow";
+    // if (daysRemaining === 2) return "Tomorrow";
+    return `In ${daysRemaining} days`; 
+  };
 
-function BirthdayCard({ name, age, role, image }) {
   return (
-    
- 
-    <div className="bg-[#F6F8FC] rounded-2xl py-5 text-center">
+    <div className=" relative bg-[#F6F8FC] rounded-2xl text-center">
+      <div>
+        <span
+          className={`absolute top-2 right-2 text-[11px] font-semibold px-2 py-2 rounded-full bg-white shadow ${
+            daysRemaining === 0 ? "text-green-600" : "text-blue-600" } ${daysRemaining === 1 ? "text-red-500" : ""
+          }`}
+        >
+          {getBirthdayText()}
+        </span>
+        <img
+          src={image}
+          alt={name}
+          className="h-40 w-full object-cover rounded-xl mb-3"
+        />
+      </div>
       {/* IMAGE */}
-      <img
-        src={image}
-        alt={name}
-        className="h-32 w-full object-cover rounded-xl mb-3"
-      />
 
       <h4 className="text-[15px] font-semibold">{name}</h4>
       <p className="text-[13px] text-pink-500">Turning {age}</p>
@@ -20,9 +32,5 @@ function BirthdayCard({ name, age, role, image }) {
         Send Birthday Wish
       </button>
     </div>
-  
-
-  )
+  );
 }
-
-export default BirthdayCard;

@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import ViewModal from "./Attendance-ViewModal";
-import ServiceTypeTag from "./SeviceTypeTag";
+import ServiceTypeTag from "./AttendanceSeviceTypeTag";
 
 // Service type label with colors (flexible)
 <ServiceTypeTag />;
