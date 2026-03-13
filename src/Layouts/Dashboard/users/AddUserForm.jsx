@@ -1,16 +1,22 @@
-import { CheckCircle, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 import { useState } from "react";
 import {
   assignImageToUser,
   uploadImage,
 } from "../../../api/services/userImageService";
-import  UserService  from "../../../api/services/userService";
+import UserService from "../../../api/services/userService";
 import InputField from "../modals/InputField";
 import SuccessModal from "../modals/successModal";
+import ErrorModal from "../modals/ErrorModal "
+
 const AddUserForm = () => {
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [showError, setShowError] = useState(false);
-  const [message, setMessage] = useState("");
+  const [errorModal, setErrorModal] = useState({
+  show: false,
+  message: "",
+});
+  // const [message, setMessage] = useState("");
+  // const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successModal, setSuccessModal] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -28,16 +34,12 @@ const AddUserForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // const handleImageChange = (e) => {
-  //   setFormData({ ...formData, image: e.target.files[0] || null });
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.username || !formData.email || !formData.password) {
-      setMessage("Please fill all required fields.");
-      setShowError(true);
+      setErrorModal("Please fill all required fields.");
+      setErrorModal(true);
       return;
     }
 
@@ -53,8 +55,8 @@ const AddUserForm = () => {
       const result = await UserService.registerUser(payload);
 
       if (!result?.success) {
-        setMessage(result?.message || "Failed to add user.");
-        setShowError(true);
+        setErrorModal(result?.message || "Failed to add user.");
+        setErrorModal(true);
         return;
       }
 
@@ -64,12 +66,12 @@ const AddUserForm = () => {
         await assignImageToUser(userId, imageId);
       }
 
-      setMessage({
-         name: `${result.firstName} ${result.lastName}`,
-        text: "added successfully.",
+      // ✅ Show success modal
+      setSuccessModal({
+        name: `${result.data.firstName} ${result.data.lastName}`,
+        action: "added",
       });
-      setShowSuccess(true);
-
+      // Reset form
       setFormData({
         firstName: "",
         lastName: "",
@@ -82,8 +84,10 @@ const AddUserForm = () => {
         image: null,
       });
     } catch (error) {
-      setMessage(error.message || "An error occurred while adding user.");
-      setShowError(true);
+     setErrorModal({
+  show: true,
+  message: error.message || "Failed to add user.",
+});
     }
   };
 
@@ -97,7 +101,10 @@ const AddUserForm = () => {
           </p>
         </div>
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           <InputField
             required
             label="First Name"
@@ -105,6 +112,7 @@ const AddUserForm = () => {
             value={formData.firstName}
             onChange={handleChange}
           />
+
           <InputField
             required
             label="Last Name"
@@ -112,6 +120,7 @@ const AddUserForm = () => {
             value={formData.lastName}
             onChange={handleChange}
           />
+
           <InputField
             required
             label="Username"
@@ -119,6 +128,7 @@ const AddUserForm = () => {
             value={formData.username}
             onChange={handleChange}
           />
+
           <InputField
             required
             label="Email"
@@ -127,6 +137,7 @@ const AddUserForm = () => {
             value={formData.email}
             onChange={handleChange}
           />
+
           <InputField
             required
             label="Password"
@@ -135,12 +146,14 @@ const AddUserForm = () => {
             value={formData.password}
             onChange={handleChange}
           />
+
           <InputField
             label="Phone Number"
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
           />
+
           <InputField
             label="Local Assembly"
             name="localAssemblyName"
@@ -152,6 +165,7 @@ const AddUserForm = () => {
             <label className="block text-gray-700 text-sm mb-1">
               Role<span className="text-red-500">*</span>
             </label>
+
             <select
               name="roleName"
               value={formData.roleName}
@@ -170,44 +184,30 @@ const AddUserForm = () => {
               <option value="REP">REP</option>
             </select>
           </div>
-        </form>
 
-        <div className="flex justify-end mt-8">
-          <button
-            onClick={handleSubmit}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-500 transition"
-          >
-            Add User
-          </button>
-        </div>
+          <div className="col-span-2 flex justify-end mt-6">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-500 transition"
+            >
+              Add User
+            </button>
+          </div>
+        </form>
       </div>
 
-      {showSuccess && (
-        <SuccessModal
-          icon={<CheckCircle className="w-10 h-10 text-blue-600" />}
-          message={
-            <>
-              <span className="text-green-600 font-semibold">
-                {message.firstName} {message.lastName}
-              </span>{" "}
-              added successfully.
-            </>
-          }
-          onClose={() => setShowSuccess(false)}
-          buttonText="Close"
-          buttonColor="bg-green-600"
-        />
-      )}
+      {/* SUCCESS MODAL */}
 
-      {showError && (
-        <SuccessModal
-          icon={<XCircle className="w-10 h-10 text-red-600" />}
-          message={<span className="text-red-600">{message}</span>}
-          onClose={() => setShowError(false)}
-          buttonText="Try Again"
-          buttonColor="bg-red-600"
-        />
-      )}
+      <SuccessModal
+        successModal={successModal}
+        setSuccessModal={setSuccessModal}
+      />
+
+      {/* ERROR MODAL */}
+      <ErrorModal
+  errorModal={errorModal}
+  setErrorModal={setErrorModal}
+/>
     </div>
   );
 };

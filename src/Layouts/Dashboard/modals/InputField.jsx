@@ -8,7 +8,7 @@ const InputField = ({
   required = false,
 }) => (
   <div>
-    <label className="block text-gray-700 text-sm mb-1">
+    <label className="block text-gray-700 font-bold">
       {label}
       {required && <span className="text-red-500">*</span>}
     </label>

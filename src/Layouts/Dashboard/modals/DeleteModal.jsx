@@ -3,7 +3,7 @@ import { TriangleAlert } from "lucide-react";
 export default function DeleteModal({ item, onCancel, onConfirm }) {
   if (!item) return null;
 
-  const { id, name } = item;
+  const { id, name ,action} = item;
 
   return (
     <div className="fixed font-[DM Sans] inset-0 bg-black/60 flex justify-center items-center z-50">
@@ -11,7 +11,7 @@ export default function DeleteModal({ item, onCancel, onConfirm }) {
         <TriangleAlert className="w-10 h-10 text-red-500 mx-auto" />
         <p className="mt-4 text-gray-500">
           Are you sure you want to delete <br />
-          <strong className="text-black">{name}</strong>?
+          <strong className="text-black">{name} {action}</strong>?
         </p>
 
         <div className="flex justify-center mt-4 space-x-4">

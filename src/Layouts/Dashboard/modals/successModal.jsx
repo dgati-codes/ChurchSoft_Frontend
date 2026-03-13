@@ -1,6 +1,18 @@
 import { Check } from "lucide-react";
+import { useEffect } from "react";
 
 const SuccessModal = ({ successModal, setSuccessModal }) => {
+
+  useEffect(() => {
+    if (!successModal) return;
+
+    const timer = setTimeout(() => {
+      setSuccessModal(null);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [successModal, setSuccessModal]);
+
   if (!successModal) return null;
 
   const { name, action } = successModal;

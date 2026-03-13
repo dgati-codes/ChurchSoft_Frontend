@@ -1,6 +1,6 @@
 import ServiceTypeTag from "./AttendanceSeviceTypeTag";
 
-function ViewModal({ record, isOpen, onClose }) {
+function AttendanceViewModal({ record, isOpen, onClose }) {
   if (!isOpen || !record) return null;
 
   const total =
@@ -114,4 +114,4 @@ function ViewModal({ record, isOpen, onClose }) {
   );
 }
 
-export default ViewModal;
+export default AttendanceViewModal;

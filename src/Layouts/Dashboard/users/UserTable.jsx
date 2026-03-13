@@ -11,9 +11,9 @@ import { useState } from "react";
 import UserService from "../../../api/services/userService.js";
 import useDebounce from "../../../hooks/useDebounce";
 import DeleteModal from "../modals/DeleteModal.jsx";
-import EditUserModal from "./EditUser.jsx";
 import LoadingSpinner from "../modals/LoadingSpinner.jsx";
 import SuccessModal from "../modals/successModal.jsx";
+import EditUserModal from "./EditUser.jsx";
 const PAGE_SIZE = 10;
 
 const UserTable = () => {
@@ -103,18 +103,18 @@ const UserTable = () => {
     await UserService.updateUser(formData);
     setEditingUser(null);
     setSuccessModal({
-       name: `${formData.firstName} ${formData.lastName}`,
+      name: `${formData.firstName} ${formData.lastName}`,
       lastName: formData.lastName,
       action: "updated",
     });
     queryClient.invalidateQueries(["users"]);
   };
 
- const handleDeleteUser = (user) =>
-  setDeleteModal({
-    id: user.id,
-    name: `${user.firstName} ${user.lastName}`,
-  });
+  const handleDeleteUser = (user) =>
+    setDeleteModal({
+      id: user.id,
+      name: `${user.firstName} ${user.lastName}`,
+    });
 
   const handleFormChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -122,8 +122,7 @@ const UserTable = () => {
   const confirmDelete = async () => {
     await UserService.deleteUser(deleteModal.id);
     setSuccessModal({
-      
-  name: `${formData.firstName} ${formData.lastName}`,
+      name: `${formData.firstName} ${formData.lastName}`,
       action: "deleted",
     });
     setSuccessModal(null);
@@ -282,11 +281,11 @@ const UserTable = () => {
         handleUpdate={handleUpdate}
         setEditingUser={setEditingUser}
       />
-<DeleteModal
-  item={deleteModal}
-  onCancel={() => setDeleteModal(null)}
-  onConfirm={confirmDelete}
-/>
+      <DeleteModal
+        item={deleteModal}
+        onCancel={() => setDeleteModal(null)}
+        onConfirm={confirmDelete}
+      />
 
       <SuccessModal
         successModal={successModal}

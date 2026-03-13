@@ -1,8 +1,9 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, MapPin, TrendingUp, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { attendanceService } from "../../../api/services/attendanceService";
 import LoadingSpinner from "../modals/LoadingSpinner";
 import StatCard from "../modals/StatCard.jsx";
-import { attendanceService } from "../../../api/services/attendanceService";
 import AddAttendanceRecord from "./AddAttendanceRecord";
 import AttendanceTable from "./AttendanceTable";
 
@@ -19,138 +20,152 @@ import AttendanceTable from "./AttendanceTable";
 // );
 
 export default function AttendanceTracking() {
-  const [showAddAttendanceRecord, setShowAddAttendanceRecord] = useState(false);
-  const [attendanceRecords, setAttendanceRecords] = useState([]);
-  const [totalElements, setTotalElements] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [metrics, setMetrics] = useState({
-    totalAttendance: 0,
-    averageAttendance: 0,
-    activeLocations: 0,
-    serviceRecords: 0,
-    children: { count: 0, percentage: 0 },
-    juniorYouth: { count: 0, percentage: 0 },
-    seniorYouth: { count: 0, percentage: 0 },
-    adults: { count: 0, percentage: 0 },
-    visitors: { count: 0, percentage: 0 },
+ const [showAddAttendanceRecord, setShowAddAttendanceRecord] = useState(false);
+const [currentPage, setCurrentPage] = useState(0);
+
+const [filters, setFilters] = useState({
+  serviceDates: "",
+  serviceType: "ALL",
+  assembly: "ALL",
+  district: "ALL",
+  region: "ALL",
+});
+
+const queryClient = useQueryClient();
+
+/* ================= FETCH ATTENDANCE ================= */
+
+const {
+  data,
+  isFetching,
+  isError,
+  error,
+} = useQuery({
+  queryKey: [
+    "attendance",
+    currentPage,
+    filters.region,
+    filters.serviceType,
+    filters.assembly,
+    filters.district,
+  ],
+
+  queryFn: () =>
+    attendanceService.getAttendanceMetrics(
+      filters.region || "ALL",
+      filters.serviceType || "ALL",
+      filters.assembly || "ALL",
+      filters.district || "ALL",
+      currentPage,
+      10
+    ),
+
+  keepPreviousData: true,
+  staleTime: 3 * 60 * 1000,
+  refetchInterval: 3 * 60 * 1000,
+  refetchOnWindowFocus: false,
+});
+
+/* ================= EXTRACT DATA ================= */
+
+const metrics = data?.metrics || {
+  totalAttendance: 0,
+  averageAttendance: 0,
+  activeLocations: 0,
+  serviceRecords: 0,
+  children: { count: 0, percentage: 0 },
+  juniorYouth: { count: 0, percentage: 0 },
+  seniorYouth: { count: 0, percentage: 0 },
+  adults: { count: 0, percentage: 0 },
+  visitors: { count: 0, percentage: 0 },
+};
+
+const attendanceRecords = data?.attendanceRecord?.content || [];
+const totalElements = data?.attendanceRecord?.totalElements || 0;
+const totalPages = data?.attendanceRecord?.totalPages || 0;
+
+/* ================= FILTER CHANGE ================= */
+
+const handleFilterChange = (key, value) => {
+  setFilters((prev) => ({
+    ...prev,
+    [key]: value,
+  }));
+
+  setCurrentPage(0);
+};
+
+/* ================= PAGE CHANGE ================= */
+
+const handlePageChange = (page) => {
+  setCurrentPage(page);
+};
+
+/* ================= ADD RECORD ================= */
+
+const handleRecordAdded = () => {
+  setCurrentPage(0);
+
+  queryClient.invalidateQueries({
+    queryKey: ["attendance"],
   });
-  const [filters, setFilters] = useState({
-    serviceDates: "", // Text input for date search (e.g., '2025-10')
-    serviceType: "ALL",
-    assembly: "ALL",
-    district: "ALL", // Default ALL
-    region: "ALL", // Default ALL (add if UI expands)
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+};
 
-  // Fetch data with filters and page
-  const fetchAttendance = async (
-    page = currentPage,
-    appliedFilters = filters
-  ) => {
-    try {
-      setLoading(true);
-      setError("");
-      const data = await attendanceService.getAttendanceMetrics(
-        appliedFilters.region || "ALL",
-        appliedFilters.serviceType || "ALL",
-        appliedFilters.assembly || "ALL",
-        appliedFilters.district || "ALL",
-        page,
-        10
-      );
-      setMetrics(data.metrics || {});
-      setAttendanceRecords(data.attendanceRecord?.content || []);
-      setTotalElements(data.attendanceRecord?.totalElements || 0);
-      setTotalPages(data.attendanceRecord?.totalPages || 0);
-    } catch (err) {
-      console.error("Failed to fetch attendance:", err);
-      setError("Failed to load attendance records");
-    } finally {
-      setLoading(false);
+/* ================= DELETE RECORD ================= */
+
+const handleDelete = async (id) => {
+  if (!window.confirm("Are you sure you want to delete this record?")) return;
+
+  try {
+    await attendanceService.deleteAttendance(id);
+
+    if (attendanceRecords.length === 1 && currentPage > 0) {
+      setCurrentPage((prev) => prev - 1);
     }
-  };
 
-  useEffect(() => {
-    fetchAttendance();
-  },[]);
+    queryClient.invalidateQueries({
+      queryKey: ["attendance"],
+    });
 
-  // Handle filter change (reset page to 0)
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-    setCurrentPage(0);
-    fetchAttendance(0, { ...filters, [key]: value });
-  };
-
-  // Handle page change
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    fetchAttendance(page);
-  };
-
-  // Handle successful add (refresh with current filters/page)
-  const handleRecordAdded = async () => {
-    setCurrentPage(0);
-    await fetchAttendance(0);
-  };
-
-  // Handle delete (refetch current page/filters)
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this record?")) {
-      try {
-        await attendanceService.deleteAttendance(id);
-        // If deleting the last item on page, go to previous page
-        if (attendanceRecords.length === 1 && currentPage > 0) {
-          setCurrentPage(currentPage - 1);
-          await fetchAttendance(currentPage - 1);
-        } else {
-          await fetchAttendance(currentPage);
-        }
-      } catch (err) {
-        console.error("Delete failed:", err);
-        alert("Failed to delete record");
-      }
-    }
-  };
-
-  // Handle view
-  const handleView = async (id) => {
-    try {
-      const record = await attendanceService.getAttendanceById(id);
-      return record;
-    } catch (err) {
-      console.error("View failed:", err);
-    }
-  };
-
-  // Handle edit
-  const handleEdit = async (id) => {
-    try {
-      const record = await attendanceService.getAttendanceById(id);
-      return record;
-    } catch (err) {
-      console.error("Edit failed:", err);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-gray-100">
-        <LoadingSpinner text="Please wait..." />
-      </div>
-    );
+  } catch (err) {
+    console.error("Delete failed:", err);
+    alert("Failed to delete record");
   }
+};
 
-  if (error) {
-    return (
-      <div className="min-h-screen p-10 bg-[#F9FAFB] flex items-center justify-center">
-        <p className="text-lg text-red-600">{error}</p>
-      </div>
-    );
+/* ================= VIEW RECORD ================= */
+
+const handleView = async (id) => {
+  try {
+    const record = await attendanceService.getAttendanceById(id);
+    return record;
+  } catch (err) {
+    console.error("View failed:", err);
   }
+};
 
+/* ================= EDIT RECORD ================= */
+
+const handleEdit = async (id) => {
+  try {
+    const record = await attendanceService.getAttendanceById(id);
+    return record;
+  } catch (err) {
+    console.error("Edit failed:", err);
+  }
+};
+
+/* ================= ERROR STATE ================= */
+
+if (isError) {
+  return (
+    <div className="min-h-screen p-10 bg-[#F9FAFB] flex items-center justify-center">
+      <p className="text-lg text-red-600">
+        {error?.message || "Failed to load attendance records"}
+      </p>
+    </div>
+  );
+}
   return (
     <div className="min-h-screen font-[DM Sans] mt-15 bg-[#F9FAFB] ">
       {/* Header */}
@@ -183,27 +198,23 @@ export default function AttendanceTracking() {
         <div className="flex justify-between mb-4">
           <h2 className="font-semibold">Filters</h2>
           <button
-            onClick={() => {
-              setFilters({
-                serviceDates: "",
-                serviceType: "ALL",
-                assembly: "ALL",
-                district: "ALL",
-                region: "ALL",
-              });
-              setCurrentPage(0);
-              fetchAttendance(0, {
-                serviceDates: "",
-                serviceType: "ALL",
-                assembly: "ALL",
-                district: "ALL",
-                region: "ALL",
-              });
-            }}
-            className="text-sm text-blue-600"
-          >
-            Clear All
-          </button>
+  onClick={() => {
+    const resetFilters = {
+      serviceDates: "",
+      serviceType: "ALL",
+      assembly: "ALL",
+      district: "ALL",
+      region: "ALL",
+    };
+
+    setFilters(resetFilters);  
+    setCurrentPage(0);          
+    // refetch();                  
+  }}
+  className="text-sm text-blue-600"
+>
+  Clear All
+</button>
         </div>
         <div className="flex gap-4">
           <div>
@@ -330,16 +341,30 @@ export default function AttendanceTracking() {
       </div>
 
       {/* Detailed View */}
-      <AttendanceTable
-        records={attendanceRecords}
-        totalElements={totalElements}
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-        onDelete={handleDelete}
-        onView={handleView}
-        onEdit={handleEdit}
-      />
+
+      <div className="p-6">
+        {/* Attendance Table */}
+        <div className="mt-6">
+          {isFetching ? (
+            <div className="flex justify-center py-10">
+              <LoadingSpinner text="Loading records..." />
+            </div>
+          ) : attendanceRecords.length === 0 ? (
+            <p className="text-center text-gray-500">No attendance records</p>
+          ) : (
+            <AttendanceTable
+              records={attendanceRecords}
+              totalElements={totalElements}
+              totalPages={totalPages}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+              onDelete={handleDelete}
+              onView={handleView}
+              onEdit={handleEdit}
+            />
+          )}
+        </div>
+      </div>
       <AddAttendanceRecord
         className=" inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50"
         isOpen={showAddAttendanceRecord}

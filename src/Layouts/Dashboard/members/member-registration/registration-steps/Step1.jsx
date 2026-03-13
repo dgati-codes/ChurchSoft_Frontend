@@ -2,6 +2,7 @@ import { User } from "lucide-react";
 import { useState,useEffect } from "react";
 import { useRegistration } from "../../registration-context/RegistrationContext";
 import { useLocation } from "react-router-dom";
+import InputField from "../../../modals/InputField";
 
 
 // ENUM maps (UI → Backend)
@@ -127,31 +128,26 @@ useEffect(() => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* FULL NAME */}
           <div>
-            <label className="text-gray-600 font-bold">
-              Full Name<span className="text-red-600">*</span>
-            </label>
-            <input
+            
+            <InputField
               name="fullName"
-              // type="text"
+              label="Full Name"
               value={localData.fullName}
               onChange={handleChange}
               placeholder="Full Name"
-              className="input"
               required
             />
           </div>
 
           {/* DOB */}
           <div>
-            <label className="text-gray-600 font-bold">
-              Date of Birth<span className="text-red-600">*</span>
-            </label>
-            <input
+            
+            <InputField
               type="date"
+              label="Date of Birth"
               name="dateOfBirth"
               value={localData.dateOfBirth}
               onChange={handleChange}
-              className="input"
               required
             />
           </div>
@@ -205,14 +201,12 @@ useEffect(() => {
 
           {/* HOMETOWN */}
           <div>
-            <label className="text-gray-600 font-bold">
-              Hometown<span className="text-red-600">*</span>
-            </label>
-            <input
+            
+            <InputField
               name="hometown"
+              label="Hometown"
               value={localData.hometown}
               onChange={handleChange}
-              className="input"
               placeholder="Hometown"
               required
             />
@@ -220,32 +214,30 @@ useEffect(() => {
 
           {/* DISTRICT */}
           <div>
-            <label className="text-gray-600 font-bold">District</label>
-            <input
+            <InputField
               name="district"
               value={localData.district}
               onChange={handleChange}
-              className="input"
+              label="District"
               placeholder="District"
             />
           </div>
           {/* jurisdiction */}
           <div>
-            <label className="text-gray-600 font-bold">Region</label>
-            <input
+            <InputField
               name="jurisdiction"
+              label="Region"
               value={localData.jurisdiction}
               onChange={handleChange}
-              className="input"
               placeholder="Region"
             />
           </div>
 
           {/* ASSEMBLY */}
           <div>
-            <label className="text-gray-600 font-bold">Assembly</label>
-            <input
+            <InputField
               name="assembly"
+              label="Assembly"
               value={localData.assembly}
               onChange={handleChange}
               className="input"
@@ -255,30 +247,26 @@ useEffect(() => {
 
           {/* NATIONALITY */}
           <div>
-            <label className="text-gray-600 font-bold">
-              Nationality<span className="text-red-600">*</span>
-            </label>
-            <input
+            
+            <InputField
               placeholder="Your Nationality"
+              label="Nationality"
               name="nationality"
               value={localData.nationality}
               onChange={handleChange}
-              className="input"
               required
             />
           </div>
 
           {/* ETHNICITY */}
           <div>
-            <label className="text-gray-600 font-bold">
-              Ethnicity<span className="text-red-600">*</span>
-            </label>
-            <input
+           
+            <InputField
               placeholder="Your Ethnicity"
+              label="Ethnicity"
               name="ethnicity"
               value={localData.ethnicity}
               onChange={handleChange}
-              className="input"
               required
             />
           </div>
@@ -310,11 +298,10 @@ useEffect(() => {
 
           {/* ID NUMBER */}
           <div>
-            <label className="text-gray-600 font-bold">
-              Identification Number<span className="text-red-600">*</span>
-            </label>
-            <input
+            
+            <InputField
               placeholder="Your ID Number"
+              label="ID Number"
               name="identificationNumber"
               value={localData.identificationNumber}
               onChange={handleChange}
@@ -325,25 +312,23 @@ useEffect(() => {
 
           {/* FATHER */}
           <div>
-            <label className="text-gray-600 font-bold">Father's Name</label>
-            <input
+            <InputField
               placeholder="Father's Name"
+              label="Father's Name"
               name="fathersName"
               value={localData.fathersName}
               onChange={handleChange}
-              className="input"
             />
           </div>
 
           {/* MOTHER */}
           <div>
-            <label className="text-gray-600 font-bold">Mother's Name</label>
-            <input
+            <InputField
               placeholder="Mother's Name"
+              label="Mother's Name"
               name="mothersName"
               value={localData.mothersName}
               onChange={handleChange}
-              className="input"
             />
           </div>
 
@@ -369,9 +354,9 @@ useEffect(() => {
 
           {/* PREFERRED LANGUAGES */}
           <div>
-            <label className="text-gray-600 font-bold">Prefer Languages</label>
-            <input
+            <InputField
               type="text"
+              label="Preferred Languages"
               placeholder="Enter language"
               value={localData.preferredLanguages.join(",  ")}
               onChange={(e) =>

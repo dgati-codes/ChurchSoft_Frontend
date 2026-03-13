@@ -8,13 +8,13 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
-import ViewModal from "./Attendance-ViewModal";
+import AttendanceViewModal from "./Attendance-ViewModal";
 import ServiceTypeTag from "./AttendanceSeviceTypeTag";
 
 // Service type label with colors (flexible)
 <ServiceTypeTag />;
 // View Modal
-<ViewModal />;
+{/* <ViewModal />; */}
 
 // Attendance Table
 export default function AttendanceTable({
@@ -469,7 +469,7 @@ export default function AttendanceTable({
           </div>
         )}
 
-        <ViewModal
+        <AttendanceViewModal
           record={selectedRecord}
           isOpen={viewModalOpen}
           onClose={() => setViewModalOpen(false)}
