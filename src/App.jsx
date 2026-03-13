@@ -23,11 +23,10 @@ import PersonalInfo from "./Layouts/profiles/member-profile/PersonalInfo";
 import ProfileLayout from "./Layouts/profiles/member-profile/ProfileLayout";
 import Skills from "./Layouts/profiles/member-profile/Skills";
 import Welfare from "./Layouts/profiles/member-profile/Welfare";
-// import UpdateUserProfile from "./Layouts/profiles/user-profile/updateUserProfile";
 import UserProfile from "./Layouts/profiles/user-profile/UserProfile";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
-import EditMemberModal from "./Layouts/Dashboard/modals/EditMemberModal";
+import EditMemberModal from "./Layouts/Dashboard/members/EditMember";
 import { Toaster } from "react-hot-toast";
 
 function App() {

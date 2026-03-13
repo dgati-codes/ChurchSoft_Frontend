@@ -1,29 +1,29 @@
-import { useState, useEffect, useCallback } from "react";
 import {
-  RefreshCw,
-  Download,
-  Plus,
+  AlertCircle,
+  CheckCircle2,
+  CircleDot,
   Clock,
+  Download,
+  Edit2,
   Eye,
   Globe,
-  CircleDot,
   Network,
-  Trash2,
-  Edit2,
+  Plus,
+  RefreshCw,
   Search,
-  CheckCircle2,
-  AlertCircle,
+  Trash2,
   X,
 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 import CountryAdministrativeDivisions, {
-  FormModal,
   ViewModal,
 } from "./CountryAdministrativeDivisions";
+import { AddContryModal } from "./AddContryModal";
 
 import {
-  fetchAllHierarchies,
   deleteCountry,
+  fetchAllHierarchies,
 } from "../../../api/services/countrySetupService";
 
 const cls = (...a) => a.filter(Boolean).join(" ");
@@ -37,7 +37,7 @@ function Toast({ message, type, onClose }) {
   return (
     <div
       className={cls(
-        "fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 rounded-xl shadow-2xl text-sm font-medium",
+        "fixed bottom-6 right-6 z-9999 flex items-center gap-3 px-5 py-3 rounded-xl shadow-2xl text-sm font-medium",
         type === "success"
           ? "bg-emerald-600 text-white"
           : "bg-red-600 text-white",
@@ -59,7 +59,7 @@ function Toast({ message, type, onClose }) {
 // ─── Delete Confirm ───────────────────────────────────────────────────────────
 function DeleteModal({ countryName, onConfirm, onCancel, loading }) {
   return (
-    <div className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-70 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm text-center">
         <div className="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Trash2 size={24} className="text-red-600" />
@@ -483,7 +483,7 @@ export default function CountriesOverview() {
                       {/* Country Name */}
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
                             <Globe size={13} className="text-blue-600" />
                           </div>
                           <span className="font-semibold text-gray-900">
@@ -515,7 +515,7 @@ export default function CountriesOverview() {
                       </td>
 
                       {/* FIX #3: Parent names */}
-                      <td className="px-4 py-3 max-w-[160px]">
+                      <td className="px-4 py-3 max-w-40">
                         <NamePills
                           names={parentNames}
                           color="bg-sky-50 text-sky-700"
@@ -523,7 +523,7 @@ export default function CountriesOverview() {
                       </td>
 
                       {/* FIX #3: Child names */}
-                      <td className="px-4 py-3 max-w-[160px]">
+                      <td className="px-4 py-3 max-w-40">
                         <NamePills
                           names={childNames}
                           color="bg-violet-50 text-violet-700"
@@ -531,7 +531,7 @@ export default function CountriesOverview() {
                       </td>
 
                       {/* FIX #3: Grandchild names */}
-                      <td className="px-4 py-3 max-w-[180px]">
+                      <td className="px-4 py-3 max-w-45">
                         <NamePills
                           names={grandNames}
                           color="bg-emerald-50 text-emerald-700"
@@ -574,7 +574,7 @@ export default function CountriesOverview() {
 
       {/* ── FIX #2: Add Country → FormModal directly ── */}
       {showAddForm && (
-        <FormModal
+        <AddContryModal
           editingData={null}
           onClose={() => setShowAddForm(false)}
           onSaved={() => {
@@ -597,7 +597,7 @@ export default function CountriesOverview() {
 
       {/* ── Edit from table row ── */}
       {editTarget && (
-        <FormModal
+        <AddContryModal
           editingData={editTarget}
           onClose={() => setEditTarget(null)}
           onSaved={() => {

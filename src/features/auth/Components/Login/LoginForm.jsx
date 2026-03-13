@@ -79,7 +79,7 @@ function LoginForm() {
               height: "380px",
             }}></div>
 
-            <div className="w-[350px] mx-auto flex flex-col items-center justify-center">
+            <div className="w-87.5 mx-auto flex flex-col items-center justify-center">
               <div className="text-center mb-10">
                 <h1 className="text-[22px] font-semibold text-gray-800">Welcome Back</h1>
               </div>
@@ -96,7 +96,7 @@ function LoginForm() {
                     User Name
                   </label>
 
-                  <div className="w-[350px] mx-auto mb-4 relative z-10">
+                  <div className="w-87.5 mx-auto mb-4 relative z-10">
                     {/* Icon */}
                     <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
                     <User className="text-blue-600"/>
@@ -117,7 +117,7 @@ function LoginForm() {
 
                   <label htmlFor="username" className="text-[12px] font-bold ">
                   Password</label>
-                <div className="w-[350px] mx-auto mb-4 relative z-10">
+                <div className="w-87.5 mx-auto mb-4 relative z-10">
                     {/* Icon */}
                     <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
                     <KeyRound className="text-blue-600"/>
@@ -135,7 +135,7 @@ function LoginForm() {
                   />
                 </div>
 
-                <div className="w-[350px] mx-auto flex flex-col items-center justify-center relative z-10">
+                <div className="w-87.5 mx-auto flex flex-col items-center justify-center relative z-10">
 
                 <button
                     type="submit"

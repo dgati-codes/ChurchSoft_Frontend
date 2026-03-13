@@ -18,6 +18,7 @@ import {
   getTotalMembers,
 } from "../../api/services/memberService.js";
 import {BirthdayCard} from "./birthday-card/BirthdayCard.jsx";
+import StatCard from "./modals/StatCard.jsx";
 
 export default function Dashboard() {
   const { data: totalMembers } = useQuery({
@@ -40,7 +41,7 @@ export default function Dashboard() {
 
   const newMembers = newMembersData?.content || newMembersData || [];
   const birthdays = birthdaysData?.content || birthdaysData || [];
-  console.log(totalMembers);
+  console.log(newMembers);
 
   const birthdayRef = useRef(null);
   const scrollLeft = () => {
@@ -61,7 +62,7 @@ export default function Dashboard() {
     <div className="flex min-h-screen bg-[#F6F8FC] font-[DM Sans]">
       <main className="flex-1 mt-10">
         <div className="grid grid-cols-4 gap-6 mb-4">
-          <Stat
+          <StatCard
             icon={
               <Users className="w-7 h-7 text-[#43A501] bg-green-100 p-1.5 rounded-lg" />
             }
@@ -70,7 +71,7 @@ export default function Dashboard() {
             color="green"
           />
 
-          <Stat
+          <StatCard
             icon={
               <User className="w-7 h-7 text-[#06A6DB] bg-blue-100 p-1.5 rounded-lg" />
             }
@@ -78,7 +79,7 @@ export default function Dashboard() {
             value={newMembers.length}
             color="blue"
           />
-          <Stat
+          <StatCard
             icon={
               <TrendingUp className="w-7 h-7 text-[#9600D6] bg-violet-100 p-1.5 rounded-lg" />
             }
@@ -86,7 +87,7 @@ export default function Dashboard() {
             value="450"
             color="purple"
           />
-          <Stat
+          <StatCard
             icon={
               <Banknote className="w-7 h-7 text-[#FF8605] bg-orange-100 p-1.5 rounded-lg" />
             }
@@ -240,24 +241,6 @@ export default function Dashboard() {
   );
 }
 
-function Stat({ title, icon, value, color }) {
-  const map = {
-    green: "border-green-400",
-    blue: "border-blue-400",
-    purple: "border-purple-400",
-    orange: "border-orange-400",
-  };
-
-  return (
-    <div className={`bg-white border ${map[color]} rounded-2xl p-5`}>
-      <div className="flex justify-between align-center">
-        <p className="text-[13px] text-gray-500">{title} </p>
-        {icon}
-      </div>
-      <p className="text-[24px] font-semibold mt-2">{value}</p>
-    </div>
-  );
-}
 
 
 

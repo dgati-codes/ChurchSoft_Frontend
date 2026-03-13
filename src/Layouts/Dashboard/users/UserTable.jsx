@@ -10,11 +10,10 @@ import {
 import { useState } from "react";
 import UserService from "../../../api/services/userService.js";
 import useDebounce from "../../../hooks/useDebounce";
+import DeleteModal from "../modals/DeleteModal.jsx";
+import EditUserModal from "./EditUser.jsx";
 import LoadingSpinner from "../modals/LoadingSpinner.jsx";
-import DeleteUserModal from "../modals/DeleteUserModal.jsx";
-import SuccessUserModal from "../modals/SuccessUserModal.jsx";
-import EditUserModal from "../modals/EditUserModal.jsx";  
-
+import SuccessModal from "../modals/successModal.jsx";
 const PAGE_SIZE = 10;
 
 const UserTable = () => {
@@ -51,27 +50,26 @@ const UserTable = () => {
 
   /* ===================== DATA FETCH ===================== */
   const { data, isFetching, isError, error } = useQuery({
-  queryKey: ["users", page, filters.localAssemblyName, debouncedSearch],
-  queryFn: () => {
-    if (isSearching) {
-      return UserService.searchUsers(page, PAGE_SIZE, debouncedSearch);
-    }
-    if (hasAssembly) {
-      return UserService.getUsersByAssembly(
-        page,
-        PAGE_SIZE,
-        filters.localAssemblyName,
-      );
-      
-    }
-    return UserService.getAllUsers(page, PAGE_SIZE, filters);
-  },
+    queryKey: ["users", page, filters.localAssemblyName, debouncedSearch],
+    queryFn: () => {
+      if (isSearching) {
+        return UserService.searchUsers(page, PAGE_SIZE, debouncedSearch);
+      }
+      if (hasAssembly) {
+        return UserService.getUsersByAssembly(
+          page,
+          PAGE_SIZE,
+          filters.localAssemblyName,
+        );
+      }
+      return UserService.getAllUsers(page, PAGE_SIZE, filters);
+    },
 
-  keepPreviousData: true,          
-  staleTime: 3 * 60 * 1000,        
-  refetchInterval: 3 * 60 * 1000,  
-  refetchOnWindowFocus: false,     
-});
+    keepPreviousData: true,
+    staleTime: 3 * 60 * 1000,
+    refetchInterval: 3 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   /* ===================== NORMALIZED DATA ===================== */
   const users = Array.isArray(data?.content)
@@ -105,14 +103,18 @@ const UserTable = () => {
     await UserService.updateUser(formData);
     setEditingUser(null);
     setSuccessModal({
-      firstName: formData.firstName,
+       name: `${formData.firstName} ${formData.lastName}`,
       lastName: formData.lastName,
       action: "updated",
     });
     queryClient.invalidateQueries(["users"]);
   };
 
-  const handleDelete = (user) => setDeleteModal(user);
+ const handleDeleteUser = (user) =>
+  setDeleteModal({
+    id: user.id,
+    name: `${user.firstName} ${user.lastName}`,
+  });
 
   const handleFormChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -120,8 +122,8 @@ const UserTable = () => {
   const confirmDelete = async () => {
     await UserService.deleteUser(deleteModal.id);
     setSuccessModal({
-      firstName: formData.firstName,
-      lastName: formData.lastName,
+      
+  name: `${formData.firstName} ${formData.lastName}`,
       action: "deleted",
     });
     setSuccessModal(null);
@@ -236,7 +238,7 @@ const UserTable = () => {
                       />
                       <Trash2
                         className="inline w-4 h-4 text-red-500 cursor-pointer"
-                        onClick={() => handleDelete(user)}
+                        onClick={() => handleDeleteUser(user)}
                       />
                     </td>
                   </tr>
@@ -273,24 +275,23 @@ const UserTable = () => {
       </div>
 
       {/* Edit Modal */}
-     <EditUserModal
-  editingUser={editingUser}
-  formData={formData}
-  handleFormChange={handleFormChange}
-  handleUpdate={handleUpdate}
-  setEditingUser={setEditingUser}
+      <EditUserModal
+        editingUser={editingUser}
+        formData={formData}
+        handleFormChange={handleFormChange}
+        handleUpdate={handleUpdate}
+        setEditingUser={setEditingUser}
+      />
+<DeleteModal
+  item={deleteModal}
+  onCancel={() => setDeleteModal(null)}
+  onConfirm={confirmDelete}
 />
 
-<DeleteUserModal
-  deleteModal={deleteModal}
-  setDeleteModal={setDeleteModal}
-  confirmDelete={confirmDelete}
-/>
-
-<SuccessUserModal
-  successModal={successModal}
-  setSuccessModal={setSuccessModal}
-/>
+      <SuccessModal
+        successModal={successModal}
+        setSuccessModal={setSuccessModal}
+      />
     </div>
   );
 };

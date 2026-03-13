@@ -11,10 +11,10 @@ import {
 import { useEffect, useState } from "react";
 import memberService from "../../../api/services/memberService";
 import { useAuth } from "../../../context/AuthContext.jsx";
-import DeleteConfirmModal from "../modals/DeleteConfirmModal";
-import EditMemberModal from "../modals/EditMemberModal";
-import SuccessModal from "../modals/successModal.jsx";
+import DeleteModal from "../modals/DeleteModal";
 import LoadingSpinner from "../modals/LoadingSpinner";
+import SuccessModal from "../modals/successModal.jsx";
+import EditMemberModal from "./EditMember";
 import MemberFullView from "./MemberFullView";
 export default function MemberTable() {
   const [filter, setFilter] = useState({
@@ -30,7 +30,8 @@ export default function MemberTable() {
   });
   const [showDashboard, setShowDashboard] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
-  const [deletingMember, setDeletingMember] = useState(null);
+  // const [deletingMember, setDeletingMember] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(null);
   const [successModal, setSuccessModal] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [searchName, setSearchName] = useState("");
@@ -40,44 +41,47 @@ export default function MemberTable() {
   const pageSize = 10;
 
   const { data: membersData, isLoading } = useQuery({
-  queryKey: ["members", currentPage, debouncedSearch, filter.ministry, filter.assembly],
-
-  queryFn: () => {
-    if (debouncedSearch) {
-      return memberService.searchMembers(
-        currentPage,
-        pageSize,
-        debouncedSearch
-      );
-    }
-
-    if (filter.ministry) {
-      return memberService.getMembersByMinistry(
-        filter.ministry,
-        currentPage,
-        pageSize
-      );
-    }
-
-    // if(filter.assembly){
-    //   return memberService.getMembersByAssembly(
-    //     filter.assembly,
-    //     currentPage,
-    //     pageSize
-    //   );
-    // }
-
-    return memberService.getAllMembers(
+    queryKey: [
+      "members",
       currentPage,
-      pageSize
-    );
-  },
+      debouncedSearch,
+      filter.ministry,
+      filter.assembly,
+    ],
 
-  keepPreviousData: true,          
-  staleTime: 3 * 60 * 1000,        
-  refetchInterval: 3 * 60 * 1000,  
-  refetchOnWindowFocus: false,     
-});
+    queryFn: () => {
+      if (debouncedSearch) {
+        return memberService.searchMembers(
+          currentPage,
+          pageSize,
+          debouncedSearch,
+        );
+      }
+
+      if (filter.ministry) {
+        return memberService.getMembersByMinistry(
+          filter.ministry,
+          currentPage,
+          pageSize,
+        );
+      }
+
+      // if(filter.assembly){
+      //   return memberService.getMembersByAssembly(
+      //     filter.assembly,
+      //     currentPage,
+      //     pageSize
+      //   );
+      // }
+
+      return memberService.getAllMembers(currentPage, pageSize);
+    },
+
+    keepPreviousData: true,
+    staleTime: 3 * 60 * 1000,
+    refetchInterval: 3 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -92,78 +96,78 @@ export default function MemberTable() {
   const totalPages = membersData?.totalPages ?? 0;
   const totalElements = membersData?.totalElements ?? 0;
 
-
   const sortedMembers = [...members].sort(
-  (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-);
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+  );
 
-// const capitalizeFullName = (name = "") =>
-//   name
-//     .trim()
-//     .split(/\s+/)
-//     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-//     .join(" ");
+  // const capitalizeFullName = (name = "") =>
+  //   name
+  //     .trim()
+  //     .split(/\s+/)
+  //     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+  //     .join(" ");
 
-//      const capitalize = (str = "") =>
-//     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
+  //      const capitalize = (str = "") =>
+  //     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  const handleDeleteMember = (member) =>
+    setDeleteModal({
+      id: member.id,
+      name: member.fullName,
+    });
   const deleteMutation = useMutation({
     mutationFn: memberService.deleteMember,
-    onSuccess: (_, id) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["members"] });
-
-      const deleted = members.find((m) => m.id === id);
-      setSuccessModal({ fullName: deleted?.fullName, action: "deleted" });
-      setDeletingMember(null);
     },
   });
 
-  const confirmDelete = (member) => {
-    if (!member) return;
-    deleteMutation.mutate(member.id);
+  const confirmDelete = (id) => {
+    setDeleteModal(null);
+    deleteMutation.mutate(id);
   };
+  // 1️⃣ Mutation to update member
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }) => memberService.updateMember(id, payload),
+    onSuccess: (_, { payload }) => {
+      // Refresh the members list
+      queryClient.invalidateQueries({ queryKey: ["members"] });
 
-  // MemberTable.jsx
+      // Show success modal
+      setSuccessModal({ name: payload.fullName, action: "updated" });
 
-// 1️⃣ Mutation to update member
-const updateMutation = useMutation({
-  mutationFn: ({ id, payload }) => memberService.updateMember(id, payload),
-  onSuccess: (_, { payload }) => {
-    // Refresh the members list
-    queryClient.invalidateQueries({ queryKey: ["members"] });
+      // Close edit modal
+      setEditingMember(null);
+    },
+  });
 
-    // Show success modal
-    setSuccessModal({ fullName: payload.fullName, action: "updated" });
+  // 2️⃣ Save edited member
+  const saveEdit = (payload) => {
+    // Ensure arrays and nested objects exist
+    const finalPayload = {
+      ...payload,
+      preferredLanguages: Array.isArray(payload.preferredLanguages)
+        ? payload.preferredLanguages
+        : [payload.preferredLanguages].filter(Boolean),
+      ministries: payload.ministries || [],
+      skillsTalents: payload.skillsTalents || [],
+      spiritualGifts: payload.spiritualGifts || [],
+      nextOfKin: payload.nextOfKin || {
+        name: "",
+        relationship: "",
+        contactInformation: "",
+      },
+      consentForCommunication: payload.consentForCommunication ?? false,
+      whatsappAvailable: payload.whatsappAvailable ?? false,
+      hasHealthIssues: payload.hasHealthIssues ?? false,
+    };
 
-    // Close edit modal
-    setEditingMember(null);
-  },
-});
-
-// 2️⃣ Save edited member
-const saveEdit = (payload) => {
-  // Ensure arrays and nested objects exist
-  const finalPayload = {
-    ...payload,
-    preferredLanguages: Array.isArray(payload.preferredLanguages)
-      ? payload.preferredLanguages
-      : [payload.preferredLanguages].filter(Boolean),
-    ministries: payload.ministries || [],
-    skillsTalents: payload.skillsTalents || [],
-    spiritualGifts: payload.spiritualGifts || [],
-    nextOfKin: payload.nextOfKin || { name: "", relationship: "", contactInformation: "" },
-    consentForCommunication: payload.consentForCommunication ?? false,
-    whatsappAvailable: payload.whatsappAvailable ?? false,
-    hasHealthIssues: payload.hasHealthIssues ?? false,
+    updateMutation.mutate({ id: finalPayload.id, payload: finalPayload });
   };
-
-  updateMutation.mutate({ id: finalPayload.id, payload: finalPayload });
-};
   if (showDashboard)
     return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
   return (
-    <div className="w-[960px] mt-9 font-[DM Sans] bg-gray-100  ">
+    <div className="w-240 mt-9 font-[DM Sans] bg-gray-100  ">
       {/* Header */}
       <div className="mb-6 display flex justify-center text-center">
         <div>
@@ -207,7 +211,7 @@ const saveEdit = (payload) => {
         </div>
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Local Assembly</label>
-         <select
+          <select
             // value={filter.assembly}
             // onChange={(e) => {
             //   setFilter({ ...filter, assembly: e.target.value });
@@ -219,10 +223,10 @@ const saveEdit = (payload) => {
             <option value="PEACE_TEMPLE">PEACE Temple</option>
             <option value="TEMA">TEMA</option>
             <option value="BONOU_N">BONOU_N</option>
-            <option value="	GALILEY">	GALILEY</option>
+            <option value="	GALILEY"> GALILEY</option>
           </select>
         </div>
-        
+
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Age Group</label>
           <input
@@ -288,7 +292,7 @@ const saveEdit = (payload) => {
         </div>
 
         <div className="overflow-x-auto shadow-lg ">
-          <table className="w-full min-w-[500px] text-sm  whitespace-nowrap ">
+          <table className="w-full min-w-125 text-sm  whitespace-nowrap ">
             <thead>
               <tr className="bg-gray-50 text-gray-600">
                 <th className="border px-3 py-2">Full Name</th>
@@ -385,7 +389,7 @@ const saveEdit = (payload) => {
                         {isAdmin() && (
                           <>
                             <button
-                              onClick={() => setDeletingMember(m)}
+                              onClick={() => handleDeleteMember(m)}
                               className="text-red-500 hover:cursor-pointer"
                             >
                               <Trash2 className="w-5 h-5" />
@@ -437,18 +441,18 @@ const saveEdit = (payload) => {
           onSave={saveEdit}
         />
       )}
-      {deletingMember && (
-        <DeleteConfirmModal
-          member={deletingMember}
-          onCancel={() => setDeletingMember(null)}
-          onConfirm={() => confirmDelete(deletingMember)}
+      {deleteModal && (
+        <DeleteModal
+          item={deleteModal}
+          onCancel={() => setDeleteModal(null)}
+          onConfirm={confirmDelete}
         />
       )}
 
       {successModal && (
-        <SuccessModal 
-        successModal={successModal}
-        setSuccessModal={setSuccessModal}
+        <SuccessModal
+          successModal={successModal}
+          setSuccessModal={setSuccessModal}
         />
       )}
     </div>

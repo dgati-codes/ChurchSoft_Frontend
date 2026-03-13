@@ -1,22 +1,22 @@
 import { BookOpen, MapPin, TrendingUp, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import LoadingSpinner from "../modals/LoadingSpinner";
-
+import StatCard from "../modals/StatCard.jsx";
 import { attendanceService } from "../../../api/services/attendanceService";
 import AddAttendanceRecord from "./AddAttendanceRecord";
 import AttendanceTable from "./AttendanceTable";
 
 // Reusable Card component
-const StatCard = ({ title, value, subtitle, icon,  }) => (
-  <div className="bg-white shadow rounded-lg p-4 flex flex-col gap-1 border border-[#E5E5E5]">
-    <div className="flex justify-between items-center">
-      <h3 className="text-sm font-medium text-gray-600">{title}</h3>
-      {icon && <span className="text-xl">{icon}</span>}
-    </div>
-    <p className="text-2xl font-bold">{value}</p>
-    {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
-  </div>
-);
+// const StatCard = ({ title, value, subtitle, icon,  }) => (
+//   <div className="bg-white shadow rounded-lg p-4 flex flex-col gap-1 border border-[#E5E5E5]">
+//     <div className="flex justify-between items-center">
+//       <h3 className="text-sm font-medium text-gray-600">{title}</h3>
+//       {icon && <span className="text-xl">{icon}</span>}
+//     </div>
+//     <p className="text-2xl font-bold">{value}</p>
+//     {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+//   </div>
+// );
 
 export default function AttendanceTracking() {
   const [showAddAttendanceRecord, setShowAddAttendanceRecord] = useState(false);

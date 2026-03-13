@@ -6,8 +6,7 @@ import {
 } from "../../../api/services/userImageService";
 import  UserService  from "../../../api/services/userService";
 import InputField from "../modals/InputField";
-import SuccessModal from "../modals/successModal.jsx";
-
+import SuccessModal from "../modals/successModal";
 const AddUserForm = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -66,8 +65,7 @@ const AddUserForm = () => {
       }
 
       setMessage({
-        firstName: result.data.firstName,
-        lastName: result.data.lastName,
+         name: `${result.firstName} ${result.lastName}`,
         text: "added successfully.",
       });
       setShowSuccess(true);
