@@ -20,152 +20,146 @@ import AttendanceTable from "./AttendanceTable";
 // );
 
 export default function AttendanceTracking() {
- const [showAddAttendanceRecord, setShowAddAttendanceRecord] = useState(false);
-const [currentPage, setCurrentPage] = useState(0);
+  const [showAddAttendanceRecord, setShowAddAttendanceRecord] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
 
-const [filters, setFilters] = useState({
-  serviceDates: "",
-  serviceType: "ALL",
-  assembly: "ALL",
-  district: "ALL",
-  region: "ALL",
-});
-
-const queryClient = useQueryClient();
-
-/* ================= FETCH ATTENDANCE ================= */
-
-const {
-  data,
-  isFetching,
-  isError,
-  error,
-} = useQuery({
-  queryKey: [
-    "attendance",
-    currentPage,
-    filters.region,
-    filters.serviceType,
-    filters.assembly,
-    filters.district,
-  ],
-
-  queryFn: () =>
-    attendanceService.getAttendanceMetrics(
-      filters.region || "ALL",
-      filters.serviceType || "ALL",
-      filters.assembly || "ALL",
-      filters.district || "ALL",
-      currentPage,
-      10
-    ),
-
-  keepPreviousData: true,
-  staleTime: 3 * 60 * 1000,
-  refetchInterval: 3 * 60 * 1000,
-  refetchOnWindowFocus: false,
-});
-
-/* ================= EXTRACT DATA ================= */
-
-const metrics = data?.metrics || {
-  totalAttendance: 0,
-  averageAttendance: 0,
-  activeLocations: 0,
-  serviceRecords: 0,
-  children: { count: 0, percentage: 0 },
-  juniorYouth: { count: 0, percentage: 0 },
-  seniorYouth: { count: 0, percentage: 0 },
-  adults: { count: 0, percentage: 0 },
-  visitors: { count: 0, percentage: 0 },
-};
-
-const attendanceRecords = data?.attendanceRecord?.content || [];
-const totalElements = data?.attendanceRecord?.totalElements || 0;
-const totalPages = data?.attendanceRecord?.totalPages || 0;
-
-/* ================= FILTER CHANGE ================= */
-
-const handleFilterChange = (key, value) => {
-  setFilters((prev) => ({
-    ...prev,
-    [key]: value,
-  }));
-
-  setCurrentPage(0);
-};
-
-/* ================= PAGE CHANGE ================= */
-
-const handlePageChange = (page) => {
-  setCurrentPage(page);
-};
-
-/* ================= ADD RECORD ================= */
-
-const handleRecordAdded = () => {
-  setCurrentPage(0);
-
-  queryClient.invalidateQueries({
-    queryKey: ["attendance"],
+  const [filters, setFilters] = useState({
+    serviceDates: "",
+    serviceType: "ALL",
+    assembly: "ALL",
+    district: "ALL",
+    region: "ALL",
   });
-};
 
-/* ================= DELETE RECORD ================= */
+  const queryClient = useQueryClient();
 
-const handleDelete = async (id) => {
-  if (!window.confirm("Are you sure you want to delete this record?")) return;
+  /* ================= FETCH ATTENDANCE ================= */
 
-  try {
-    await attendanceService.deleteAttendance(id);
+  const { data, isFetching, isError, error } = useQuery({
+    queryKey: [
+      "attendance",
+      currentPage,
+      filters.region,
+      filters.serviceType,
+      filters.assembly,
+      filters.district,
+    ],
 
-    if (attendanceRecords.length === 1 && currentPage > 0) {
-      setCurrentPage((prev) => prev - 1);
-    }
+    queryFn: () =>
+      attendanceService.getAttendanceMetrics(
+        filters.region || "ALL",
+        filters.serviceType || "ALL",
+        filters.assembly || "ALL",
+        filters.district || "ALL",
+        currentPage,
+        10,
+      ),
+
+    keepPreviousData: true,
+    staleTime: 3 * 60 * 1000,
+    refetchInterval: 3 * 60 * 1000,
+    refetchOnWindowFocus: false,
+  });
+
+  /* ================= EXTRACT DATA ================= */
+
+  const metrics = data?.metrics || {
+    totalAttendance: 0,
+    averageAttendance: 0,
+    activeLocations: 0,
+    serviceRecords: 0,
+    children: { count: 0, percentage: 0 },
+    juniorYouth: { count: 0, percentage: 0 },
+    seniorYouth: { count: 0, percentage: 0 },
+    adults: { count: 0, percentage: 0 },
+    visitors: { count: 0, percentage: 0 },
+  };
+
+  const attendanceRecords = data?.attendanceRecord?.content || [];
+  const totalElements = data?.attendanceRecord?.totalElements || 0;
+  const totalPages = data?.attendanceRecord?.totalPages || 0;
+
+  /* ================= FILTER CHANGE ================= */
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+
+    setCurrentPage(0);
+  };
+
+  /* ================= PAGE CHANGE ================= */
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  /* ================= ADD RECORD ================= */
+
+  const handleRecordAdded = () => {
+    setCurrentPage(0);
 
     queryClient.invalidateQueries({
       queryKey: ["attendance"],
     });
+  };
 
-  } catch (err) {
-    console.error("Delete failed:", err);
-    alert("Failed to delete record");
+  /* ================= DELETE RECORD ================= */
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this record?")) return;
+
+    try {
+      await attendanceService.deleteAttendance(id);
+
+      if (attendanceRecords.length === 1 && currentPage > 0) {
+        setCurrentPage((prev) => prev - 1);
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["attendance"],
+      });
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Failed to delete record");
+    }
+  };
+
+  /* ================= VIEW RECORD ================= */
+
+  const handleView = async (id) => {
+    try {
+      const record = await attendanceService.getAttendanceById(id);
+      return record;
+    } catch (err) {
+      console.error("View failed:", err);
+    }
+  };
+
+  /* ================= EDIT RECORD ================= */
+
+  const handleEdit = async (id) => {
+    try {
+      const record = await attendanceService.getAttendanceById(id);
+      return record;
+    } catch (err) {
+      console.error("Edit failed:", err);
+    }
+  };
+
+  /* ================= ERROR STATE ================= */
+
+  if (isError) {
+    return (
+      <div className="min-h-screen p-10 bg-[#F9FAFB] flex items-center justify-center">
+        <p className="text-lg text-red-600">
+          {error?.message || "Failed to load attendance records"}
+        </p>
+      </div>
+    );
   }
-};
-
-/* ================= VIEW RECORD ================= */
-
-const handleView = async (id) => {
-  try {
-    const record = await attendanceService.getAttendanceById(id);
-    return record;
-  } catch (err) {
-    console.error("View failed:", err);
-  }
-};
-
-/* ================= EDIT RECORD ================= */
-
-const handleEdit = async (id) => {
-  try {
-    const record = await attendanceService.getAttendanceById(id);
-    return record;
-  } catch (err) {
-    console.error("Edit failed:", err);
-  }
-};
-
-/* ================= ERROR STATE ================= */
-
-if (isError) {
-  return (
-    <div className="min-h-screen p-10 bg-[#F9FAFB] flex items-center justify-center">
-      <p className="text-lg text-red-600">
-        {error?.message || "Failed to load attendance records"}
-      </p>
-    </div>
-  );
-}
   return (
     <div className="min-h-screen font-[DM Sans] mt-15 bg-[#F9FAFB] ">
       {/* Header */}
@@ -198,23 +192,23 @@ if (isError) {
         <div className="flex justify-between mb-4">
           <h2 className="font-semibold">Filters</h2>
           <button
-  onClick={() => {
-    const resetFilters = {
-      serviceDates: "",
-      serviceType: "ALL",
-      assembly: "ALL",
-      district: "ALL",
-      region: "ALL",
-    };
+            onClick={() => {
+              const resetFilters = {
+                serviceDates: "",
+                serviceType: "ALL",
+                assembly: "ALL",
+                district: "ALL",
+                region: "ALL",
+              };
 
-    setFilters(resetFilters);  
-    setCurrentPage(0);          
-    // refetch();                  
-  }}
-  className="text-sm text-blue-600"
->
-  Clear All
-</button>
+              setFilters(resetFilters);
+              setCurrentPage(0);
+              // refetch();
+            }}
+            className="text-sm text-blue-600"
+          >
+            Clear All
+          </button>
         </div>
         <div className="flex gap-4">
           <div>
