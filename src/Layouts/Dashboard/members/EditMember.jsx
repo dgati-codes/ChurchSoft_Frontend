@@ -43,6 +43,8 @@ export default function EditMemberModal({ member, onClose, onSave }) {
       consentForCommunication: form.consentForCommunication ?? false,
       whatsappAvailable: form.whatsappAvailable ?? false,
       hasHealthIssues: form.hasHealthIssues ?? false,
+          updatedAt: new Date().toISOString(),
+
     };
 
   onSave(payload); 

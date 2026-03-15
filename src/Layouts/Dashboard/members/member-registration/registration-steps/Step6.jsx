@@ -1,5 +1,6 @@
 import { Shield } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../../../../../context/AuthContext";
 import { useRegistration } from "../../registration-context/RegistrationContext";
 
 // 🔹 Constant options
@@ -9,10 +10,15 @@ const Step6HealthWelfareInfo = () => {
   const { formData, updateForm, nextStep, prevStep } = useRegistration();
 
   const [localData, setLocalData] = useState({
+    createdBy: formData.createdBy || "",
+    createdDate: formData.createdDate || "",
+    updatedAt: formData.updatedAt || "",
     hasHealthIssues: formData.hasHealthIssues || false,
     specialNeedsOrMedicalConditions:
       formData.specialNeedsOrMedicalConditions || "",
   });
+
+  const { user } = useAuth();
 
   // Handle text input changes
   const handleChange = (e) => {
@@ -30,13 +36,27 @@ const Step6HealthWelfareInfo = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateForm(localData);
+
+    const dataToSubmit = {
+      ...localData,
+      createdBy: user?.id ? Number(user.id) : null,
+      createdDate: formData.createdDate || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    updateForm(dataToSubmit);
     nextStep();
   };
 
   const handleSaveExit = (e) => {
     e.preventDefault();
-    updateForm(localData);
+
+    const dataToSubmit = {
+      ...localData,
+      createdBy: user?.id ? Number(user.id) : null,
+      createdDate: formData.createdDate || new Date().toISOString(),
+    };
+    updateForm(dataToSubmit);
   };
 
   return (

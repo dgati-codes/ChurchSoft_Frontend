@@ -66,6 +66,9 @@ export const RegistrationProvider = ({ children }) => {
     spiritualGifts: [],
     hasHealthIssues: false,
     specialNeedsOrMedicalConditions: "",
+    createdBy: "",
+    createdDate: "",
+    updatedAt: "",
   });
 
   // Navigate steps
@@ -137,6 +140,9 @@ export const RegistrationProvider = ({ children }) => {
       spiritualGifts: [],
       hasHealthIssues: false,
       specialNeedsOrMedicalConditions: "",
+      createdBy: "",
+      updatedBy: "",
+      createdAt: "",
     });
     setStep(1);
   };

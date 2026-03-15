@@ -1,4 +1,4 @@
-import ServiceTypeTag from "./AttendanceSeviceTypeTag";
+import ServiceTypeTag from "../AttendanceSeviceTypeTag";
 
 function AttendanceViewModal({ record, isOpen, onClose }) {
   if (!isOpen || !record) return null;
@@ -16,8 +16,8 @@ function AttendanceViewModal({ record, isOpen, onClose }) {
     record.visitorFemale;
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white p-10 rounded-lg max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">View Record</h3>
           <button onClick={onClose} className="text-gray-500">

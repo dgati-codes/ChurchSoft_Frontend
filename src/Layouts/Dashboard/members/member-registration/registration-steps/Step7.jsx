@@ -180,6 +180,8 @@ const Step7ReviewSubmit = () => {
       title: "Health & Welfare Information",
       icon: <HeartPulse className="w-5 h-5 text-white" />,
       fields: [
+        "createdBy",
+        "createdDate",
         "hasHealthIssues",
         "specialNeedsOrMedicalConditions",
         "leadershipRole",
@@ -237,6 +239,11 @@ const Step7ReviewSubmit = () => {
               {section.fields.map((field) => {
                 const isArray = Array.isArray(localData[field]);
                 const value = localData[field];
+                if (isArray) {
+                  return value.map((item, index) => (
+                    <div key={index}>{item}</div>
+                  ));
+                }
 
                 return (
                   <div

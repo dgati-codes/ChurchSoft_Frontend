@@ -1,19 +1,18 @@
-import { XCircle } from "lucide-react";
 import { useState } from "react";
 import {
   assignImageToUser,
   uploadImage,
 } from "../../../api/services/userImageService";
 import UserService from "../../../api/services/userService";
+import ErrorModal from "../modals/ErrorModal ";
 import InputField from "../modals/InputField";
 import SuccessModal from "../modals/successModal";
-import ErrorModal from "../modals/ErrorModal "
 
 const AddUserForm = () => {
   const [errorModal, setErrorModal] = useState({
-  show: false,
-  message: "",
-});
+    show: false,
+    message: "",
+  });
   // const [message, setMessage] = useState("");
   // const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
@@ -84,10 +83,10 @@ const AddUserForm = () => {
         image: null,
       });
     } catch (error) {
-     setErrorModal({
-  show: true,
-  message: error.message || "Failed to add user.",
-});
+      setErrorModal({
+        show: true,
+        message: error.message || "Failed to add user.",
+      });
     }
   };
 
@@ -204,10 +203,7 @@ const AddUserForm = () => {
       />
 
       {/* ERROR MODAL */}
-      <ErrorModal
-  errorModal={errorModal}
-  setErrorModal={setErrorModal}
-/>
+      <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} />
     </div>
   );
 };

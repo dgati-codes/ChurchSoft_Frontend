@@ -1,8 +1,10 @@
-import React, { useState } from "react";
 import { X } from "lucide-react";
-import { attendanceService } from "../../../api/services/attendanceService";
+import { useState } from "react";
+import { attendanceService } from "../../../../api/services/attendanceService";
+import SuccessModal from "../../modals/successModal";
 // Add this import
-const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added onRecordAdded prop
+const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => {
+  // Added onRecordAdded prop
   const [formData, setFormData] = useState({
     serviceDate: "",
     serviceType: "",
@@ -28,6 +30,7 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successModal, setSuccessModal] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,10 +77,14 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
       };
       const payload = {
         ...formData,
-        serviceType: serviceTypeMap[formData.serviceType] || formData.serviceType,
+        serviceType:
+          serviceTypeMap[formData.serviceType] || formData.serviceType,
       };
       const response = await attendanceService.createAttendance(payload);
       console.log("Attendance record created:", response);
+      setSuccessModal({
+        action: "added",
+      });
       // Reset form
       setFormData({
         serviceDate: "",
@@ -106,7 +113,7 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
       if (onRecordAdded) {
         onRecordAdded(response);
       }
-      onClose();
+      // onClose();
     } catch (error) {
       console.error("Error submitting attendance:", error);
       // Fallback handling for auth errors (global interceptor should catch most cases)
@@ -120,7 +127,7 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
         return;
       }
       setError(
-        error.response?.data?.message || "Failed to create attendance record"
+        error.response?.data?.message || "Failed to create attendance record",
       );
     } finally {
       setLoading(false);
@@ -136,9 +143,15 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-xl font-semibold">Add New Attendance Record</h2>
-            <p className="text-gray-500"> Fill in the attendance details for the service. </p>
+            <p className="text-gray-500">
+              {" "}
+              Fill in the attendance details for the service.{" "}
+            </p>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800" >
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-800"
+          >
             <X className="w-6 h-6 text-gray-400" />
           </button>
         </div>
@@ -152,7 +165,7 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="text-sm font-medium">
-                Service Date<span className='text-red-600'>*</span>
+                Service Date<span className="text-red-600">*</span>
               </label>
               <input
                 type="date"
@@ -165,7 +178,7 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
             </div>
             <div>
               <label className="text-sm font-medium">
-                Service Type<span className='text-red-600'>*</span>
+                Service Type<span className="text-red-600">*</span>
               </label>
               <select
                 name="serviceType"
@@ -188,7 +201,8 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
             </div>
             <div>
               <label className="text-sm font-medium">
-                {" "}Submitted By<span className="text-red-600">*</span>{" "}
+                {" "}
+                Submitted By<span className="text-red-600">*</span>{" "}
               </label>
               <input
                 type="text"
@@ -205,7 +219,7 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="text-sm font-medium">
-                Region<span className='text-red-600'>*</span>
+                Region<span className="text-red-600">*</span>
               </label>
               <select
                 name="region"
@@ -221,7 +235,7 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
             </div>
             <div>
               <label className="text-sm font-medium">
-                District<span className='text-red-600'>*</span>
+                District<span className="text-red-600">*</span>
               </label>
               <select
                 name="district"
@@ -237,7 +251,7 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
             </div>
             <div>
               <label className="text-sm font-medium">
-                Local Assembly<span className='text-red-600'>*</span>
+                Local Assembly<span className="text-red-600">*</span>
               </label>
               <select
                 name="localAssembly"
@@ -266,7 +280,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="boys"
                       value={formData.boys}
-                      onChange={(e) => handleNumberChange("boys", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("boys", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -276,7 +292,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="girls"
                       value={formData.girls}
-                      onChange={(e) => handleNumberChange("girls", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("girls", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -292,7 +310,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="juniorYouthMale"
                       value={formData.juniorYouthMale}
-                      onChange={(e) => handleNumberChange("juniorYouthMale", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("juniorYouthMale", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -302,7 +322,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="juniorYouthFemale"
                       value={formData.juniorYouthFemale}
-                      onChange={(e) => handleNumberChange("juniorYouthFemale", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("juniorYouthFemale", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -318,7 +340,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="seniorYouthMale"
                       value={formData.seniorYouthMale}
-                      onChange={(e) => handleNumberChange("seniorYouthMale", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("seniorYouthMale", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -328,7 +352,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="seniorYouthFemale"
                       value={formData.seniorYouthFemale}
-                      onChange={(e) => handleNumberChange("seniorYouthFemale", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("seniorYouthFemale", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -344,7 +370,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="adultMen"
                       value={formData.adultMen}
-                      onChange={(e) => handleNumberChange("adultMen", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("adultMen", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -354,7 +382,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="adultWomen"
                       value={formData.adultWomen}
-                      onChange={(e) => handleNumberChange("adultWomen", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("adultWomen", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -370,7 +400,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="visitorMale"
                       value={formData.visitorMale}
-                      onChange={(e) => handleNumberChange("visitorMale", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("visitorMale", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -380,7 +412,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                       type="number"
                       name="visitorFemale"
                       value={formData.visitorFemale}
-                      onChange={(e) => handleNumberChange("visitorFemale", e.target.value)}
+                      onChange={(e) =>
+                        handleNumberChange("visitorFemale", e.target.value)
+                      }
                       className="input"
                     />
                   </div>
@@ -393,7 +427,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
             <h3 className="font-semibold mb-4">Notes (Optional)</h3>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">General Observations</label>
+                <label className="text-sm font-medium">
+                  General Observations
+                </label>
                 <textarea
                   name="generalObservations"
                   value={formData.note.generalObservations}
@@ -403,7 +439,9 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Challenges Noticed</label>
+                <label className="text-sm font-medium">
+                  Challenges Noticed
+                </label>
                 <textarea
                   name="challengesNoticed"
                   value={formData.note.challengesNoticed}
@@ -444,6 +482,12 @@ const AddAttendanceRecord = ({ isOpen, onClose, onRecordAdded }) => { // Added o
           </div>
         </form>
       </div>
+
+      <SuccessModal
+        successModal={successModal}
+        setSuccessModal={setSuccessModal}
+        // onClose={onClose()}
+      />
     </div>
   );
 };

@@ -119,11 +119,8 @@ localStorage.removeItem("member");
     <AuthContext.Provider
       value={{
         user,
-
         updateUser,
-       
         member,
-        // loading,
         login,
         logout,
         hasRole,

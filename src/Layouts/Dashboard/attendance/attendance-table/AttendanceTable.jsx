@@ -8,13 +8,15 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
-import AttendanceViewModal from "./Attendance-ViewModal";
-import ServiceTypeTag from "./AttendanceSeviceTypeTag";
+import AttendanceViewModal from "../attendance-viewmodal/Attendance-ViewModal";
+import ServiceTypeTag from "../AttendanceSeviceTypeTag";
 
 // Service type label with colors (flexible)
 <ServiceTypeTag />;
 // View Modal
-{/* <ViewModal />; */}
+{
+  /* <ViewModal />; */
+}
 
 // Attendance Table
 export default function AttendanceTable({

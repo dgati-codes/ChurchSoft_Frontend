@@ -98,7 +98,7 @@ const Step4EducationInfo = () => {
               value={localData.educationalLevel}
               onChange={handleChange}
               className="input"
-              required
+              // required
             >
               <option value="">Select Education Level</option>
               {Object.keys(educationLevelMap).map((key) => (
@@ -121,7 +121,7 @@ const Step4EducationInfo = () => {
               onChange={handleChange}
               placeholder="Enter your occupation"
               className="input"
-              required
+              // required
             />
           </div>
 
@@ -135,7 +135,7 @@ const Step4EducationInfo = () => {
               value={localData.employmentSector}
               onChange={handleChange}
               className="input"
-              required
+              // required
             >
               <option value="">Select Employment Sector</option>
               {Object.keys(employmentSectorMap).map((key) => (
@@ -156,7 +156,7 @@ const Step4EducationInfo = () => {
               value={localData.employmentType}
               onChange={handleChange}
               className="input"
-              required
+              // required
             >
               <option value="">Select Employment Type</option>
               {Object.keys(employmentTypeMap).map((key) => (

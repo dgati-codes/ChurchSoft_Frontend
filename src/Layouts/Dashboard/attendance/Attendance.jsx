@@ -2,27 +2,16 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BookOpen, MapPin, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
 import { attendanceService } from "../../../api/services/attendanceService";
+import DeleteModal from "../modals/DeleteModal";
 import LoadingSpinner from "../modals/LoadingSpinner";
 import StatCard from "../modals/StatCard.jsx";
-import AddAttendanceRecord from "./AddAttendanceRecord";
-import AttendanceTable from "./AttendanceTable";
-
-// Reusable Card component
-// const StatCard = ({ title, value, subtitle, icon,  }) => (
-//   <div className="bg-white shadow rounded-lg p-4 flex flex-col gap-1 border border-[#E5E5E5]">
-//     <div className="flex justify-between items-center">
-//       <h3 className="text-sm font-medium text-gray-600">{title}</h3>
-//       {icon && <span className="text-xl">{icon}</span>}
-//     </div>
-//     <p className="text-2xl font-bold">{value}</p>
-//     {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
-//   </div>
-// );
+import AddAttendanceRecord from "./addattendance-record/AddAttendanceRecord.jsx";
+import AttendanceTable from "./attendance-table/AttendanceTable.jsx";
 
 export default function AttendanceTracking() {
   const [showAddAttendanceRecord, setShowAddAttendanceRecord] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
-
+  const [deleteModal, setDeleteModal] = useState(null);
   const [filters, setFilters] = useState({
     serviceDates: "",
     serviceType: "ALL",
@@ -107,12 +96,16 @@ export default function AttendanceTracking() {
   };
 
   /* ================= DELETE RECORD ================= */
+  const handleDelete = (id) => {
+    setDeleteModal({
+      id: id,
+      action: "this record",
+    });
+  };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this record?")) return;
-
+  const confirmDelete = async () => {
     try {
-      await attendanceService.deleteAttendance(id);
+      await attendanceService.deleteAttendance(deleteModal.id);
 
       if (attendanceRecords.length === 1 && currentPage > 0) {
         setCurrentPage((prev) => prev - 1);
@@ -121,6 +114,8 @@ export default function AttendanceTracking() {
       queryClient.invalidateQueries({
         queryKey: ["attendance"],
       });
+
+      setDeleteModal(null);
     } catch (err) {
       console.error("Delete failed:", err);
       alert("Failed to delete record");
@@ -360,10 +355,16 @@ export default function AttendanceTracking() {
         </div>
       </div>
       <AddAttendanceRecord
-        className=" inset-0 flex items-center justify-center bg-black bg-opacity-10 z-50"
+        className=" inset-0 flex items-center justify-center bg-black/50  z-50"
         isOpen={showAddAttendanceRecord}
         onClose={() => setShowAddAttendanceRecord(false)}
         onRecordAdded={handleRecordAdded}
+      />
+
+      <DeleteModal
+        item={deleteModal}
+        onCancel={() => setDeleteModal(null)}
+        onConfirm={confirmDelete}
       />
     </div>
   );

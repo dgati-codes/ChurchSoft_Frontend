@@ -89,7 +89,7 @@ const Step2ContactInfo = () => {
               onChange={handleChange}
               placeholder="Phone Number*"
               className="input bg-gray-100 rounded px-4 py-2"
-              required
+              // required
             />
             <input
               name="email"
