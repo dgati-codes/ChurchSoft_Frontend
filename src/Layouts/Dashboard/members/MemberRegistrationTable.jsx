@@ -66,14 +66,6 @@ export default function MemberTable() {
         );
       }
 
-      // if(filter.assembly){
-      //   return memberService.getMembersByAssembly(
-      //     filter.assembly,
-      //     currentPage,
-      //     pageSize
-      //   );
-      // }
-
       return memberService.getAllMembers(currentPage, pageSize);
     },
 
@@ -125,6 +117,7 @@ export default function MemberTable() {
     setDeleteModal(null);
     deleteMutation.mutate(id);
   };
+
   // 1️⃣ Mutation to update member
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }) => memberService.updateMember(id, payload),
@@ -277,7 +270,7 @@ export default function MemberTable() {
         </div>
       </div>
 
-      <div className="rounded-xl overflow-hidden shadow-md border bg-white border-gray-200">
+      <div className="rounded-xl overflow-hidden shadow-md border p-5 bg-white border-gray-200">
         <div className="flex justify-between items-center p-3 ">
           <h1 className="ml-5 text-xl font-semibold">Filters</h1>
           <div className=" bg-blue-700 flex items-center justify-center rounded-md">

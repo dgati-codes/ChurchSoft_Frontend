@@ -11,6 +11,7 @@ import {
   User,
   Users,
 } from "lucide-react";
+ 
 import { useRef } from "react";
 import {
   getBirthdaysThisWeek,
@@ -59,7 +60,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FC] font-[DM Sans]">
+    <div className=" min-h-screen bg-[#F6F8FC] font-[DM Sans]">
       <main className="flex-1 mt-10">
         <div className="grid grid-cols-4 gap-6 mb-4">
           <StatCard
@@ -238,6 +239,7 @@ export default function Dashboard() {
         </div>
       </main>
     </div>
+    
   );
 }
 

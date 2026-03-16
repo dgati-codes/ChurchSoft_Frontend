@@ -12,101 +12,138 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import memberService from "../../../../../api/services/memberService";
+import SuccessModal from "../../../modals/successModal";
 import { useRegistration } from "../../registration-context/RegistrationContext";
-
-// ✅ use service instead of axios
 
 const Step7ReviewSubmit = () => {
   const { formData, updateForm, resetForm } = useRegistration();
   const [editingSection, setEditingSection] = useState(null);
-  const [localData, setLocalData] = useState(formData);
+  const [localData, setLocalData] = useState(formData || {});
   const [loading, setLoading] = useState(false);
+  const [successModal, setSuccessModal] = useState(null);
+  const queryClient = useQueryClient();
 
-  // 🔹 Handle field changes (including arrays)
+  const ARRAY_FIELDS = [
+    "skillsTalents",
+    "spiritualGifts",
+    "ministries",
+    "preferredLanguages",
+  ];
+
+  /* ---------------- HANDLE FIELD CHANGE ---------------- */
+
   const handleFieldChange = (key, value, subObject = null) => {
-    const isArrayField = [
-      "skillsTalents",
-      "spiritualGifts",
-      "ministries",
-      "preferredLanguages",
-    ].includes(key);
+    const normalizeArray = (val) => {
+      if (typeof val === "string") {
+        return val
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean);
+      }
 
-    const finalValue = isArrayField
-      ? typeof value === "string"
-        ? value
-            .split(",")
-            .map((v) => v.trim())
-            .filter(Boolean)
-        : Array.isArray(value)
-          ? value
-          : []
+      if (Array.isArray(val)) {
+        return val
+          .map((v) => (typeof v === "string" ? v.trim() : v))
+          .filter(Boolean);
+      }
+
+      return [];
+    };
+
+    const finalValue = ARRAY_FIELDS.includes(key)
+      ? normalizeArray(value)
       : value;
 
-    if (subObject) {
-      setLocalData((prev) => ({
-        ...prev,
-        [subObject]: { ...prev[subObject], [key]: finalValue },
-      }));
-    } else {
-      setLocalData((prev) => ({ ...prev, [key]: finalValue }));
-    }
+    setLocalData((prev) => {
+      if (subObject) {
+        return {
+          ...prev,
+          [subObject]: {
+            ...(prev?.[subObject] || {}),
+            [key]: finalValue,
+          },
+        };
+      }
+
+      return { ...prev, [key]: finalValue };
+    });
   };
 
-  // 🔹 Save section edits
+  /* ---------------- SAVE SECTION ---------------- */
+
   const handleSave = () => {
     updateForm(localData);
     setEditingSection(null);
   };
 
-  // 🔹 Final submit using memberService
-  const queryClient = useQueryClient();
+  /* ---------------- FINAL SUBMIT ---------------- */
 
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Normalize booleans
-      localData.hasHealthIssues =
-        localData.hasHealthIssues === "YES" ||
-        localData.hasHealthIssues === true;
+      const payload = JSON.parse(JSON.stringify(localData));
 
-      localData.healthCondition =
-        localData.healthCondition === "YES" ||
-        localData.healthCondition === true;
+      payload.hasHealthIssues =
+        payload?.hasHealthIssues === "YES" || payload?.hasHealthIssues === true;
 
-      // Ensure arrays exist
-      [
-        "skillsTalents",
-        "spiritualGifts",
-        "ministries",
-        "preferredLanguages",
-      ].forEach((field) => {
-        if (!Array.isArray(localData[field])) localData[field] = [];
+      payload.healthCondition =
+        payload?.healthCondition === "YES" || payload?.healthCondition === true;
+
+      ARRAY_FIELDS.forEach((field) => {
+        if (!Array.isArray(payload[field])) payload[field] = [];
+
+        payload[field] = payload[field]
+          .map((v) => {
+            if (typeof v === "string") return v.trim();
+            if (typeof v === "object") return v?.ministryName || v?.name;
+            return null;
+          })
+          .filter(Boolean);
       });
 
-      // Remove empty strings
-      Object.keys(localData).forEach(
-        (key) => localData[key] === "" && (localData[key] = null),
-      );
-      console.log("Sending data:", localData);
-      // ✅ Create member via API
-      const newMember = await memberService.createMember(localData);
+      Object.keys(payload).forEach((key) => {
+        if (payload[key] === "") payload[key] = null;
+      });
 
-      // ✅ Update React Query cache so new member appears on top
+      console.log("FINAL PAYLOAD:", payload);
+
+      const newMember = await memberService.createMember(payload);
+
       queryClient.setQueryData(["members"], (old = []) => [newMember, ...old]);
-
-      alert("Submission successful!");
-      resetForm(); // optional: reset registration form
+      // alert("Member created successfully");
+      setSuccessModal({
+        name: payload.fullName || "Member",
+        action: "registered",
+      });
+      // resetForm();
     } catch (error) {
-      console.error(error);
-      alert("Submission failed. Check console for details.");
+      console.error("Backend error:", error?.response?.data || error);
+      alert("Error creating member. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Sections definition (unchanged)
+  /* ---------------- DISPLAY VALUE ---------------- */
+
+  const displayValue = (value) => {
+    if (Array.isArray(value)) {
+      if (!value.length) return "None";
+
+      return value
+        .map((v) => (typeof v === "object" ? v?.ministryName || v?.name : v))
+        .join(", ");
+    }
+
+    if (typeof value === "boolean") return value ? "Yes" : "No";
+
+    return value || <em className="text-gray-400">Not Provided</em>;
+  };
+
+  /* ---------------- FORM SECTIONS ---------------- */
+
   const sections = [
     {
       title: "Personal & Identity Information",
@@ -189,25 +226,22 @@ const Step7ReviewSubmit = () => {
     },
   ];
 
-  const displayValue = (value) => {
-    if (Array.isArray(value)) return value.length ? value.join(", ") : "None";
-    if (typeof value === "boolean") return value ? "Yes" : "No";
-    return value || <em className="text-gray-400">Not Provided</em>;
-  };
+  /* ---------------- UI ---------------- */
 
   return (
     <div className="max-w-6xl font-[DM Sans] mx-auto px-4 py-10">
       <h1 className="text-3xl font-semibold text-center mb-2">
         Church Member Registration
       </h1>
+
       <p className="text-center text-gray-600 mb-8">
         Review all information carefully before submission.
       </p>
 
       <form onSubmit={handleFinalSubmit} className="space-y-8">
-        {sections.map((section, i) => (
+        {sections.map((section) => (
           <div
-            key={i}
+            key={section.title}
             className="rounded-xl border shadow bg-white overflow-hidden"
           >
             <div className="flex justify-between items-center bg-blue-600 px-4 py-3">
@@ -220,7 +254,7 @@ const Step7ReviewSubmit = () => {
                 <button
                   type="button"
                   onClick={() => setEditingSection(null)}
-                  className="text-white hover:text-gray-100 flex items-center gap-1"
+                  className="text-white flex items-center gap-1"
                 >
                   <X className="w-4 h-4" /> Cancel
                 </button>
@@ -228,7 +262,7 @@ const Step7ReviewSubmit = () => {
                 <button
                   type="button"
                   onClick={() => setEditingSection(section.title)}
-                  className="text-white hover:text-gray-100 flex items-center gap-1"
+                  className="text-white flex items-center gap-1"
                 >
                   <Pencil className="w-4 h-4" /> Edit
                 </button>
@@ -237,13 +271,7 @@ const Step7ReviewSubmit = () => {
 
             <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
               {section.fields.map((field) => {
-                const isArray = Array.isArray(localData[field]);
-                const value = localData[field];
-                if (isArray) {
-                  return value.map((item, index) => (
-                    <div key={index}>{item}</div>
-                  ));
-                }
+                const value = localData?.[field];
 
                 return (
                   <div
@@ -258,7 +286,9 @@ const Step7ReviewSubmit = () => {
                       <input
                         type="text"
                         value={
-                          Array.isArray(value) ? value.join(", ") : value || ""
+                          Array.isArray(value)
+                            ? value.join(", ")
+                            : (value ?? "")
                         }
                         onChange={(e) =>
                           handleFieldChange(field, e.target.value)
@@ -275,11 +305,12 @@ const Step7ReviewSubmit = () => {
               })}
             </div>
 
-            {section.subTitle && section.subFields && section.subObject && (
+            {section.subTitle && (
               <div className="px-6 pb-6">
                 <h4 className="text-center font-semibold mb-4 mt-2">
                   {section.subTitle}
                 </h4>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {section.subFields.map((sub) => (
                     <div
@@ -293,7 +324,7 @@ const Step7ReviewSubmit = () => {
                       {editingSection === section.title ? (
                         <input
                           type="text"
-                          value={localData[section.subObject]?.[sub] || ""}
+                          value={localData?.[section.subObject]?.[sub] ?? ""}
                           onChange={(e) =>
                             handleFieldChange(
                               sub,
@@ -305,7 +336,7 @@ const Step7ReviewSubmit = () => {
                         />
                       ) : (
                         <p className="font-medium text-gray-800">
-                          {displayValue(localData[section.subObject]?.[sub])}
+                          {displayValue(localData?.[section.subObject]?.[sub])}
                         </p>
                       )}
                     </div>
@@ -319,7 +350,7 @@ const Step7ReviewSubmit = () => {
                 <button
                   type="button"
                   onClick={handleSave}
-                  className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-500"
+                  className="flex items-center gap-1 bg-green-600 text-white px-4 py-2 rounded"
                 >
                   <Save className="w-4 h-4" /> Save Section
                 </button>
@@ -328,12 +359,11 @@ const Step7ReviewSubmit = () => {
           </div>
         ))}
 
-        {/* Submit / Reset */}
-        <div className="flex justify-between pt-6">
+        <div className="flex justify-end pt-6">
           <button
             type="submit"
             disabled={loading}
-            className={`px-6 py-2 ml-100 text-white rounded ${
+            className={`px-6 py-2 text-white cursor-pointer rounded ${
               loading ? "bg-gray-400" : "bg-green-600 hover:bg-green-500"
             }`}
           >
@@ -341,6 +371,12 @@ const Step7ReviewSubmit = () => {
           </button>
         </div>
       </form>
+
+      <SuccessModal
+        successModal={successModal}
+        setSuccessModal={setSuccessModal}
+        onAutoClose={resetForm}
+      />
     </div>
   );
 };

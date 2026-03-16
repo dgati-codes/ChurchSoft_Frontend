@@ -71,7 +71,7 @@ const Step3MembershipInfo = () => {
               value={localData.dateJoinedChurch}
               onChange={handleChange}
               className="w-full bg-gray-100 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              // required
+              required
             />
           </div>
 
@@ -85,7 +85,7 @@ const Step3MembershipInfo = () => {
               value={localData.status}
               onChange={handleChange}
               className="w-full rounded-md px-4 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              // required
+              required
             >
               <option value="">Select status</option>
               <option value="ACTIVE">ACTIVE</option>

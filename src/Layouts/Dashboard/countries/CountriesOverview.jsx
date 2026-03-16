@@ -478,7 +478,7 @@ export default function CountriesOverview() {
                   return (
                     <tr
                       key={h.countryName ?? i}
-                      className="border-b border-gray-50 hover:bg-gray-50/40 transition"
+                      className="border-b border-gray-100 hover:bg-gray-50/40 transition"
                     >
                       {/* Country Name */}
                       <td className="px-4 py-3">

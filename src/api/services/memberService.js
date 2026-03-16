@@ -242,12 +242,10 @@ export default memberService;
 
 
 
-export const getIncompleteMembers = async () => {
-  const response = await axiosInstance.get("/members");
+export const getIncompleteMembers = async (userId) => {
+  const response = await axiosInstance.get(`/members/incomplete/${userId}`);
 
-  return response.data.data.filter(
-    (member) => member.isCompleted === false
-  );
+  return response.data.data;
 };
 export const getBirthdaysThisWeek = async () => {
   const response = await axiosInstance.get("/members/birthdays-this-week");

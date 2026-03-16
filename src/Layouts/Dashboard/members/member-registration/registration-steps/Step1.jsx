@@ -267,7 +267,7 @@ useEffect(() => {
               name="ethnicity"
               value={localData.ethnicity}
               onChange={handleChange}
-              required
+              // required
             />
           </div>
 
@@ -306,7 +306,7 @@ useEffect(() => {
               value={localData.identificationNumber}
               onChange={handleChange}
               className="input"
-              required
+              // required
             />
           </div>
 
@@ -342,6 +342,7 @@ useEffect(() => {
               value={localData.ministryAffiliation}
               onChange={handleChange}
               className="input"
+              required
             >
               <option value="">Select Ministry</option>
               <option value="MEN">MEN</option>
