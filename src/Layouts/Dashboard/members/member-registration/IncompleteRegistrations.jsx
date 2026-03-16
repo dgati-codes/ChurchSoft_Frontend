@@ -1,147 +1,131 @@
 import { useQuery } from "@tanstack/react-query";
-import { getIncompleteMembers } from "../../../../api/services/memberService.js";
-// import { data } from "react-router-dom";
-
-
-
-
-// const registrations = [
-//   {
-//     name: "Sandra Adom",
-//     email: "Sandra@gmail.com",
-//     id: "Us001",
-//     progress: 70,
-//     started: "1/15/2024",
-//     updated: "1/15/2024",
-//     initials: "SA",
-//     avatarBg: "bg-red-100",
-//     avatarText: "text-red-600",
-//   },
-//   {
-//     name: "Nii Tackie Jnr",
-//     email: "Niitr@gmail.com",
-//     id: "Us001",
-//     progress: 40,
-//     started: "1/15/2024",
-//     updated: "1/15/2024",
-//     initials: "NT",
-//     avatarBg: "bg-cyan-100",
-//     avatarText: "text-cyan-600",
-//   },
-// ];
+import { Calendar, Clock, Mail, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { getIncompleteMembers } from "../../../../api/services/memberService";
 
 export default function IncompleteRegistrations() {
+  const navigate = useNavigate();
+  const {
+    data: registrations = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["incompleteMembers"],
+    queryFn: getIncompleteMembers,
+    keepPreviousData: true,
+  });
 
-const { data: registrations = [], isLoading } = useQuery({
-  
-  queryKey: ["incompleteMembers"],
-  queryFn: getIncompleteMembers,
-  
- 
-}
-);
-const formattedRegistrations = registrations.map((member) => {
-  const initials = member.fullName
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2);
+  if (isLoading) {
+    return <div className="p-6">Loading incomplete registrations...</div>;
+  }
 
-  return {
-    name: member.fullName,
-    email: member.email,
-    id: member.memberId,
-    progress: 50, // placeholder until backend provides progress
-    started: new Date(member.createdAt).toLocaleDateString(),
-    updated: new Date(member.updatedAt).toLocaleDateString(),
-    initials,
-    avatarBg: "bg-blue-100",
-    avatarText: "text-blue-600",
-  };
-});
-
-if (isLoading) {
-  return <div className="p-6">Loading registrations...</div>;
-}
+  if (isError) {
+    return <div className="p-6 text-red-500">Failed to load data</div>;
+  }
 
   return (
-    <div className="w-full min-h-screen bg-gray-100 ">
-      {/* Tabs */}
-      <div className="flex items-center justify-between mb-6"></div>
-
-      {/* Header */}
-      <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
+    <div className="w-full p-6 bg-gray-50 min-h-screen">
+      {/* Header Section */}
+      <div className="bg-white border rounded-xl p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Incomplete Registrations</h2>
 
-        <input
-          type="text"
-          placeholder="Search by name, email or phone number"
-          className="w-full bg-gray-100 rounded-md px-4 py-2 text-sm outline-none"
-        />
+        <div className="relative">
+          <Search className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Search by name, email or phone number"
+            className="w-full pl-9 pr-4 py-2 bg-gray-100 rounded-lg outline-none text-sm"
+          />
+        </div>
       </div>
 
-      {/* Cards */}
+      {/* Registration Cards */}
       <div className="space-y-6">
-        {formattedRegistrations.map((item, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-xl shadow-sm p-6 flex justify-between"
-          >
-            <div className="flex gap-4 w-full">
-              {/* Avatar */}
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${item.avatarBg} ${item.avatarText}`}
-              >
-                {item.initials}
-              </div>
+        {registrations.map((user) => {
+          const initials = user.fullName
+            ?.split(" ")
+            .map((n) => n[0])
+            .slice(0, 2)
+            .join("")
+            .toUpperCase();
 
-              {/* Content */}
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
+          const progress = user.completionPercentage || 0;
+
+          return (
+            <div
+              key={user.id}
+              className="bg-white border rounded-xl p-6 shadow-sm"
+            >
+              {/* Top Row */}
+              <div className="flex justify-between items-start">
+                <div className="flex items-start gap-4">
+                  {/* Avatar */}
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full text-sm font-semibold bg-blue-100 text-blue-600">
+                    {initials}
+                  </div>
+
+                  {/* Name + Email */}
                   <div>
-                    <h3 className="font-semibold text-gray-900">{item.name}</h3>
-                    <div className="text-sm text-gray-500 flex gap-4 mt-1">
-                      <span>{item.email}</span>
-                      <span>ID: {item.id}</span>
+                    <h3 className="font-medium text-gray-800">
+                      {user.fullName}
+                    </h3>
+
+                    <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
+                      <div className="flex items-center gap-1">
+                        <Mail className="w-4 h-4" />
+                        {user.email}
+                      </div>
+
+                      <span className="text-gray-400">ID: {user.id}</span>
                     </div>
                   </div>
-
-                  <span className="text-xs bg-orange-100 text-orange-600 px-3 py-1 rounded-full">
-                    Incomplete
-                  </span>
                 </div>
 
-                {/* Progress */}
-                <div className="mt-6">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-gray-600">Registration Progress</span>
-                    <span className="font-medium">{item.progress}%</span>
-                  </div>
+                <span className="text-xs bg-orange-100 text-orange-600 px-3 py-1 rounded-full">
+                  Incomplete
+                </span>
+              </div>
 
-                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-600 rounded-full"
-                      style={{ width: `${item.progress}%` }}
-                    />
-                  </div>
+              {/* Progress */}
+              <div className="mt-6">
+                <div className="flex justify-between text-sm text-gray-600 mb-1">
+                  <span>Registration Progress</span>
+                  <span>{progress}%</span>
                 </div>
 
-                {/* Dates */}
-                <div className="flex gap-6 text-xs text-gray-500 mt-4">
-                  <span>Started: {item.started}</span>
-                  <span>Last updated: {item.updated}</span>
+                <div className="w-full h-2 bg-gray-200 rounded-full">
+                  <div
+                    className="h-2 bg-blue-600 rounded-full"
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
               </div>
-            </div>
 
-            {/* Action */}
-            <div className="flex items-end">
-              <button className="bg-blue-600 text-white text-sm px-5 py-2 rounded-md hover:bg-blue-700">
-                Continue Registration
-              </button>
+              {/* Footer */}
+              <div className="flex justify-between items-center mt-4">
+                <div className="flex items-center gap-6 text-sm text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    Started: {new Date(user.createdAt).toLocaleDateString()}
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    Last updated:{" "}
+                    {new Date(user.updatedAt).toLocaleDateString()}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => navigate("/dashboard/new-registration")}
+                  className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-md"
+                >
+                  Continue Registration
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

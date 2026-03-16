@@ -28,6 +28,7 @@ import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
 import EditMemberModal from "./Layouts/Dashboard/members/EditMember";
 import { Toaster } from "react-hot-toast";
+import Register from "./Layouts/Dashboard/members/member-registration/register";
 
 function App() {
   return (
@@ -107,7 +108,8 @@ function App() {
             <Route path="attendance" element={<AttendanceTracking />} />
             <Route path="countries" element={<CountriesOverview />} />
             <Route path="configuration" element={<Configuration />} />
-            <Route
+            <Route path="new-registration" element={<Register />} />
+            <Route 
               path="register"
               element={
                 <PrivateRoute

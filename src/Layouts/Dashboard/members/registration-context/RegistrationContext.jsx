@@ -75,6 +75,13 @@ export const RegistrationProvider = ({ children }) => {
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 7));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
+
+  const loadMemberData = (memberData) => {
+  setFormData((prev) => ({
+    ...prev,
+    ...memberData,
+  }));
+};
   // Update form data
   const updateForm = (newData) => {
     setFormData((prev) => ({ ...prev, ...newData }));
@@ -157,6 +164,7 @@ export const RegistrationProvider = ({ children }) => {
         nextStep,
         prevStep,
         resetForm,
+        loadMemberData,
       }}
     >
       {children}

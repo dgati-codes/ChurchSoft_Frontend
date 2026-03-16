@@ -116,7 +116,7 @@ export default function AttendanceTable({
 
   return (
     <div className=" w-full font-[DM Sans] ">
-      <div className="bg-white rounded-lg shadow border p-8">
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
         <div className="flex justify-between mb-2">
           <div className="flex gap-2 items-center">
             <div className="flex items-center space-x-3">
@@ -295,21 +295,21 @@ export default function AttendanceTable({
                   <th className="border p-2">Submitted By</th>
                   <th className="border p-2">Actions</th>
                 </tr>
-              </thead>
+             
 
               {/* SECOND HEADER */}
-              <thead className="bg-gray-50 text-xs">
+              {/* <thead className="bg-gray-50 text-xs"> */}
                 <tr className="h-2 text-sm">
-                  <th colSpan={4} className="border  py-2"></th>
-                  <th className="border  py-2">Boys</th>
-                  <th className="border  py-2">Girls</th>
-                  <th className="border  py-2"> M</th>
-                  <th className="border  py-2"> F</th>
-                  <th className="border  py-2"> M</th>
-                  <th className="border  py-2">F</th>
-                  <th className="border  py-2">M</th>
-                  <th className="border  py-2">W</th>
-                  <th className="border  py-2">Visitors</th>
+                  <th colSpan={4} className="border"></th>
+                  <th className="border  ">Boys</th>
+                  <th className="border  ">Girls</th>
+                  <th className="border  "> M</th>
+                  <th className="border  "> F</th>
+                  <th className="border  "> M</th>
+                  <th className="border  ">F</th>
+                  <th className="border  ">M</th>
+                  <th className="border  ">W</th>
+                  <th className="border  ">Visitors</th>
                 </tr>
               </thead>
 
@@ -318,8 +318,8 @@ export default function AttendanceTable({
                   records.map((row) => {
                     const chartData = getChartData(row);
                     return (
-                      <tr key={row.id} className="text-center">
-                        <td className="border px-3 py-2">
+                      <tr key={row.id} className="text-center ">
+                        <td className="border  py-2 px-2">
                           {new Date(row.serviceDate).toLocaleDateString(
                             "en-US",
                             {
@@ -330,38 +330,38 @@ export default function AttendanceTable({
                           )}
                         </td>
 
-                        <td className="border px-3 py-2">
+                        <td className="border  py-2">
                           <ServiceTypeTag type={row.serviceType} />
                         </td>
 
-                        <td className="border px-3 py-2">
+                        <td className="border  py-2">
                           {row.localAssembly}
                         </td>
-                        <td className="border px-3 py-2">{row.region}</td>
+                        <td className="border  py-2">{row.region}</td>
 
                         <td className=" border-r-0 border-b  p-2">
                           {row.boys}
                         </td>
-                        <td className="border px-3 py-2">{row.girls}</td>
-                        <td className="border px-3 py-2">
+                        <td className="border  py-2">{row.girls}</td>
+                        <td className="border  py-2">
                           {row.juniorYouthMale}
                         </td>
-                        <td className="border px-3 py-2">
+                        <td className="border  py-2">
                           {row.juniorYouthFemale}
                         </td>
-                        <td className="border px-3 py-2">
+                        <td className="border  py-2">
                           {row.seniorYouthMale}
                         </td>
-                        <td className="border px-3 py-2">
+                        <td className="border  py-2">
                           {row.seniorYouthFemale}
                         </td>
-                        <td className="border px-3 py-2">{row.adultMen}</td>
-                        <td className="border px-3 py-2">{row.adultWomen}</td>
-                        <td className="border px-3 py-2">
+                        <td className="border  py-2">{row.adultMen}</td>
+                        <td className="border  py-2">{row.adultWomen}</td>
+                        <td className="border  py-2">
                           {row.visitorMale + row.visitorFemale}
                         </td>
 
-                        <td className="border px-3 py-2 font-bold">
+                        <td className="border  py-2 font-bold">
                           {row.boys +
                             row.girls +
                             row.juniorYouthMale +
@@ -374,7 +374,7 @@ export default function AttendanceTable({
                             row.visitorFemale}
                         </td>
 
-                        <td className="border px-3 py-2">
+                        <td className="border  py-2">
                           <div className="flex w-10 gap-1 justify-center items-center">
                             {chartData.map((entry, index) => (
                               <div
@@ -394,7 +394,7 @@ export default function AttendanceTable({
                           </div>
                         </td>
 
-                        <td className="border px-3 py-2">{row.submittedBy}</td>
+                        <td className="border  py-2">{row.submittedBy}</td>
 
                         <td className="border  text-center space-x-2">
                           <Eye

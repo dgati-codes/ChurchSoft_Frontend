@@ -19,10 +19,10 @@ const memberService = {
   getAllMembers: async (page = 0, size = 10) => {
     try {
       const res = await axiosInstance.get("/members", {
-        params: { 
-          page, 
+        params: {
+          page,
           size,
-         },
+        },
       });
 
       return normalizeResponse(res?.data);
@@ -232,25 +232,22 @@ const memberService = {
     const res = await axiosInstance.post("/members", memberData);
     return res.data;
   },
-
-
-  
 };
 
 export default memberService;
 
+export const getIncompleteMembers = async () => {
+  const response = await axiosInstance.get(
+    "/members/incomplete?createdBy=147"
+  );
 
+  console.log("API response:", response.data);
 
-
-export const getIncompleteMembers = async (userId) => {
-  const response = await axiosInstance.get(`/members/incomplete/${userId}`);
-
-  return response.data.data;
+  return response.data; // IMPORTANT
 };
 export const getBirthdaysThisWeek = async () => {
   const response = await axiosInstance.get("/members/birthdays-this-week");
   return response.data;
-  
 };
 
 export const getTotalMembers = async () => {
@@ -259,5 +256,9 @@ export const getTotalMembers = async () => {
 };
 export const getNewMembers = async () => {
   const response = await axiosInstance.get("/members/new-members");
+  return response.data;
+};
+export const getMemberByMemberId = async (memberId) => {
+  const response = await axiosInstance.get(`/members/${memberId}`);
   return response.data;
 };

@@ -44,10 +44,10 @@ function UserProfile() {
     },
     userId: user.id,
   };
-  console.log("User object:", user);
-console.log("Full navigation payload:", JSON.stringify(navigationData, null, 2));
+  // console.log("User object:", user);
+// console.log("Full navigation payload:", JSON.stringify(navigationData, null, 2));
 
-  navigate("/dashboard/register", {
+  navigate("/dashboard/new-registration", {
     state: navigationData,
   });
 };

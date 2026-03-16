@@ -183,7 +183,7 @@ export default function AttendanceTracking() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 m-4 rounded-lg shadow border border-[#E5E5E5]">
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
         <div className="flex justify-between mb-4">
           <h2 className="font-semibold">Filters</h2>
           <button
@@ -255,7 +255,7 @@ export default function AttendanceTracking() {
       </div>
 
       {/* KPI Cards - Dynamic from metrics */}
-      <div className="grid grid-cols-1 m-4 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <StatCard
           title="Total Attendance"
           value={metrics.totalAttendance.toLocaleString()}
@@ -331,11 +331,11 @@ export default function AttendanceTracking() {
 
       {/* Detailed View */}
 
-      <div className="p-6">
+      <div>
         {/* Attendance Table */}
         <div className="mt-6">
           {isFetching ? (
-            <div className="flex justify-center py-10">
+            <div className="flex justify-center ">
               <LoadingSpinner text="Loading records..." />
             </div>
           ) : attendanceRecords.length === 0 ? (

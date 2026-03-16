@@ -18,7 +18,7 @@ function IncompleteAndNewRegister() {
                 : "bg-gray-200 text-black hover:bg-gray-200"
             }`}
           >
-            New Registration
+           Incomplete Registrations
           </button>
 
           <button
@@ -30,14 +30,15 @@ function IncompleteAndNewRegister() {
                 : "bg-gray-200 text-black hover:bg-gray-200"
             }`}
           >
-            Incomplete Registrations
+             New Registration
+            
           </button>
         {/* </div> */}
       </div>
       {/* Content */}
       <div className="pt-24">
-        {activeTab === "new" && <Register />}
-        {activeTab === "incomplete" && <IncompleteRegistrations />}
+        {activeTab === "incomplete" && <Register />}
+        {activeTab === "new" && <IncompleteRegistrations />}
       </div>
     </div>
   );
