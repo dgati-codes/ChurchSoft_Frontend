@@ -19,35 +19,30 @@ const Sidebar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
 
   // Determine activeView based on current route
-  const getActiveView = () => {
-    if (location.pathname === "/dashboard") return "dashboard";
-    if (location.pathname === "/dashboard/add-user") return "addUser";
-    if (location.pathname === "/dashboard/user-table") return "userTable";
-    if (location.pathname === "/dashboard/register") return "addMember";
-    if (location.pathname === "/dashboard/members") return "viewMembers";
-    if (location.pathname === "/dashboard/attendance") return "attendance";
-    if (location.pathname === "/dashboard/countries") return "countries";
-    if (location.pathname === "/dashboard/configuration")
-      return "configuration";
-    if (location.pathname === "/memberProfile") return "my-profile";
-    return "dashboard";
-  };
+ const getActiveView = () => {
+  const path = location.pathname;
+
+  if (path === "/dashboard") return "dashboard";
+  if (path === "/dashboard/add-user") return "addUser";
+  if (path === "/dashboard/user-table") return "userTable";
+
+  // Member routes
+  if (path === "/dashboard/register") return "addMember"; // New/incomplete registration
+  if (path.startsWith("/dashboard/new-registration") || path === "/dashboard/members")
+    return "viewMembers"; // Continuation or member table
+
+  if (path === "/dashboard/attendance") return "attendance";
+  if (path === "/dashboard/countries") return "countries";
+  if (path === "/dashboard/configuration") return "configuration";
+  if (path.startsWith("/memberProfile")) return "my-profile";
+
+  return "dashboard";
+};
   const activeView = getActiveView();
   const { hasRole } = useAuth();
 
   const isAdmin = hasRole([ROLES.ADMIN]);
-  // const canViewUsers = hasRole([
-  //   ROLES.ADMIN,
-  //   ROLES.PASTOR,
-  //   ROLES.ELDER,
-  //   ROLES.REP,
-  //   ROLES.FINANCE,
-  //   ROLES.LEADER,
-  //   ROLES.MEMBER,
-  //   ROLES.GUEST,
-  // ]);
-
-  // Ensure Members dropdown opens if activeView is inside Members
+ 
   useEffect(() => {
     if (activeView === "addMember" || activeView === "viewMembers") {
       setOpenDropdown("members");
@@ -77,10 +72,10 @@ const Sidebar = () => {
     }
   };
 
-  const handleChildClick = (childView, route) => {
-    navigate(route);
-    setOpenDropdown("members", "users"); 
-  };
+ const handleChildClick = (childView, route) => {
+  navigate(route);
+  setOpenDropdown("members"); 
+};
 
   const linkClasses = (isActive) =>
     `block w-full text-left px-2 py-1 rounded ${

@@ -11,14 +11,14 @@ import {
   User,
   Users,
 } from "lucide-react";
- 
+
 import { useRef } from "react";
 import {
   getBirthdaysThisWeek,
   getNewMembers,
   getTotalMembers,
 } from "../../api/services/memberService.js";
-import {BirthdayCard} from "./birthday-card/BirthdayCard.jsx";
+import { BirthdayCard } from "./birthday-card/BirthdayCard.jsx";
 import StatCard from "./modals/StatCard.jsx";
 
 export default function Dashboard() {
@@ -101,7 +101,18 @@ export default function Dashboard() {
         {/* BIRTHDAYS + EVENTS */}
         <div className="grid grid-cols-[1.3fr_1fr] gap-6 mb-4">
           {/* BIRTHDAYS */}
+          {/* BIRTHDAYS */}
           <div className=" bg-white rounded-2xl p-6">
+            
+
+            {birthdaysLoading && (
+              <p className="text-sm text-gray-400">Loading birthdays...</p>
+            )}
+
+            {birthdaysError && (
+              <p className="text-sm text-red-400">Failed to load birthdays</p>
+            )}
+
             <div className="flex relative w-full gap-2">
               <button
                 onClick={scrollLeft}
@@ -117,20 +128,10 @@ export default function Dashboard() {
                 <ChevronRight size={16} />
               </button>
             </div>
-            <div className="grid grid-cols-3 gap-4">
-              {birthdaysLoading && (
-                <p className="text-sm text-gray-400">Loading birthdays...</p>
-              )}
 
-              {birthdaysError && (
-                <p className="text-sm text-red-400">Failed to load birthdays</p>
-              )}
-
-              <div
-                ref={birthdayRef}
-                className="flex gap-4 overflow-hidden  w-125"
-              >
-                {birthdays.map((member, index) => (
+            <div className="flex gap-4 overflow-hidden w-125" ref={birthdayRef}>
+              {birthdays.length > 0 ? (
+                birthdays.map((member, index) => (
                   <div key={index} className="min-w-45 overflow-hidden">
                     <BirthdayCard
                       name={member.fullName}
@@ -144,8 +145,13 @@ export default function Dashboard() {
                       }
                     />
                   </div>
-                ))}
-              </div>
+                ))
+              ) : (
+                <p className="text-center mt-20 text-md text-gray-500 w-full py-10">
+                  No birthdays today{" "}
+                  <span className="inline-block animate-bounce text-4xl">🎉</span>
+                </p>
+              )}
             </div>
           </div>
 
@@ -239,12 +245,8 @@ export default function Dashboard() {
         </div>
       </main>
     </div>
-    
   );
 }
-
-
-
 
 function EventCard({ title, location, date }) {
   return (

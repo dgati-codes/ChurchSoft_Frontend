@@ -1,11 +1,12 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState,useEffect } from "react";
 
 const RegistrationContext = createContext();
 
 export const useRegistration = () => useContext(RegistrationContext);
 
-export const RegistrationProvider = ({ children }) => {
+export const RegistrationProvider = ({ children, prefill }) => {
   const [step, setStep] = useState(1);
+
 
   const [formData, setFormData] = useState({
     // Step 1 - Personal & Identity Info
@@ -71,6 +72,20 @@ export const RegistrationProvider = ({ children }) => {
     updatedAt: "",
   });
 
+
+  useEffect(() => {
+    if (prefill) {
+      setFormData((prev) => ({
+        ...prev,
+        fullName: prefill.fullName || prev.fullName,
+        email: prefill.email || prev.email,
+        phoneNumber: prefill.phoneNumber || prev.phoneNumber,
+        assembly: prefill.assembly || prev.assembly,
+        userId: prefill.userId || prev.userId,
+      }));
+      setStep(1); // always start at Step 1 for new registration
+    }
+  }, [prefill]);
   // Navigate steps
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 7));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));

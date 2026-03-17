@@ -1,9 +1,8 @@
-import { User } from "lucide-react";
-import { useState,useEffect } from "react";
-import { useRegistration } from "../../registration-context/RegistrationContext";
-import { useLocation } from "react-router-dom";
-import InputField from "../../../modals/InputField";
+import { useState } from "react";
 
+import { User } from "lucide-react";
+import InputField from "../../../modals/InputField";
+import { useRegistration } from "../../registration-context/RegistrationContext";
 
 // ENUM maps (UI → Backend)
 const genderMap = {
@@ -30,98 +29,32 @@ const idTypeMap = {
 const Step1PersonalInfo = () => {
   const { formData, updateForm, nextStep } = useRegistration();
 
-  const [localData, setLocalData] = useState({
-    userId: formData.userId || "",
-    fullName: formData.fullName || "",
-    dateOfBirth: formData.dateOfBirth || "",
-    gender: formData.gender || "",
-    maritalStatus: formData.maritalStatus || "",
-    hometown: formData.hometown || "",
-    district: formData.district || "",
-    jurisdiction: formData.jurisdiction || "",
-    nationality: formData.nationality || "",
-    assembly: formData.assembly || "",
-    ethnicity: formData.ethnicity || "",
-    identificationType: formData.identificationType || "",
-    identificationNumber: formData.identificationNumber || "",
-    fathersName: formData.fathersName || "",
-    mothersName: formData.mothersName || "",
-    ministryAffiliation: formData.ministryAffiliation || "",
-    preferredLanguages: Array.isArray(formData.preferredLanguages)
-      ? formData.preferredLanguages
-      : [], 
-  });
-
-const location = useLocation();
-
-useEffect(() => {
-  setLocalData({
-    userId: formData.userId || "",
-    fullName: formData.fullName || "",
-    dateOfBirth: formData.dateOfBirth || "",
-    gender: formData.gender || "",
-    maritalStatus: formData.maritalStatus || "",
-    hometown: formData.hometown || "",
-    district: formData.district || "",
-    jurisdiction: formData.jurisdiction || "",
-    nationality: formData.nationality || "",
-    assembly: formData.assembly || "",
-    ethnicity: formData.ethnicity || "",
-    identificationType: formData.identificationType || "",
-    identificationNumber: formData.identificationNumber || "",
-    fathersName: formData.fathersName || "",
-    mothersName: formData.mothersName || "",
-    ministryAffiliation: formData.ministryAffiliation || "",
-    preferredLanguages: Array.isArray(formData.preferredLanguages)
-      ? formData.preferredLanguages
-      : [],
-  });
-}, [formData]);
-useEffect(() => {
-  if (location.state?.prefill) {
-    setLocalData((prev) => ({
-      ...prev,
-      ...location.state.prefill,
-       userId: location.state.userId, 
-    }));
-  }
-}, [location.state]);
-  // GENERIC HANDLER
+  // Generic input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLocalData((prev) => ({ ...prev, [name]: value }));
+    updateForm({ [name]: value });
   };
 
-  // MAPPED FIELDS
-  const handleGenderChange = (e) => {
-    const backendValue = genderMap[e.target.value] || "";
-    setLocalData((prev) => ({ ...prev, gender: backendValue }));
-  };
-
-  const handleMaritalStatusChange = (e) => {
-    const backendValue = maritalStatusMap[e.target.value] || "";
-    setLocalData((prev) => ({ ...prev, maritalStatus: backendValue }));
-  };
-
-  const handleIdTypeChange = (e) => {
-    const backendValue = idTypeMap[e.target.value] || "";
-    setLocalData((prev) => ({ ...prev, identificationType: backendValue }));
-  };
+  // Special mapped fields
+  const handleGenderChange = (e) =>
+    updateForm({ gender: genderMap[e.target.value] || "" });
+  const handleMaritalStatusChange = (e) =>
+    updateForm({ maritalStatus: maritalStatusMap[e.target.value] || "" });
+  const handleIdTypeChange = (e) =>
+    updateForm({ identificationType: idTypeMap[e.target.value] || "" });
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // 🔥 ENSURE preferredLanguages ALWAYS SAVES AS ARRAY
-    const cleanedLanguages = [...localData.preferredLanguages];
-
+    // Ensure preferredLanguages is always an array
     updateForm({
-      ...localData,
-      preferredLanguages: cleanedLanguages,
+      preferredLanguages: Array.isArray(formData.preferredLanguages)
+        ? formData.preferredLanguages
+        : [],
     });
 
     nextStep();
   };
-
   return (
     <>
       <h1 className="text-xl font-[DM Sans] flex justify-center font-semibold mb-1">
@@ -151,11 +84,10 @@ useEffect(() => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* FULL NAME */}
           <div>
-            
             <InputField
               name="fullName"
               label="Full Name"
-              value={localData.fullName}
+              value={formData.fullName || ""}
               onChange={handleChange}
               placeholder="Full Name"
               required
@@ -164,12 +96,11 @@ useEffect(() => {
 
           {/* DOB */}
           <div>
-            
             <InputField
               type="date"
               label="Date of Birth"
               name="dateOfBirth"
-              value={localData.dateOfBirth}
+              value={formData.dateOfBirth || ""}
               onChange={handleChange}
               required
             />
@@ -184,7 +115,7 @@ useEffect(() => {
               name="gender"
               value={
                 Object.keys(genderMap).find(
-                  (key) => genderMap[key] === localData.gender
+                  (key) => genderMap[key] === formData.gender,
                 ) || ""
               }
               onChange={handleGenderChange}
@@ -207,7 +138,7 @@ useEffect(() => {
               name="maritalStatus"
               value={
                 Object.keys(maritalStatusMap).find(
-                  (key) => maritalStatusMap[key] === localData.maritalStatus
+                  (key) => maritalStatusMap[key] === formData.maritalStatus,
                 ) || ""
               }
               onChange={handleMaritalStatusChange}
@@ -224,11 +155,10 @@ useEffect(() => {
 
           {/* HOMETOWN */}
           <div>
-            
             <InputField
               name="hometown"
               label="Hometown"
-              value={localData.hometown}
+              value={formData.hometown || ""}
               onChange={handleChange}
               placeholder="Hometown"
               required
@@ -239,7 +169,7 @@ useEffect(() => {
           <div>
             <InputField
               name="district"
-              value={localData.district}
+              value={formData.district || ""}
               onChange={handleChange}
               label="District"
               placeholder="District"
@@ -250,7 +180,7 @@ useEffect(() => {
             <InputField
               name="jurisdiction"
               label="Region"
-              value={localData.jurisdiction}
+              value={formData.jurisdiction || ""}
               onChange={handleChange}
               placeholder="Region"
             />
@@ -261,7 +191,7 @@ useEffect(() => {
             <InputField
               name="assembly"
               label="Assembly"
-              value={localData.assembly}
+              value={formData.assembly || ""}
               onChange={handleChange}
               className="input"
               placeholder="Assembly"
@@ -270,12 +200,11 @@ useEffect(() => {
 
           {/* NATIONALITY */}
           <div>
-            
             <InputField
               placeholder="Your Nationality"
               label="Nationality"
               name="nationality"
-              value={localData.nationality}
+              value={formData.nationality || ""}
               onChange={handleChange}
               required
             />
@@ -283,12 +212,11 @@ useEffect(() => {
 
           {/* ETHNICITY */}
           <div>
-           
             <InputField
               placeholder="Your Ethnicity"
               label="Ethnicity"
               name="ethnicity"
-              value={localData.ethnicity}
+              value={formData.ethnicity || ""}
               onChange={handleChange}
               // required
             />
@@ -303,7 +231,7 @@ useEffect(() => {
               name="identificationType"
               value={
                 Object.keys(idTypeMap).find(
-                  (key) => idTypeMap[key] === localData.identificationType
+                  (key) => idTypeMap[key] === formData.identificationType,
                 ) || ""
               }
               onChange={handleIdTypeChange}
@@ -321,12 +249,11 @@ useEffect(() => {
 
           {/* ID NUMBER */}
           <div>
-            
             <InputField
               placeholder="Your ID Number"
               label="ID Number"
               name="identificationNumber"
-              value={localData.identificationNumber}
+              value={formData.identificationNumber || ""}
               onChange={handleChange}
               className="input"
               // required
@@ -339,7 +266,7 @@ useEffect(() => {
               placeholder="Father's Name"
               label="Father's Name"
               name="fathersName"
-              value={localData.fathersName}
+              value={formData.fathersName || ""}
               onChange={handleChange}
             />
           </div>
@@ -350,7 +277,7 @@ useEffect(() => {
               placeholder="Mother's Name"
               label="Mother's Name"
               name="mothersName"
-              value={localData.mothersName}
+              value={formData.mothersName || ""}
               onChange={handleChange}
             />
           </div>
@@ -362,7 +289,7 @@ useEffect(() => {
             </label>
             <select
               name="ministryAffiliation"
-              value={localData.ministryAffiliation}
+              value={formData.ministryAffiliation || ""}
               onChange={handleChange}
               className="input"
               required
@@ -382,17 +309,18 @@ useEffect(() => {
               type="text"
               label="Preferred Languages"
               placeholder="Enter language"
-              value={localData.preferredLanguages.join(",  ")}
-              onChange={(e) =>
-                setLocalData((prev) => ({
-                  ...prev,
-                  preferredLanguages: e.target.value
-                    .split(" , ")
-                    .map((l) => l.trim())
-                    .filter(Boolean),
-                }))
-              }
               className="input"
+              // Join array into a string separated by comma and space
+              value={formData.preferredLanguages?.join(", ") || ""}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                const languagesArray = inputValue
+                  .split(",") 
+                  .map((l) => l.trim()) // trim spaces
+                  .filter(Boolean); // remove empty strings
+
+                updateForm({ preferredLanguages: languagesArray });
+              }}
             />
           </div>
         </div>
