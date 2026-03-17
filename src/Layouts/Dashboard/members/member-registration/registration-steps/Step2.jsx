@@ -140,7 +140,7 @@ const Step2ContactInfo = () => {
               onChange={handleChange}
               placeholder="Area of Residence / Physical Address*"
               className="w-full bg-gray-100 rounded px-4 py-2"
-              required
+              // required
             />
           </div>
         </div>
@@ -156,7 +156,7 @@ const Step2ContactInfo = () => {
               onChange={handleChange}
               placeholder="Name*"
               className="input bg-gray-100 rounded px-4 py-2"
-              required
+              // required
             />
             <input
               name="nextOfKinRelationship"
@@ -164,7 +164,7 @@ const Step2ContactInfo = () => {
               onChange={handleChange}
               placeholder="Relationship*"
               className="input bg-gray-100 rounded px-4 py-2"
-              required
+              // required
             />
             <input
               name="nextOfKinContactInformation"

@@ -143,7 +143,7 @@ const Step1PersonalInfo = () => {
               }
               onChange={handleMaritalStatusChange}
               className="input"
-              required
+              // required
             >
               <option value="">Select Status</option>
               <option value="Single">SINGLE</option>
@@ -161,7 +161,7 @@ const Step1PersonalInfo = () => {
               value={formData.hometown || ""}
               onChange={handleChange}
               placeholder="Hometown"
-              required
+              // required
             />
           </div>
 
@@ -195,6 +195,7 @@ const Step1PersonalInfo = () => {
               onChange={handleChange}
               className="input"
               placeholder="Assembly"
+              required
             />
           </div>
 

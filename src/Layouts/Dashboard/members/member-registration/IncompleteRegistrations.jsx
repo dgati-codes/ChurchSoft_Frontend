@@ -1,11 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, Mail, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getIncompleteMembers } from "../../../../api/services/memberService";
+import { useAuth } from "../../../../context/AuthContext";
 import LoadingSpinner from "../../modals/LoadingSpinner";
-import { useState, useMemo } from "react";
 
 export default function IncompleteRegistrations() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -14,10 +16,13 @@ export default function IncompleteRegistrations() {
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["incompleteMembers"],
-    queryFn: getIncompleteMembers,
+    queryKey: ["incompleteMembers", user.id],
+    queryFn: () => getIncompleteMembers(user.id),
+    enabled: !!user?.id,
     keepPreviousData: true,
   });
+
+  console.log("registrations:", registrations);
 
   // ✅ Filtered registrations based on search term
   const filteredRegistrations = useMemo(() => {
@@ -27,7 +32,7 @@ export default function IncompleteRegistrations() {
       (user) =>
         user.fullName?.toLowerCase().includes(term) ||
         user.email?.toLowerCase().includes(term) ||
-        user.phoneNumber?.toLowerCase().includes(term)
+        user.phoneNumber?.toLowerCase().includes(term),
     );
   }, [searchTerm, registrations]);
 
@@ -58,7 +63,7 @@ export default function IncompleteRegistrations() {
           <LoadingSpinner text="Loading Incomplete Registrations...." />
         </div>
       ) : filteredRegistrations.length === 0 ? (
-        <div className="p-6 text-gray-500">No members found</div>
+        <div className="p-10 text-center text-gray-500">No incomplete member registration found</div>
       ) : (
         <div className="space-y-6">
           {filteredRegistrations.map((user) => {

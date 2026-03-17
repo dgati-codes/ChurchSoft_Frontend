@@ -236,14 +236,12 @@ const memberService = {
 
 export default memberService;
 
-export const getIncompleteMembers = async () => {
+export const getIncompleteMembers = async (userId) => {
   const response = await axiosInstance.get(
-    "/members/incomplete?createdBy=147"
+    `/members/incomplete?createdBy=${userId}`
   );
-
-  // console.log("API response:", response.data);
-
-  return response.data; // IMPORTANT
+console.log(response.data); 
+  return response.data;
 };
 export const getBirthdaysThisWeek = async () => {
   const response = await axiosInstance.get("/members/birthdays-this-week");
@@ -260,6 +258,5 @@ export const getNewMembers = async () => {
 };
 export const getMemberByMemberId = async (id) => {
   const response = await axiosInstance.get(`/members/${id}`);
-  console.log(response.data);
   return response.data;
 };
