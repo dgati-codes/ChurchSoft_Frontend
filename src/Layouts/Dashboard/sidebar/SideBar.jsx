@@ -27,10 +27,10 @@ const Sidebar = () => {
   if (path === "/dashboard/user-table") return "userTable";
 
   // Member routes
-  if (path === "/dashboard/register") return "addMember"; // New/incomplete registration
-  if (path.startsWith("/dashboard/new-registration") || path === "/dashboard/members")
-    return "viewMembers"; // Continuation or member table
-
+  if (path === "/dashboard/register") return "addMember"; 
+  if (path.startsWith("/dashboard/new-registration")) return "addMember" ;  // Continuation or member table
+  if (path === "/dashboard/members")
+    return "viewMembers";
   if (path === "/dashboard/attendance") return "attendance";
   if (path === "/dashboard/countries") return "countries";
   if (path === "/dashboard/configuration") return "configuration";
@@ -59,10 +59,10 @@ const Sidebar = () => {
   const handleParentClick = (view, route) => {
     if (view === "members") {
       setOpenDropdown("members");
-      navigate("/dashboard/members");
+      navigate("/dashboard/register");
     } else if (view === "users") {
       setOpenDropdown("users");
-      navigate("/dashboard/user-table");
+      navigate("/dashboard/add-user");
     }else if (view === "memberProfile") {
       setOpenDropdown("memberProfile");
       navigate("/dashboard/configuration");

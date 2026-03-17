@@ -2,10 +2,8 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getMemberByMemberId  } from "../../../../../api/services/memberService.js";
-
-
-
+import { getMemberByMemberId } from "../../../../../api/services/memberService.js";
+import LoadingSpinner from "../../../modals/LoadingSpinner";
 import { useState } from "react";
 import { useRegistration } from "../../registration-context/RegistrationContext";
 import RegistrationStepper from "./RegistrationStepper";
@@ -20,38 +18,38 @@ import Step7ReviewSubmit from "./Step7";
 const RegistrationFormWrapper = () => {
   // const { step } = useRegistration();
   const { step, loadMemberData, setStep } = useRegistration();
-const { id  } = useParams();
+  const { id } = useParams();
   const [submitted, setSubmitted] = useState(false);
 
   const { data, isLoading } = useQuery({
-  queryKey: ["member", id ],
-  queryFn: () => getMemberByMemberId (id ),
-  enabled: !!id ,
-});
+    queryKey: ["member", id],
+    queryFn: () => getMemberByMemberId(id),
+    enabled: !!id,
+  });
 
-useEffect(() => {
-  if (data) {
-    loadMemberData(data);
+  useEffect(() => {
+    if (data) {
+      loadMemberData(data);
 
-    // restore step using completionPercentage
-    const progress = data.completionPercentage || 0;
+      // restore step using completionPercentage
+      const progress = data.completionPercentage || 0;
 
-    if (progress < 20) setStep(1);
-    else if (progress < 40) setStep(2);
-    else if (progress < 60) setStep(3);
-    else if (progress < 80) setStep(4);
-    else if (progress < 95) setStep(5);
-    else setStep(6);
+      if (progress < 20) setStep(1);
+      else if (progress < 40) setStep(2);
+      else if (progress < 60) setStep(3);
+      else if (progress < 80) setStep(4);
+      else if (progress < 95) setStep(5);
+      else setStep(6);
+    }
+  }, [data, loadMemberData, setStep]);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center  items-center min-h-screen">
+        <LoadingSpinner />
+      </div>
+    );
   }
-}, [data]);
-
-if (isLoading) {
-  return (
-    <div className="flex justify-center items-center min-h-screen">
-      Loading member registration...
-    </div>
-  );
-}
 
   // ✅ Step renderer
   const renderStep = () => {
