@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import {
   Navigate,
   Route,
@@ -11,11 +12,13 @@ import AttendanceTracking from "./Layouts/Dashboard/attendance/Attendance";
 import Configuration from "./Layouts/Dashboard/configuration/Configuration";
 import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
 import Dashboard from "./Layouts/Dashboard/Dashboard";
-import DashboardLayout from "./Layouts/DashboardLayout";
+import EditMemberModal from "./Layouts/Dashboard/members/EditMember";
 import IncompleteAndNewRegister from "./Layouts/Dashboard/members/member-registration/IncompleteAndNewRegister";
+import Register from "./Layouts/Dashboard/members/member-registration/register";
 import MemberTable from "./Layouts/Dashboard/members/MemberRegistrationTable";
 import AddUserForm from "./Layouts/Dashboard/users/AddUserForm";
 import UserTable from "./Layouts/Dashboard/users/UserTable";
+import DashboardLayout from "./Layouts/DashboardLayout";
 import Contact from "./Layouts/profiles/member-profile/Contact";
 import EducationWork from "./Layouts/profiles/member-profile/education-work";
 import Membership from "./Layouts/profiles/member-profile/Membership";
@@ -26,9 +29,6 @@ import Welfare from "./Layouts/profiles/member-profile/Welfare";
 import UserProfile from "./Layouts/profiles/user-profile/UserProfile";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
-import EditMemberModal from "./Layouts/Dashboard/members/EditMember";
-import { Toaster } from "react-hot-toast";
-import Register from "./Layouts/Dashboard/members/member-registration/register";
 
 function App() {
   return (
@@ -108,8 +108,12 @@ function App() {
             <Route path="attendance" element={<AttendanceTracking />} />
             <Route path="countries" element={<CountriesOverview />} />
             <Route path="configuration" element={<Configuration />} />
-            <Route path="new-registration" element={<Register />} />
-            <Route 
+            {/* <Route path="new-registration" element={<Register />} /> */}
+            <Route
+              path="/dashboard/new-registration/:id"
+              element={<Register />}
+            />
+            <Route
               path="register"
               element={
                 <PrivateRoute

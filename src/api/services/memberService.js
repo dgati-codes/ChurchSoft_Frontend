@@ -241,7 +241,7 @@ export const getIncompleteMembers = async () => {
     "/members/incomplete?createdBy=147"
   );
 
-  console.log("API response:", response.data);
+  // console.log("API response:", response.data);
 
   return response.data; // IMPORTANT
 };
@@ -258,7 +258,8 @@ export const getNewMembers = async () => {
   const response = await axiosInstance.get("/members/new-members");
   return response.data;
 };
-export const getMemberByMemberId = async (memberId) => {
-  const response = await axiosInstance.get(`/members/${memberId}`);
+export const getMemberByMemberId = async (id) => {
+  const response = await axiosInstance.get(`/members/${id}`);
+  console.log(response.data);
   return response.data;
 };

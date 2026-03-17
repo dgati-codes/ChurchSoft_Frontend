@@ -117,7 +117,9 @@ export default function IncompleteRegistrations() {
                 </div>
 
                 <button
-                  onClick={() => navigate("/dashboard/new-registration")}
+                  onClick={() =>
+                    navigate(`/dashboard/new-registration/${user.id}`)
+                  }
                   className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-md"
                 >
                   Continue Registration

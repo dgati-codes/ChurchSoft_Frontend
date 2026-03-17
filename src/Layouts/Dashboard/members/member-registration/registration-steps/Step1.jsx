@@ -55,6 +55,29 @@ const Step1PersonalInfo = () => {
 const location = useLocation();
 
 useEffect(() => {
+  setLocalData({
+    userId: formData.userId || "",
+    fullName: formData.fullName || "",
+    dateOfBirth: formData.dateOfBirth || "",
+    gender: formData.gender || "",
+    maritalStatus: formData.maritalStatus || "",
+    hometown: formData.hometown || "",
+    district: formData.district || "",
+    jurisdiction: formData.jurisdiction || "",
+    nationality: formData.nationality || "",
+    assembly: formData.assembly || "",
+    ethnicity: formData.ethnicity || "",
+    identificationType: formData.identificationType || "",
+    identificationNumber: formData.identificationNumber || "",
+    fathersName: formData.fathersName || "",
+    mothersName: formData.mothersName || "",
+    ministryAffiliation: formData.ministryAffiliation || "",
+    preferredLanguages: Array.isArray(formData.preferredLanguages)
+      ? formData.preferredLanguages
+      : [],
+  });
+}, [formData]);
+useEffect(() => {
   if (location.state?.prefill) {
     setLocalData((prev) => ({
       ...prev,

@@ -47,7 +47,7 @@ function UserProfile() {
   // console.log("User object:", user);
 // console.log("Full navigation payload:", JSON.stringify(navigationData, null, 2));
 
-  navigate("/dashboard/new-registration", {
+  navigate("/dashboard/register", {
     state: navigationData,
   });
 };
