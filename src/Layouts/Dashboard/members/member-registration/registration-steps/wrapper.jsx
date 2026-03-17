@@ -41,7 +41,7 @@ const RegistrationFormWrapper = () => {
       else if (progress < 95) setStep(5);
       else setStep(6);
     }
-  }, [data, loadMemberData, setStep]);
+  }, [data]);
 
   if (isLoading) {
     return (
