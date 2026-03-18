@@ -240,7 +240,7 @@ export const getIncompleteMembers = async (userId) => {
   const response = await axiosInstance.get(
     `/members/incomplete?createdBy=${userId}`
   );
-console.log(response.data); 
+// console.log(response.data); 
   return response.data;
 };
 export const getBirthdaysThisWeek = async () => {

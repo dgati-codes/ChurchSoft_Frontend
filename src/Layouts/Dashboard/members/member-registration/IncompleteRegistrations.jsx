@@ -22,7 +22,7 @@ export default function IncompleteRegistrations() {
     keepPreviousData: true,
   });
 
-  console.log("registrations:", registrations);
+  // console.log("registrations:", registrations);
 
   // ✅ Filtered registrations based on search term
   const filteredRegistrations = useMemo(() => {
@@ -63,7 +63,7 @@ export default function IncompleteRegistrations() {
           <LoadingSpinner text="Loading Incomplete Registrations...." />
         </div>
       ) : filteredRegistrations.length === 0 ? (
-        <div className="p-10 text-center text-gray-500">No incomplete member registration found</div>
+        <div className="p-10 text-center text-gray-500">No incomplete registration found</div>
       ) : (
         <div className="space-y-6">
           {filteredRegistrations.map((user) => {

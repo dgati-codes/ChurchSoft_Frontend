@@ -42,7 +42,7 @@ export default function Dashboard() {
 
   const newMembers = newMembersData?.content || newMembersData || [];
   const birthdays = birthdaysData?.content || birthdaysData || [];
-  console.log(newMembers);
+  // console.log(newMembers);
 
   const birthdayRef = useRef(null);
   const scrollLeft = () => {
