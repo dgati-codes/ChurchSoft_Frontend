@@ -6,7 +6,7 @@ import { useAuth } from "../../../context/AuthContext";
 import SuccessModal from "../../Dashboard/modals/successModal.jsx";
 
 function UserProfile() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, member } = useAuth();
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -30,27 +30,29 @@ function UserProfile() {
         email: user.email || "",
         phoneNumber: user.phoneNumber || "",
         localAssemblyName: user.localAssemblyName || "",
+         userId: user.id, 
       });
     }
   }, [user]);
 
- const handleRegisterClick = () => {
-  const navigationData = {
-    prefill: {
-      fullName: `${user.firstName.trim()} ${user.lastName.trim()}`,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      assembly: user.localAssemblyName, 
-    },
-    userId: user.id,
-  };
-  // console.log("User object:", user);
-// console.log("Full navigation payload:", JSON.stringify(navigationData, null, 2));
+  const handleRegisterClick = () => {
+    const navigationData = {
+      prefill: {
+        fullName: `${user.firstName.trim()} ${user.lastName.trim()}`,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        assembly: user.localAssemblyName,
+         userId: user.id, 
+      },
+      // userId: user.id,
+    };
+    // console.log("User object:", user);
+    // console.log("Full navigation payload:", JSON.stringify(navigationData, null, 2));
 
-  navigate("/dashboard/register", {
-    state: navigationData,
-  });
-};
+    navigate("/dashboard/register", {
+      state: navigationData,
+    });
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -114,12 +116,14 @@ function UserProfile() {
           </h1>
         </div>
         <div className="flex items-center p-8 justify-end">
-          <button
-            onClick={handleRegisterClick}
-            className="bg-white text-blue-700 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium"
-          >
-            Register as Member
-          </button>
+          {!member && (
+            <button
+              onClick={handleRegisterClick}
+              className="bg-white text-blue-700 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium"
+            >
+              Register as Member
+            </button>
+          )}
         </div>
       </div>
 

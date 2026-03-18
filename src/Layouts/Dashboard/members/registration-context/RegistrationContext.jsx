@@ -84,6 +84,7 @@ export const RegistrationProvider = ({ children, prefill }) => {
         userId: prefill.userId || prev.userId,
       }));
       setStep(1); // always start at Step 1 for new registration
+      // console.log("Prefill data:", prefill);
     }
   }, [prefill]);
   // Navigate steps

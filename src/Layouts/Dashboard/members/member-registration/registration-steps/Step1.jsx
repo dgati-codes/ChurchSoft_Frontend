@@ -28,7 +28,6 @@ const idTypeMap = {
 
 const Step1PersonalInfo = () => {
   const { formData, updateForm, nextStep } = useRegistration();
-
   // Generic input change
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,17 +43,18 @@ const Step1PersonalInfo = () => {
     updateForm({ identificationType: idTypeMap[e.target.value] || "" });
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Ensure preferredLanguages is always an array
-    updateForm({
-      preferredLanguages: Array.isArray(formData.preferredLanguages)
-        ? formData.preferredLanguages
-        : [],
-    });
+  updateForm({
+    ...formData,
+    preferredLanguages: Array.isArray(formData.preferredLanguages)
+      ? formData.preferredLanguages
+      : [],
+  });
 
-    nextStep();
-  };
+  nextStep();
+  console.log(formData);
+};
   return (
     <>
       <h1 className="text-xl font-[DM Sans] flex justify-center font-semibold mb-1">

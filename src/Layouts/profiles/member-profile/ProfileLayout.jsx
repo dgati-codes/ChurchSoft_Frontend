@@ -24,8 +24,9 @@ function ProfileLayout() {
         email: user.email ?? "",
         phoneNumber: user.phoneNumber ?? "",
         assembly: user.localAssemblyName ?? "",
+        userId: user.id,
       },
-      userId: user.id,
+      
     };
 
     navigate("/dashboard/register", { state: navigationData });

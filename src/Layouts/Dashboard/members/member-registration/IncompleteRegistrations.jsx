@@ -63,7 +63,9 @@ export default function IncompleteRegistrations() {
           <LoadingSpinner text="Loading Incomplete Registrations...." />
         </div>
       ) : filteredRegistrations.length === 0 ? (
-        <div className="p-10 text-center text-gray-500">No incomplete registration found</div>
+        <div className="p-10 text-center text-gray-500">
+          No incomplete registration found
+        </div>
       ) : (
         <div className="space-y-6">
           {filteredRegistrations.map((user) => {
@@ -101,7 +103,9 @@ export default function IncompleteRegistrations() {
                           {user.email}
                         </div>
 
-                        <span className="text-gray-400">ID: {user.id}</span>
+                        <span className="text-gray-400">
+                          ID: {user.memberId}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -137,7 +141,14 @@ export default function IncompleteRegistrations() {
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
                       Last updated:{" "}
-                      {new Date(user.updatedAt).toLocaleDateString()}
+                      {new Date(user.updatedAt).toLocaleString(undefined, {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false, 
+                      })}
                     </div>
                   </div>
 
