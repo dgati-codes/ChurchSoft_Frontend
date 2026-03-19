@@ -1,6 +1,7 @@
-import { useState } from "react";
+import {  useState } from "react";
 
 import { User } from "lucide-react";
+import { useHierarchy } from "../../../../../api/services/locationService";
 import InputField from "../../../modals/InputField";
 import { useRegistration } from "../../registration-context/RegistrationContext";
 
@@ -34,6 +35,28 @@ const Step1PersonalInfo = () => {
     updateForm({ [name]: value });
   };
 
+  // const selectedCountry = "Ghana"; // or from formData later
+
+  const {
+    countries,
+    regions,
+    districts,
+    assemblies,
+    formatName,
+  } = useHierarchy({
+    country: formData.country,
+    region: formData.jurisdiction,
+    district: formData.district,
+  });
+
+  regions.map((r) => ({
+    ...r,
+    parentName: formatName(r.parentName),
+  }));
+
+
+
+
   // Special mapped fields
   const handleGenderChange = (e) =>
     updateForm({ gender: genderMap[e.target.value] || "" });
@@ -43,18 +66,18 @@ const Step1PersonalInfo = () => {
     updateForm({ identificationType: idTypeMap[e.target.value] || "" });
 
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  updateForm({
-    ...formData,
-    preferredLanguages: Array.isArray(formData.preferredLanguages)
-      ? formData.preferredLanguages
-      : [],
-  });
+    updateForm({
+      ...formData,
+      preferredLanguages: Array.isArray(formData.preferredLanguages)
+        ? formData.preferredLanguages
+        : [],
+    });
 
-  nextStep();
-  console.log(formData);
-};
+    nextStep();
+    console.log(formData);
+  };
   return (
     <>
       <h1 className="text-xl font-[DM Sans] flex justify-center font-semibold mb-1">
@@ -153,6 +176,112 @@ const Step1PersonalInfo = () => {
             </select>
           </div>
 
+          {/* NATIONALITY */}
+          <div>
+            <label className="text-gray-600 font-bold">
+              Country<span className="text-red-600">*</span>
+            </label>
+            <select
+              name="country"
+              value={formData.country || ""}
+              onChange={(e) =>
+                updateForm({
+                  country: e.target.value,
+                  jurisdiction: "",
+                  district: "",
+                  assembly: "",
+                })
+              }
+              className="input"
+              required
+            >
+              <option value="">Select Country</option>
+
+              {countries.map((c, i) => (
+                <option key={i} value={c.countryName}>
+                  {formatName(c.countryName)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* jurisdiction */}
+          <div>
+            <label className="text-gray-600 font-bold">
+              Region<span className="text-red-600">*</span>
+            </label>
+            <select
+              name="jurisdiction"
+              value={formData.jurisdiction || ""}
+              onChange={(e) =>
+                updateForm({
+                  jurisdiction: e.target.value,
+                  district: "",
+                  assembly: "",
+                })
+              }
+              required
+              className="input"
+            >
+              <option value="">Select Region</option>
+
+              {regions.map((r, i) => (
+                <option key={i} value={r.parentName}>
+                  {formatName(r.parentName)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* DISTRICT */}
+          <div>
+            <label className="text-gray-600 font-bold">
+              District<span className="text-red-600">*</span>
+            </label>
+            <select
+              name="district"
+              value={formData.district || ""}
+              onChange={(e) =>
+                updateForm({
+                  district: e.target.value,
+                  assembly: "",
+                })
+              }
+              required
+              className="input"
+            >
+              <option value="">Select District</option>
+
+              {districts.map((d, i) => (
+                <option key={i} value={d.childName}>
+                  {formatName(d.childName)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* ASSEMBLY */}
+          <div>
+            <label className="text-gray-600 font-bold">
+              Local Assembly<span className="text-red-600">*</span>
+            </label>
+            <select
+              name="assembly"
+              value={formData.assembly || ""}
+              onChange={handleChange}
+              className="input"
+              required
+            >
+              <option value="">Select Assembly</option>
+
+              {assemblies.map((a, i) => (
+                <option key={i} value={a}>
+                  {formatName(a)}
+                </option>
+              ))}
+            </select>
+          </div>
+
           {/* HOMETOWN */}
           <div>
             <InputField
@@ -162,52 +291,6 @@ const Step1PersonalInfo = () => {
               onChange={handleChange}
               placeholder="Hometown"
               // required
-            />
-          </div>
-
-          {/* DISTRICT */}
-          <div>
-            <InputField
-              name="district"
-              value={formData.district || ""}
-              onChange={handleChange}
-              label="District"
-              placeholder="District"
-            />
-          </div>
-          {/* jurisdiction */}
-          <div>
-            <InputField
-              name="jurisdiction"
-              label="Region"
-              value={formData.jurisdiction || ""}
-              onChange={handleChange}
-              placeholder="Region"
-            />
-          </div>
-
-          {/* ASSEMBLY */}
-          <div>
-            <InputField
-              name="assembly"
-              label="Assembly"
-              value={formData.assembly || ""}
-              onChange={handleChange}
-              className="input"
-              placeholder="Assembly"
-              required
-            />
-          </div>
-
-          {/* NATIONALITY */}
-          <div>
-            <InputField
-              placeholder="Your Nationality"
-              label="Nationality"
-              name="nationality"
-              value={formData.nationality || ""}
-              onChange={handleChange}
-              required
             />
           </div>
 
@@ -316,7 +399,7 @@ const Step1PersonalInfo = () => {
               onChange={(e) => {
                 const inputValue = e.target.value;
                 const languagesArray = inputValue
-                  .split(",") 
+                  .split(",")
                   .map((l) => l.trim()) // trim spaces
                   .filter(Boolean); // remove empty strings
 

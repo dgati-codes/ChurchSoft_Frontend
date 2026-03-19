@@ -1,36 +1,50 @@
+// hooks/useHierarchy.js
+import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../axiosInstance";
 
-const API = "https://churchsoft-backend.onrender.com/church-soft/v1.0";
+const formatName = (name) =>
+  name?.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
 
-export const getCountries = async () => {
-  const { data } = await axiosInstance.get("/country-setup/countries");
-  console.log(data);
-  return data;
-};
+export const useHierarchy = ({ country, region, district }) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["hierarchy"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/country-setup/hierarchy");
+      return res.data;
+    },
+    staleTime: 1000 * 60 * 10,
+  });
 
-export const getJurisdictions = async (countryId) => {
-  const { data } = await axiosInstance.get(
-    `/jurisdictions?countryId=${countryId}`,
+  // 🔹 Countries
+  const countries = data || [];
+
+  // 🔹 Selected country
+  const selectedCountry = countries.find(
+    (c) => c.countryName === country
   );
-  console.log(data);
 
-  return data;
-};
+  // 🔹 Regions
+  const regions =
+    selectedCountry?.parents?.filter(
+      (r) => r.parentName && r.parentName.trim() !== ""
+    ) || [];
 
-export const getDistricts = async (jurisdictionId) => {
-  const { data } = await axiosInstance.get(
-    `/districts?jurisdictionId=${jurisdictionId}`,
-  );
-  console.log(data);
+  // 🔹 Districts
+  const districts =
+    regions.find((r) => r.parentName === region)?.children || [];
 
-  return data;
-};
+  // 🔹 Assemblies
+  const assemblies =
+    districts.find((d) => d.childName === district)
+      ?.grandChildren || [];
 
-export const getAssemblies = async (districtId) => {
-  const { data } = await axiosInstance.get(
-    `/assemblies?districtId=${districtId}`,
-  );
-  console.log(data);
-
-  return data;
+  return {
+    countries,
+    regions,
+    districts,
+    assemblies,
+    isLoading,
+    error,
+    formatName,
+  };
 };

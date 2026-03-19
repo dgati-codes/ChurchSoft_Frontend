@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useHierarchy } from "../../../api/services/locationService.js";
 import { useAuth } from "../../../context/AuthContext.jsx";
 
 export default function EditMemberModal({ member, onClose, onSave }) {
@@ -9,13 +10,29 @@ export default function EditMemberModal({ member, onClose, onSave }) {
   // Store editable form values
   const [form, setForm] = useState({});
 
-  // Sync form whenever a new member is passed
+  const { countries, regions, districts, assemblies, formatName } =
+    useHierarchy({
+      country: form.country,
+      region: form.jurisdiction,
+      district: form.district,
+    });
+
   useEffect(() => {
-    if (member) {
-      setOriginalMember(member);
-      setForm(member);
-    }
-  }, [member]);
+  if (member) {
+    const normalize = (val) =>
+      val?.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+
+    setOriginalMember(member);
+
+    setForm({
+      ...member,
+      country: normalize(member.country),
+      jurisdiction: normalize(member.jurisdiction),
+      district: normalize(member.district),
+      assembly: normalize(member.assembly),
+    });
+  }
+}, [member]);
 
   if (!member) return null;
 
@@ -32,23 +49,31 @@ export default function EditMemberModal({ member, onClose, onSave }) {
   const handleSubmit = () => {
     const payload = {
       ...originalMember, // preserve all backend-required fields
-      ...form,           // override only edited fields
+      ...form, // override only edited fields
       preferredLanguages: Array.isArray(form.preferredLanguages)
         ? form.preferredLanguages
         : [form.preferredLanguages].filter(Boolean),
       ministries: form.ministries || [],
       skillsTalents: form.skillsTalents || [],
       spiritualGifts: form.spiritualGifts || [],
-      nextOfKin: form.nextOfKin || { name: "", relationship: "", contactInformation: "" },
+      nextOfKin: form.nextOfKin || {
+        name: "",
+        relationship: "",
+        contactInformation: "",
+      },
       consentForCommunication: form.consentForCommunication ?? false,
       whatsappAvailable: form.whatsappAvailable ?? false,
       hasHealthIssues: form.hasHealthIssues ?? false,
-          updatedAt: new Date().toISOString(),
-
+      updatedAt: new Date().toISOString(),
     };
 
-  onSave(payload); 
+    onSave(payload);
   };
+
+  if (!countries.length) {
+    return <div className="p-4">Loading...</div>;
+  }
+ 
 
   return (
     <div className="fixed font-[DM Sans] inset-0 flex items-center justify-center bg-black/60 z-50">
@@ -120,46 +145,112 @@ export default function EditMemberModal({ member, onClose, onSave }) {
 
         {/* Nationality */}
         <div className="mb-3">
-          <label className="text-sm font-medium">Nationality</label>
-          <input
-            className="input w-full"
-            name="nationality"
-            value={form.nationality || ""}
-            onChange={handleChange}
-          />
+          <div>
+            <label className="text-gray-600 font-bold">
+              Country<span className="text-red-600">*</span>
+            </label>
+            <select
+              name="country"
+              value={form.country || ""}
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  country: e.target.value,
+                  jurisdiction: "",
+                  district: "",
+                  assembly: "",
+                }))
+              }
+              className="input"
+              required
+            >
+              <option value="">Select Country</option>
+
+              {countries.map((c, i) => (
+                <option key={i} value={c.countryName}>
+                  {formatName(c.countryName)}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        {/* Assembly */}
-        <div className="mb-3">
-          <label className="text-sm font-medium">Assembly</label>
-          <input
-            className="input w-full"
+        <div>
+          <label className="text-sm font-medium">
+            Region<span className="text-red-600">*</span>
+          </label>
+          <select
+            name="jurisdiction"
+            value={form.jurisdiction || ""}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                jurisdiction: e.target.value,
+                district: "",
+                assembly: "",
+              }))
+            }
+            className="input"
+            required
+          >
+            <option value="">Select Region</option>
+
+            {regions.map((region, i) => (
+              <option key={i} value={region.parentName}>
+                {formatName(region.parentName)}
+              </option>
+            ))}
+          </select>
+        </div>
+        {/* DISTRICT */}
+        <div>
+          <label className="text-sm font-medium">
+            District<span className="text-red-600">*</span>
+          </label>
+          <select
+            name="district"
+            value={form.district || ""}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                district: e.target.value,
+                assembly: "",
+              }))
+            }
+            className="input"
+            required
+          >
+            <option value="">Select District</option>
+
+            {districts.map((d, i) => (
+              <option key={i} value={d.childName}>
+                {d.childName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* ASSEMBLY */}
+        <div>
+          <label className="text-sm font-medium">
+            Local Assembly<span className="text-red-600">*</span>
+          </label>
+          <select
             name="assembly"
             value={form.assembly || ""}
             onChange={handleChange}
-          />
-        </div>
+            className="input"
+            required
+          >
+            <option value="">Select Assembly</option>
 
-        {/* District */}
-        <div className="mb-3">
-          <label className="text-sm font-medium">Region</label>
-          <input
-            className="input w-full"
-            name="jurisdiction"
-            value={form.jurisdiction || ""}
-            onChange={handleChange}
-          />
+            {assemblies.map((a, i) => (
+              <option key={i} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="mb-3">
-          <label className="text-sm font-medium">District</label>
-          <input
-            className="input w-full"
-            name="district"
-            value={form.district || ""}
-            onChange={handleChange}
-          />
-        </div>
-
         {/* Ethnicity */}
         <div className="mb-3">
           <label className="text-sm font-medium">Ethnicity</label>

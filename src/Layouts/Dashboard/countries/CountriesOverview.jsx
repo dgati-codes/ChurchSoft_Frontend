@@ -16,15 +16,17 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
+import { AddContryModal } from "./AddContryModal";
 import CountryAdministrativeDivisions, {
   ViewModal,
 } from "./CountryAdministrativeDivisions";
-import { AddContryModal } from "./AddContryModal";
 
 import {
   deleteCountry,
   fetchAllHierarchies,
 } from "../../../api/services/countrySetupService";
+        
+import { ROLES,useAuth } from "../../../context/AuthContext";
 
 const cls = (...a) => a.filter(Boolean).join(" ");
 
@@ -92,18 +94,18 @@ function DeleteModal({ countryName, onConfirm, onCancel, loading }) {
 // ─── Name pill list ───────────────────────────────────────────────────────────
 // Renders a comma-separated list of name pills, truncated with "+N more" if long
 function NamePills({ names = [], color = "bg-gray-100 text-gray-600" }) {
-  const MAX = 3;
+  const MAX = 2;
   const visible = names.slice(0, MAX);
   const extra = names.length - MAX;
   if (names.length === 0)
     return <span className="text-gray-300 text-xs">—</span>;
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="flex flex-wrap gap-1 whitespace-nowrap">
       {visible.map((name, i) => (
         <span
           key={i}
           className={cls(
-            "text-[11px] font-medium px-2 py-0.5 rounded-full",
+            "text-[11px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap",
             color,
           )}
         >
@@ -111,7 +113,7 @@ function NamePills({ names = [], color = "bg-gray-100 text-gray-600" }) {
         </span>
       ))}
       {extra > 0 && (
-        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+        <span className="whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
           +{extra} more
         </span>
       )}
@@ -127,7 +129,6 @@ export default function CountriesOverview() {
   const [showAddForm, setShowAddForm] = useState(false);
   // card-grid modal still accessible via a separate trigger if needed
   const [showDivisions, setShowDivisions] = useState(false);
-
   // live stats
   const [stats, setStats] = useState({
     total: 0,
@@ -154,6 +155,9 @@ export default function CountriesOverview() {
   const [toast, setToast] = useState(null);
   const showToast = (message, type = "success") => setToast({ message, type });
 
+  const {hasRole} = useAuth();
+
+  const isAdmin = hasRole([ROLES.ADMIN]);
   const deriveStats = (data) => {
     const totalParents = data.reduce((s, h) => s + (h.parents?.length ?? 0), 0);
     setStats({
@@ -178,9 +182,11 @@ export default function CountriesOverview() {
     }
   }, []);
 
-  useEffect(() => {
+ useEffect(() => {
+  if (tableData.length === 0) {
     loadTableData();
-  }, [loadTableData]);
+  }
+}, []);
 
   const handleRefreshStats = useCallback((data) => {
     deriveStats(data);
@@ -329,7 +335,6 @@ export default function CountriesOverview() {
       {/* ── Filters ── */}
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
         <div className="flex justify-between items-center mb-3">
-          
           <h2 className="text-sm font-semibold text-gray-700">Filters</h2>
           <button
             onClick={() => {
@@ -412,11 +417,11 @@ export default function CountriesOverview() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-sm">
             <thead>
-              <tr className="bg-gray-50 text-gray-600">
+              <tr className="bg-gray-50 text-gray-600 text-center whitespace-nowrap">
                 {[
                   "Country Name",
-                  "Parent Level Name",
-                  "Child Level Name",
+                  // "Parent Level Name",
+                  // "Child Level Name",
                   // FIX #3: names, not counts
                   "Parents",
                   "Children",
@@ -425,7 +430,7 @@ export default function CountriesOverview() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="text-left px-4 py-3 font-semibold border-b border-gray-100 whitespace-nowrap text-xs uppercase tracking-wide"
+                    className=" text-left px-4 py-3 font-semibold border border-gray-500 whitespace-nowrap text-xs uppercase tracking-wide"
                   >
                     {h}
                   </th>
@@ -448,7 +453,7 @@ export default function CountriesOverview() {
                 <tr>
                   <td
                     colSpan={7}
-                    className="text-center py-12 text-gray-400 text-sm"
+                    className="text-center py-12 text-gray-400 text-sm whitespace-nowrap"
                   >
                     {tableData.length === 0
                       ? "No countries configured yet."
@@ -479,10 +484,10 @@ export default function CountriesOverview() {
                   return (
                     <tr
                       key={h.countryName ?? i}
-                      className="border-b border-gray-100 hover:bg-gray-50/40 transition"
+                      className="border border-gray-300 hover:bg-gray-50/40 transition whitespace-nowrap"
                     >
                       {/* Country Name */}
-                      <td className="px-4 py-3">
+                      <td className="p-4 border border-gray-200">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 bg-blue-100 rounded-lg flex items-center justify-center shrink-0">
                             <Globe size={13} className="text-blue-600" />
@@ -494,18 +499,18 @@ export default function CountriesOverview() {
                       </td>
 
                       {/* Parent Level Name */}
-                      <td className="px-4 py-3">
+                      {/* <td className="p-4">
                         {h.parentLevel ? (
-                          <span className="bg-sky-100 text-sky-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                          <span className="bg-sky-100 text-red-700 text-xs font-medium px-2 py-0.5 rounded-full">
                             {h.parentLevel}
                           </span>
                         ) : (
                           <span className="text-gray-300 text-xs">—</span>
                         )}
-                      </td>
+                      </td> */}
 
                       {/* Child Level Name */}
-                      <td className="px-4 py-3">
+                      {/* <td className="p-4">
                         {h.childLevel ? (
                           <span className="bg-violet-100 text-violet-700 text-xs font-medium px-2 py-0.5 rounded-full">
                             {h.childLevel}
@@ -513,34 +518,37 @@ export default function CountriesOverview() {
                         ) : (
                           <span className="text-gray-300 text-xs">—</span>
                         )}
-                      </td>
+                      </td> */}
 
                       {/* FIX #3: Parent names */}
-                      <td className="px-4 py-3 max-w-40">
+                      <td className="p-4 border border-gray-300 max-w-40 whitespace-wrap">
                         <NamePills
                           names={parentNames}
                           color="bg-sky-50 text-sky-700"
+                          className="whitespace-nowrap"
                         />
                       </td>
 
                       {/* FIX #3: Child names */}
-                      <td className="px-4 py-3 max-w-40">
+                      <td className="p-4 border border-gray-300 max-w-40 whitespace-nowrap">
                         <NamePills
                           names={childNames}
                           color="bg-violet-50 text-violet-700"
+                          className="whitespace-nowrap"
                         />
                       </td>
 
                       {/* FIX #3: Grandchild names */}
-                      <td className="px-4 py-3 max-w-45">
+                      <td className="p-4 border border-gray-300 max-w-45 whitespace-nowrap">
                         <NamePills
                           names={grandNames}
                           color="bg-emerald-50 text-emerald-700"
+                          className="whitespace-nowrap"
                         />
                       </td>
 
                       {/* FIX #3: Actions — always visible */}
-                      <td className="px-4 py-3">
+                      <td className=" border border-gray-300">
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => setViewTarget(h)}
@@ -549,6 +557,9 @@ export default function CountriesOverview() {
                           >
                             <Eye size={15} />
                           </button>
+                          {isAdmin && (
+                            
+                         
                           <button
                             onClick={() => setEditTarget(h)}
                             className="p-1.5 hover:bg-amber-100 rounded-lg text-gray-400 hover:text-amber-600 transition"
@@ -556,13 +567,16 @@ export default function CountriesOverview() {
                           >
                             <Edit2 size={15} />
                           </button>
+                           )}
+                          {isAdmin && (
                           <button
                             onClick={() => setDeleteTarget(h.countryName)}
-                            className="p-1.5 hover:bg-red-100 rounded-lg text-gray-400 hover:text-red-600 transition"
+                            className="p-1.5 hover:bg-red-100  text-red-500 cursor-pointer rounded-lg  hover:text-red-800 transition"
                             title="Delete"
                           >
                             <Trash2 size={15} />
                           </button>
+                           )}
                         </div>
                       </td>
                     </tr>
@@ -572,6 +586,8 @@ export default function CountriesOverview() {
           </table>
         </div>
       </div>
+
+      {/* ////////////// */}
 
       {/* ── FIX #2: Add Country → FormModal directly ── */}
       {showAddForm && (

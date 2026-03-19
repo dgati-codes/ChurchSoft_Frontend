@@ -337,7 +337,6 @@ export default function CountryAdministrativeDivisions({
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [filterParentLevel, setFilterParentLevel] = useState("");
-
   const [formOpen, setFormOpen] = useState(false);
   const [editingData, setEditingData] = useState(null);
   const [viewTarget, setViewTarget] = useState(null);
