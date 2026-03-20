@@ -5,38 +5,36 @@ import { useAuth } from "../../../context/AuthContext.jsx";
 export default function EditMemberModal({ member, onClose, onSave }) {
   const { isAdmin } = useAuth();
 
-  // Store original member to preserve hidden/backend fields
   const [originalMember, setOriginalMember] = useState({});
-  // Store editable form values
   const [form, setForm] = useState({});
 
-  const { countries, regions, districts, assemblies, formatName } =
+  // 🔹 Load hierarchy
+  const { nationalities, regions, districts, assemblies } =
     useHierarchy({
-      country: form.country,
+      nationality: form.nationality,
       region: form.jurisdiction,
       district: form.district,
     });
-
+  // console.log({ nationalities, regions, districts, assemblies });
+  // 🔹 Initialize form (ONLY ONCE PER MEMBER)
   useEffect(() => {
-  if (member) {
-    const normalize = (val) =>
-      val?.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+    if (member) {
+      setOriginalMember(member);
 
-    setOriginalMember(member);
+      setForm({
+        ...member,
+        nationality: member.nationality,
+        jurisdiction: member.jurisdiction,
+        district: member.district,
+        assembly: member.assembly,
+      });
+    }
+  }, [member]);
 
-    setForm({
-      ...member,
-      country: normalize(member.country),
-      jurisdiction: normalize(member.jurisdiction),
-      district: normalize(member.district),
-      assembly: normalize(member.assembly),
-    });
-  }
-}, [member]);
 
   if (!member) return null;
 
-  // Generic change handler for inputs
+  // 🔹 Generic handler
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -45,11 +43,44 @@ export default function EditMemberModal({ member, onClose, onSave }) {
     }));
   };
 
-  // Submit handler: merge original + edited fields, safely handle arrays and nested objects
+  // 🔹 Country change
+  const handleCountryChange = (e) => {
+    const value = e.target.value;
+    setForm((prev) => ({
+      ...prev,
+      nationality: value,
+      jurisdiction: "",
+      district: "",
+      assembly: "",
+    }));
+  };
+
+  // 🔹 Region change
+  const handleRegionChange = (e) => {
+    const value = e.target.value;
+    setForm((prev) => ({
+      ...prev,
+      jurisdiction: value,
+      district: "",
+      assembly: "",
+    }));
+  };
+
+  // 🔹 District change
+  const handleDistrictChange = (e) => {
+    const value = e.target.value;
+    setForm((prev) => ({
+      ...prev,
+      district: value,
+      assembly: "",
+    }));
+  };
+
+  // 🔹 Submit
   const handleSubmit = () => {
     const payload = {
-      ...originalMember, // preserve all backend-required fields
-      ...form, // override only edited fields
+      ...originalMember,
+      ...form,
       preferredLanguages: Array.isArray(form.preferredLanguages)
         ? form.preferredLanguages
         : [form.preferredLanguages].filter(Boolean),
@@ -70,10 +101,10 @@ export default function EditMemberModal({ member, onClose, onSave }) {
     onSave(payload);
   };
 
-  if (!countries.length) {
+  // 🔹 Loading guard
+  if (!nationalities.length) {
     return <div className="p-4">Loading...</div>;
   }
- 
 
   return (
     <div className="fixed font-[DM Sans] inset-0 flex items-center justify-center bg-black/60 z-50">
@@ -145,83 +176,59 @@ export default function EditMemberModal({ member, onClose, onSave }) {
 
         {/* Nationality */}
         <div className="mb-3">
-          <div>
-            <label className="text-gray-600 font-bold">
-              Country<span className="text-red-600">*</span>
-            </label>
-            <select
-              name="country"
-              value={form.country || ""}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  country: e.target.value,
-                  jurisdiction: "",
-                  district: "",
-                  assembly: "",
-                }))
-              }
-              className="input"
-              required
-            >
-              <option value="">Select Country</option>
-
-              {countries.map((c, i) => (
-                <option key={i} value={c.countryName}>
-                  {formatName(c.countryName)}
-                </option>
-              ))}
-            </select>
-          </div>
+          <label className="text-gray-600 font-bold">
+            Country<span className="text-red-600">*</span>
+          </label>
+          <select
+            name="country"
+            value={form.nationality || ""}
+            onChange={handleCountryChange}
+            className="input"
+            required
+          >
+            <option value="">Select Country</option>
+            {nationalities.map((c, i) => (
+              <option key={i} value={c.countryName}>
+                {c.countryName}
+              </option>
+            ))}
+          </select>
         </div>
 
-        <div>
+        {/* Region */}
+                <div className="mb-3">
           <label className="text-sm font-medium">
             Region<span className="text-red-600">*</span>
           </label>
           <select
             name="jurisdiction"
             value={form.jurisdiction || ""}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                jurisdiction: e.target.value,
-                district: "",
-                assembly: "",
-              }))
-            }
+            onChange={handleRegionChange}
             className="input"
-            required
+            disabled={!form.nationality}
           >
             <option value="">Select Region</option>
-
-            {regions.map((region, i) => (
-              <option key={i} value={region.parentName}>
-                {formatName(region.parentName)}
+            {regions.map((r, i) => (
+              <option key={i} value={r.parentName}>
+                {r.parentName}
               </option>
             ))}
           </select>
         </div>
-        {/* DISTRICT */}
-        <div>
+
+        {/* District */}
+        <div className="mb-3">
           <label className="text-sm font-medium">
             District<span className="text-red-600">*</span>
           </label>
           <select
             name="district"
             value={form.district || ""}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                district: e.target.value,
-                assembly: "",
-              }))
-            }
+            onChange={handleDistrictChange}
             className="input"
-            required
+            disabled={!form.jurisdiction}
           >
             <option value="">Select District</option>
-
             {districts.map((d, i) => (
               <option key={i} value={d.childName}>
                 {d.childName}
@@ -230,8 +237,8 @@ export default function EditMemberModal({ member, onClose, onSave }) {
           </select>
         </div>
 
-        {/* ASSEMBLY */}
-        <div>
+        {/* Assembly */}
+        <div className="mb-3">
           <label className="text-sm font-medium">
             Local Assembly<span className="text-red-600">*</span>
           </label>
@@ -240,10 +247,9 @@ export default function EditMemberModal({ member, onClose, onSave }) {
             value={form.assembly || ""}
             onChange={handleChange}
             className="input"
-            required
+            disabled={!form.district}
           >
             <option value="">Select Assembly</option>
-
             {assemblies.map((a, i) => (
               <option key={i} value={a}>
                 {a}

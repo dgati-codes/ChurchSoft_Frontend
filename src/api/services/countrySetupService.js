@@ -76,5 +76,13 @@ export const fetchGrandChildrenByChild = async (childName) => {
 // DELETE COUNTRY
 // ===============================
 export const deleteCountry = async (countryName) => {
-  return await axiosInstance.delete(`/country-setup/${countryName}`);
+  return await axiosInstance.delete(`/country-setup/name/${countryName}`);
+};
+
+
+
+// Delete a country
+export const deleteCountryBYId = async (id) => {
+  const res = await axiosInstance.delete(`country-setup/${id}`);
+  return res.data;
 };

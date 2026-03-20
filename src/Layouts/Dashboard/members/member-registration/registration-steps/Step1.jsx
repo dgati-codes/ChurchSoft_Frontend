@@ -38,21 +38,21 @@ const Step1PersonalInfo = () => {
   // const selectedCountry = "Ghana"; // or from formData later
 
   const {
-    countries,
+    nationalities,
     regions,
     districts,
     assemblies,
-    formatName,
+    // formatName,
   } = useHierarchy({
-    country: formData.country,
+    nationality: formData.nationality,
     region: formData.jurisdiction,
     district: formData.district,
   });
 
-  regions.map((r) => ({
-    ...r,
-    parentName: formatName(r.parentName),
-  }));
+  // regions.map((r) => ({
+  //   ...r,
+  //   parentName: formatName(r.parentName),
+  // }));
 
 
 
@@ -76,11 +76,11 @@ const Step1PersonalInfo = () => {
     });
 
     nextStep();
-    console.log(formData);
+    // console.log(formData);
   };
   return (
     <>
-      <h1 className="text-xl font-[DM Sans] flex justify-center font-semibold mb-1">
+      <h1 className="text-xl w-full mix-w-[100vw] font-[DM Sans] flex justify-center font-semibold mb-1">
         Church Member Registration
       </h1>
       <p className="flex justify-center pb-6">
@@ -182,11 +182,11 @@ const Step1PersonalInfo = () => {
               Country<span className="text-red-600">*</span>
             </label>
             <select
-              name="country"
-              value={formData.country || ""}
+              name="nationality"
+              value={formData.nationality || ""}
               onChange={(e) =>
                 updateForm({
-                  country: e.target.value,
+                  nationality: e.target.value,
                   jurisdiction: "",
                   district: "",
                   assembly: "",
@@ -197,9 +197,9 @@ const Step1PersonalInfo = () => {
             >
               <option value="">Select Country</option>
 
-              {countries.map((c, i) => (
+              {nationalities.map((c, i) => (
                 <option key={i} value={c.countryName}>
-                  {formatName(c.countryName)}
+                  {c.countryName}
                 </option>
               ))}
             </select>
@@ -227,7 +227,7 @@ const Step1PersonalInfo = () => {
 
               {regions.map((r, i) => (
                 <option key={i} value={r.parentName}>
-                  {formatName(r.parentName)}
+                  {r.parentName}
                 </option>
               ))}
             </select>
@@ -254,7 +254,7 @@ const Step1PersonalInfo = () => {
 
               {districts.map((d, i) => (
                 <option key={i} value={d.childName}>
-                  {formatName(d.childName)}
+                  {d.childName}
                 </option>
               ))}
             </select>
@@ -276,7 +276,7 @@ const Step1PersonalInfo = () => {
 
               {assemblies.map((a, i) => (
                 <option key={i} value={a}>
-                  {formatName(a)}
+                  {a}
                 </option>
               ))}
             </select>

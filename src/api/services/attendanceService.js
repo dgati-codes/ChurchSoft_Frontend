@@ -19,6 +19,7 @@ export const attendanceService = {
         `/attendance/${id}`,
         attendanceData,
       );
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error updating attendance record:", error);

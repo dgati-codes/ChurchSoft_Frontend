@@ -14,7 +14,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { AddContryModal } from "./AddContryModal";
 import CountryAdministrativeDivisions, {
@@ -25,8 +25,9 @@ import {
   deleteCountry,
   fetchAllHierarchies,
 } from "../../../api/services/countrySetupService";
-        
-import { ROLES,useAuth } from "../../../context/AuthContext";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ROLES, useAuth } from "../../../context/AuthContext";
 
 const cls = (...a) => a.filter(Boolean).join(" ");
 
@@ -124,89 +125,94 @@ function NamePills({ names = [], color = "bg-gray-100 text-gray-600" }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // COUNTRIES OVERVIEW — main page
 // ═══════════════════════════════════════════════════════════════════════════════
+
 export default function CountriesOverview() {
-  // FIX #2: "Add Country" now opens FormModal directly (not card-grid modal)
+  const queryClient = useQueryClient();
+
+  // UI state (UNCHANGED)
   const [showAddForm, setShowAddForm] = useState(false);
-  // card-grid modal still accessible via a separate trigger if needed
   const [showDivisions, setShowDivisions] = useState(false);
-  // live stats
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    totalParents: 0,
-    lastUpdated: null,
-  });
 
-  // table state
-  const [tableData, setTableData] = useState([]);
-  const [tableLoading, setTableLoading] = useState(false);
-
-  // table filters
   const [tableSearch, setTableSearch] = useState("");
   const [tableContinent, setTableContinent] = useState("");
   const [tableStatus, setTableStatus] = useState("");
 
-  // table row modals
   const [viewTarget, setViewTarget] = useState(null);
   const [editTarget, setEditTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [toast, setToast] = useState(null);
   const showToast = (message, type = "success") => setToast({ message, type });
 
-  const {hasRole} = useAuth();
-
+  const { hasRole } = useAuth();
   const isAdmin = hasRole([ROLES.ADMIN]);
-  const deriveStats = (data) => {
-    const totalParents = data.reduce((s, h) => s + (h.parents?.length ?? 0), 0);
-    setStats({
-      total: data.length,
-      active: data.filter((h) => h.status !== "Inactive").length,
-      totalParents,
-      lastUpdated: data.length > 0 ? new Date() : null,
-    });
-  };
 
-  const loadTableData = useCallback(async () => {
-    setTableLoading(true);
-    try {
+  // ✅ FETCH (SOURCE OF TRUTH)
+  const {
+    data: tableData = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["hierarchies"],
+    queryFn: async () => {
       const res = await fetchAllHierarchies();
-      const data = res.data ?? [];
-      setTableData(data);
-      deriveStats(data);
-    } catch {
-      showToast("Failed to load data.", "error");
-    } finally {
-      setTableLoading(false);
-    }
-  }, []);
+      return res.data ?? [];
+    },
+  });
 
- useEffect(() => {
-  if (tableData.length === 0) {
-    loadTableData();
-  }
-}, []);
+  // ✅ DELETE MUTATION
+  const deleteMutation = useMutation({
+    mutationFn: deleteCountry,
 
-  const handleRefreshStats = useCallback((data) => {
-    deriveStats(data);
-    setTableData(data);
-  }, []);
-
-  const handleDeleteFromTable = async () => {
-    setDeleteLoading(true);
-    try {
-      await deleteCountry(deleteTarget);
-      showToast(`${deleteTarget} deleted.`);
+    onSuccess: (_, countryName) => {
+      queryClient.invalidateQueries(["hierarchies"]); // 🔥 auto refresh
+      showToast(`${countryName} deleted.`);
       setDeleteTarget(null);
-      loadTableData();
-    } catch (err) {
-      showToast(err.response?.data?.message || "Delete failed.", "error");
-    } finally {
-      setDeleteLoading(false);
-    }
-  };
+    },
 
+    onError: (err) => {
+      showToast(err.response?.data?.message || "Delete failed.", "error");
+    },
+  });
+
+  const handleDeleteFromTable = () => {
+  if (!deleteTarget) return;
+  deleteMutation.mutate(deleteTarget);
+};
+
+  // ✅ DERIVED STATS (NO STATE)
+  const stats = useMemo(() => {
+    const totalParents = tableData.reduce(
+      (s, h) => s + (h.parents?.length ?? 0),
+      0,
+    );
+
+    return {
+      total: tableData.length,
+      active: tableData.filter((h) => h.status !== "Inactive").length,
+      totalParents,
+      lastUpdated: tableData.length > 0 ? new Date() : null,
+    };
+  }, [tableData]);
+
+  // ✅ FILTERED DATA
+  const filteredRows = useMemo(() => {
+    return tableData.filter((h) => {
+      if (
+        tableSearch &&
+        !h.countryName?.toLowerCase().includes(tableSearch.toLowerCase())
+      )
+        return false;
+
+      if (tableStatus === "Active" && h.status === "Inactive") return false;
+
+      if (tableStatus === "Inactive" && h.status !== "Inactive") return false;
+
+      return true;
+    });
+  }, [tableData, tableSearch, tableStatus]);
+
+  // ✅ EXPORT (UNCHANGED)
   const exportCSV = () => {
     const headers = [
       "Country Name",
@@ -216,18 +222,22 @@ export default function CountriesOverview() {
       "Children",
       "Grandchildren",
     ];
+
     const rows = tableData.map((h) => {
       const parentNames = h.parents?.map((p) => p.parentName).join("|") ?? "";
+
       const childNames =
         h.parents
           ?.flatMap((p) => p.children?.map((c) => c.childName) ?? [])
           .join("|") ?? "";
+
       const grandNames =
         h.parents
           ?.flatMap(
             (p) => p.children?.flatMap((c) => c.grandChildren ?? []) ?? [],
           )
           .join("|") ?? "";
+
       return [
         h.countryName,
         h.parentLevel ?? "",
@@ -237,9 +247,11 @@ export default function CountriesOverview() {
         grandNames,
       ].join(",");
     });
+
     const blob = new Blob([[headers.join(","), ...rows].join("\n")], {
       type: "text/csv",
     });
+
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -248,38 +260,25 @@ export default function CountriesOverview() {
     URL.revokeObjectURL(url);
   };
 
-  const filteredRows = tableData.filter((h) => {
-    if (
-      tableSearch &&
-      !h.countryName?.toLowerCase().includes(tableSearch.toLowerCase())
-    )
-      return false;
-    if (tableStatus === "Active" && h.status === "Inactive") return false;
-    if (tableStatus === "Inactive" && h.status !== "Inactive") return false;
-    return true;
-  });
-
+  // ✅ STAT CARDS (UNCHANGED UI)
   const statCards = [
     {
       label: "Total Countries",
       value: stats.total,
       sub: "Configured in system",
       icon: <Globe className="w-5 h-5 text-yellow-500" />,
-      isDate: false,
     },
     {
       label: "Parent Levels",
       value: stats.totalParents,
       sub: "Total across all countries",
       icon: <Network className="w-5 h-5 text-green-600" />,
-      isDate: false,
     },
     {
       label: "Active Countries",
       value: stats.active,
       sub: "Currently active",
       icon: <CircleDot className="w-5 h-5 text-green-600" />,
-      isDate: false,
     },
     {
       label: "Last Updated",
@@ -292,12 +291,13 @@ export default function CountriesOverview() {
         : "—",
       sub: "Most recent change",
       icon: <Clock className="w-5 h-5 text-blue-600" />,
-      isDate: true,
     },
   ];
 
+  // 👉 RETURN YOUR UI (UNCHANGED)
+
   return (
-    <div className="font-[DM_Sans,sans-serif] mt-10 bg-gray-50 min-h-screen px-6 pb-10">
+    <div className="w-full font-[DM_Sans,sans-serif] mt-10 bg-gray-50 min-h-screen px-6 pb-10">
       {/* ── Page Header ── */}
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -311,7 +311,7 @@ export default function CountriesOverview() {
         </div>
         <div className="flex gap-2">
           <button
-            onClick={loadTableData}
+            onClick={() => refetch()}
             className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 text-sm font-medium text-gray-700 transition"
           >
             <RefreshCw size={15} /> Refresh
@@ -410,7 +410,7 @@ export default function CountriesOverview() {
       </div>
 
       {/* ── Table ── */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white rounded-xl w-full shadow-sm border border-gray-100 p-6">
         <h3 className="text-sm font-semibold text-gray-900 mb-4">
           Configured Countries Overview
         </h3>
@@ -438,7 +438,7 @@ export default function CountriesOverview() {
               </tr>
             </thead>
             <tbody>
-              {tableLoading && (
+              {isLoading && (
                 <tr>
                   <td colSpan={7} className="text-center py-12 text-gray-400">
                     <div className="flex items-center justify-center gap-2">
@@ -449,7 +449,7 @@ export default function CountriesOverview() {
                 </tr>
               )}
 
-              {!tableLoading && filteredRows.length === 0 && (
+              {!isLoading && filteredRows.length === 0 && (
                 <tr>
                   <td
                     colSpan={7}
@@ -462,7 +462,7 @@ export default function CountriesOverview() {
                 </tr>
               )}
 
-              {!tableLoading &&
+              {!isLoading &&
                 filteredRows.map((h, i) => {
                   // FIX #3: extract actual names
                   const parentNames =
@@ -550,33 +550,35 @@ export default function CountriesOverview() {
                       {/* FIX #3: Actions — always visible */}
                       <td className=" border border-gray-300">
                         <div className="flex items-center gap-1.5">
-                          <button
-                            onClick={() => setViewTarget(h)}
-                            className="p-1.5 hover:bg-blue-100 rounded-lg text-gray-400 hover:text-blue-600 transition"
-                            title="View"
-                          >
-                            <Eye size={15} />
-                          </button>
+                          {!isAdmin && (
+                            <button
+                              onClick={() => setViewTarget(h)}
+                              className="p-1.5 hover:bg-blue-100 ml-8 rounded-lg  hover:text-blue-600 transition"
+                              title="View"
+                            >
+                              <Eye size={20} />
+                            </button>
+                          )}
+
                           {isAdmin && (
-                            
-                         
-                          <button
-                            onClick={() => setEditTarget(h)}
-                            className="p-1.5 hover:bg-amber-100 rounded-lg text-gray-400 hover:text-amber-600 transition"
-                            title="Edit"
-                          >
-                            <Edit2 size={15} />
-                          </button>
-                           )}
+                            <button
+                              onClick={() => setEditTarget(h)}
+                              className="p-1.5 hover:bg-blue-100 ml-5 rounded-lg  hover:text-blue-600 transition"
+                              title="Edit"
+                            >
+                              <Edit2 size={15} />
+                            </button>
+                          )}
+
                           {isAdmin && (
-                          <button
-                            onClick={() => setDeleteTarget(h.countryName)}
-                            className="p-1.5 hover:bg-red-100  text-red-500 cursor-pointer rounded-lg  hover:text-red-800 transition"
-                            title="Delete"
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                           )}
+                            <button
+                              onClick={() => setDeleteTarget(h.countryName)}
+                              className="p-1.5 hover:bg-red-100  text-red-500 cursor-pointer rounded-lg  hover:text-red-800 transition"
+                              title="Delete"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -596,7 +598,7 @@ export default function CountriesOverview() {
           onClose={() => setShowAddForm(false)}
           onSaved={() => {
             setShowAddForm(false);
-            loadTableData();
+            refetch();
           }}
           showToast={showToast}
         />
@@ -607,9 +609,8 @@ export default function CountriesOverview() {
         isOpen={showDivisions}
         onClose={() => {
           setShowDivisions(false);
-          loadTableData();
+          refetch();
         }}
-        onRefreshStats={handleRefreshStats}
       />
 
       {/* ── Edit from table row ── */}
@@ -619,7 +620,7 @@ export default function CountriesOverview() {
           onClose={() => setEditTarget(null)}
           onSaved={() => {
             setEditTarget(null);
-            loadTableData();
+            refetch();
           }}
           showToast={showToast}
         />
@@ -636,7 +637,7 @@ export default function CountriesOverview() {
           countryName={deleteTarget}
           onConfirm={handleDeleteFromTable}
           onCancel={() => setDeleteTarget(null)}
-          loading={deleteLoading}
+          loading={deleteMutation.isPending}
         />
       )}
 

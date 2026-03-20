@@ -1,26 +1,11 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Globe, Layers, MapPin, Plus, Trash2, Upload, X } from "lucide-react";
 import { useState } from "react";
 import {
-  Upload,
-  X,
-  Plus,
-  Trash2,
-  ChevronDown,
-  ChevronRight,
-  Search,
-  RefreshCw,
-  Edit2,
-  Eye,
-  Globe,
-  CheckCircle2,
-  AlertCircle,
-  MoreVertical,
-  Filter,
-  Layers,
-  MapPin,
-} from "lucide-react";import { createOrUpdateCountry,
-  importCountryCsv } from "../../../api/services/countrySetupService";
-  import {TreeNode} from "./CountryAdministrativeDivisions"
-
+  createOrUpdateCountry,
+  importCountryCsv,
+} from "../../../api/services/countrySetupService";
+import { TreeNode } from "./CountryAdministrativeDivisions";
 
 export function AddContryModal({ editingData, onClose, onSaved, showToast }) {
   const [activeTab, setActiveTab] = useState("manual");
@@ -35,48 +20,66 @@ export function AddContryModal({ editingData, onClose, onSaved, showToast }) {
   );
   const [childLevel, setChildLevel] = useState(editingData?.childLevel ?? "");
   const [parents, setParents] = useState(editingData?.parents ?? []);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const isEdit = !!editingData;
+  const queryClient = useQueryClient();
+  const cls = (...a) => a.filter(Boolean).join(" ");
 
-const cls = (...a) => a.filter(Boolean).join(" ");
+  const csvMutation = useMutation({
+    mutationFn: importCountryCsv,
 
-  const handleFileUpload = async (file) => {
-    if (!file) return;
-    setLoading(true);
-    try {
-      await importCountryCsv(file);
+    onSuccess: () => {
+      queryClient.invalidateQueries(["hierarchies"]);
       showToast("CSV imported successfully.");
       onSaved();
-    } catch (err) {
+    },
+
+    onError: (err) => {
       showToast(err.response?.data?.message || "CSV upload failed.", "error");
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const handleFileUpload = (file) => {
+    if (!file) return;
+    csvMutation.mutate(file);
   };
 
-  const handleSubmit = async () => {
+  const mutation = useMutation({
+    mutationFn: createOrUpdateCountry,
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries(["hierarchies"]); // 🔥 refresh ALL UI
+
+      showToast(
+        isEdit
+          ? `${variables.countryName} updated.`
+          : `${variables.countryName} created.`,
+      );
+
+      onSaved(); // close modal AFTER success
+    },
+
+    onError: (err) => {
+      showToast(err.response?.data?.message || "Failed to save.", "error");
+    },
+  });
+
+  const loading = mutation.isPending || csvMutation?.isPending;
+
+  const handleSubmit = () => {
     if (!countryName.trim()) {
       showToast("Country name is required.", "error");
       return;
     }
-    setLoading(true);
-    try {
-      await createOrUpdateCountry({
-        countryName,
-        description,
-        parentLevel,
-        childLevel,
-        parents,
-      });
-      showToast(isEdit ? `${countryName} updated.` : `${countryName} created.`);
-      onSaved();
-    } catch (err) {
-      showToast(err.response?.data?.message || "Failed to save.", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
 
+    mutation.mutate({
+      countryName,
+      description,
+      parentLevel,
+      childLevel,
+      parents,
+    });
+  };
   // hierarchy handlers
   const addParent = () =>
     setParents([...parents, { parentName: "", children: [] }]);

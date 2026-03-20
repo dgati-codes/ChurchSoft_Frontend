@@ -22,10 +22,10 @@ const cls = (...a) => a.filter(Boolean).join(" ");
     ) ?? 0;
 
   return (
-    <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all">
+    <div className="bg-red-600 border border-red-500 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 bg-red-600 rounded-xl flex items-center justify-center shrink-0">
             <User size={18} className="text-white" />
           </div>
           <div>
@@ -52,7 +52,7 @@ const cls = (...a) => a.filter(Boolean).join(" ");
                 className="fixed inset-0 z-10"
                 onClick={() => setMenuOpen(false)}
               />
-              <div className="absolute right-0 top-8 z-20 bg-white border border-gray-100 rounded-xl shadow-xl py-1 w-36 text-xs">
+              <div className="absolute right-0 top-8 z-20 bg-red-600 border border-gray-100 rounded-xl shadow-xl py-1 w-36 text-xs">
                 <button
                   onClick={() => {
                     onView(hierarchy);

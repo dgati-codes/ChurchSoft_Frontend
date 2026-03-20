@@ -294,14 +294,14 @@ export default function MemberTable() {
                 <th className="border px-3 py-2">Marital Status</th>
                 <th className="border px-3 py-2">Nationality</th>
                 <th className="border px-3 py-2">Region</th>
-                <th className="border px-3 py-2">Language</th>
                 <th className="border px-3 py-2">District</th>
                 <th className="border px-3 py-2">Local Assembly</th>
+                <th className="border px-3 py-2">Language</th>
                 <th className="border px-3 py-2">Ethnicity</th>
                 <th className="border px-3 py-2">Email</th>
                 <th className="border px-3 py-2">Contact Info</th>
                 <th className="border px-3 py-2">Status</th>
-                <th className="border px-3 py-2">Action</th>
+                <th className="border px-3 py-2 sticky right-0 bg-gray-50 z-20">Action</th>
               </tr>
             </thead>
 
@@ -330,9 +330,9 @@ export default function MemberTable() {
                     <td className="border px-3 py-2">{m.maritalStatus}</td>
                     <td className="border px-3 py-2">{m.nationality}</td>
                     <td className="border px-3 py-2">{m.jurisdiction}</td>
-                    <td className="border px-3 py-2">{m.preferredLanguages}</td>
                     <td className="border px-3 py-2">{m.district}</td>
                     <td className="border px-3 py-2">{m.assembly}</td>
+                    <td className="border px-3 py-2">{m.preferredLanguages}</td>
                     <td className="border px-3 py-2">{m.ethnicity}</td>
                     <td className="border px-3 py-2">{m.email}</td>
                     <td className="border px-3 py-2">{m.phoneNumber}</td>
@@ -355,7 +355,7 @@ export default function MemberTable() {
                       </span>
                     </td>
 
-                    <td className="p-2 border whitespace-nowrap">
+                    <td className="border px-3 py-2 sticky right-0 bg-red-50 z-10">
                       <div className="flex space-x-2">
                         {!isAdmin() && (
                           <>

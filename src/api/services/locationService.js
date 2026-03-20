@@ -2,49 +2,41 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../axiosInstance";
 
-const formatName = (name) =>
-  name?.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-
-export const useHierarchy = ({ country, region, district }) => {
+export const useHierarchy = ({ nationality, region, district }) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["hierarchy"],
     queryFn: async () => {
       const res = await axiosInstance.get("/country-setup/hierarchy");
-      return res.data;
+      return res.data; // raw backend data
     },
     staleTime: 1000 * 60 * 10,
   });
 
-  // 🔹 Countries
-  const countries = data || [];
+  // 🔹 All nationalities exactly as backend
+  const nationalities = data || [];
 
-  // 🔹 Selected country
-  const selectedCountry = countries.find(
-    (c) => c.countryName === country
+  // 🔹 Selected nationality object
+  const selectedNationality = nationalities.find(
+    (c) => c.countryName === nationality
   );
 
-  // 🔹 Regions
-  const regions =
-    selectedCountry?.parents?.filter(
-      (r) => r.parentName && r.parentName.trim() !== ""
-    ) || [];
+  // 🔹 Regions exactly as backend
+  const regions = selectedNationality?.parents || [];
 
-  // 🔹 Districts
+  // 🔹 Districts exactly as backend
   const districts =
     regions.find((r) => r.parentName === region)?.children || [];
 
-  // 🔹 Assemblies
+  // 🔹 Assemblies exactly as backend
   const assemblies =
-    districts.find((d) => d.childName === district)
-      ?.grandChildren || [];
+    districts.find((d) => d.childName === district)?.grandChildren || [];
 
   return {
-    countries,
+    nationalities,
     regions,
     districts,
     assemblies,
     isLoading,
     error,
-    formatName,
   };
 };
