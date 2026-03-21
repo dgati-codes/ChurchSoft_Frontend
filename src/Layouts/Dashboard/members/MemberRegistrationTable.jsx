@@ -16,6 +16,7 @@ import LoadingSpinner from "../modals/LoadingSpinner";
 import SuccessModal from "../modals/successModal.jsx";
 import EditMemberModal from "./EditMember";
 import MemberFullView from "./MemberFullView";
+
 export default function MemberTable() {
   const [filter, setFilter] = useState({
     jurisdiction: "",
@@ -30,7 +31,6 @@ export default function MemberTable() {
   });
   const [showDashboard, setShowDashboard] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
-  // const [deletingMember, setDeletingMember] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
   const [successModal, setSuccessModal] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
@@ -48,7 +48,6 @@ export default function MemberTable() {
       filter.ministry,
       filter.assembly,
     ],
-
     queryFn: () => {
       if (debouncedSearch) {
         return memberService.searchMembers(
@@ -57,7 +56,6 @@ export default function MemberTable() {
           debouncedSearch,
         );
       }
-
       if (filter.ministry) {
         return memberService.getMembersByMinistry(
           filter.ministry,
@@ -65,10 +63,8 @@ export default function MemberTable() {
           pageSize,
         );
       }
-
       return memberService.getAllMembers(currentPage, pageSize);
     },
-
     keepPreviousData: true,
     staleTime: 3 * 60 * 1000,
     refetchInterval: 3 * 60 * 1000,
@@ -80,7 +76,6 @@ export default function MemberTable() {
       setDebouncedSearch(searchName.trim());
       setCurrentPage(0);
     }, 500);
-
     return () => clearTimeout(timeout);
   }, [searchName]);
 
@@ -92,20 +87,9 @@ export default function MemberTable() {
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
   );
 
-  // const capitalizeFullName = (name = "") =>
-  //   name
-  //     .trim()
-  //     .split(/\s+/)
-  //     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-  //     .join(" ");
-
-  //      const capitalize = (str = "") =>
-  //     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   const handleDeleteMember = (member) =>
-    setDeleteModal({
-      id: member.id,
-      name: member.fullName,
-    });
+    setDeleteModal({ id: member.id, name: member.fullName });
+
   const deleteMutation = useMutation({
     mutationFn: memberService.deleteMember,
     onSuccess: () => {
@@ -118,24 +102,16 @@ export default function MemberTable() {
     deleteMutation.mutate(id);
   };
 
-  // 1️⃣ Mutation to update member
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }) => memberService.updateMember(id, payload),
     onSuccess: (_, { payload }) => {
-      // Refresh the members list
       queryClient.invalidateQueries({ queryKey: ["members"] });
-
-      // Show success modal
       setSuccessModal({ name: payload.fullName, action: "updated" });
-
-      // Close edit modal
       setEditingMember(null);
     },
   });
 
-  // 2️⃣ Save edited member
   const saveEdit = (payload) => {
-    // Ensure arrays and nested objects exist
     const finalPayload = {
       ...payload,
       preferredLanguages: Array.isArray(payload.preferredLanguages)
@@ -153,42 +129,41 @@ export default function MemberTable() {
       whatsappAvailable: payload.whatsappAvailable ?? false,
       hasHealthIssues: payload.hasHealthIssues ?? false,
     };
-
     updateMutation.mutate({ id: finalPayload.id, payload: finalPayload });
   };
+
   if (showDashboard)
     return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
   return (
-    <div className="w-240 mt-9 font-[DM Sans] bg-gray-100  ">
+    <div className="w-full font-[DM_Sans] bg-gray-100 px-5 py-6">
       {/* Header */}
-      <div className="mb-6 display flex justify-center text-center">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-xl font-semibold">
             Member Registration - Table View
           </h2>
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-sm mt-0.5">
             Manage and view member registrations with advanced filtering and
             search
           </p>
         </div>
+        <button
+          onClick={() => setShowDashboard(true)}
+          className="inline-flex items-center gap-1 bg-blue-700 hover:bg-blue-800
+                     text-white text-sm font-medium px-4 py-2 rounded-md cursor-pointer
+                     transition-colors duration-150 shrink-0"
+        >
+          View Details
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white border border-gray-300 shadow-md rounded-xl p-6 mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
-        <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Region</label>
-          <input
-            type="text"
-            placeholder="Search by region"
-            value={filter.jurisdiction}
-            onChange={(e) => {
-              setFilter({ ...filter, jurisdiction: e.target.value });
-              setCurrentPage(0);
-            }}
-            className="input"
-          />
-        </div>
+      <div
+        className="bg-white border border-gray-300 shadow-md rounded-xl p-5 mb-6
+                      grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+      >
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">District</label>
           <input
@@ -202,42 +177,27 @@ export default function MemberTable() {
             className="input"
           />
         </div>
+
         <div className="flex flex-col">
           <label className="text-sm font-medium mb-1">Local Assembly</label>
           <select
-            // value={filter.assembly}
-            // onChange={(e) => {
-            //   setFilter({ ...filter, assembly: e.target.value });
-            //   setCurrentPage(0);
-            // }}
+            value={filter.assembly}
+            onChange={(e) => {
+              setFilter({ ...filter, assembly: e.target.value });
+              setCurrentPage(0);
+            }}
             className="input"
           >
-            <option value="">All </option>
+            <option value="">All</option>
             <option value="PEACE_TEMPLE">PEACE Temple</option>
             <option value="TEMA">TEMA</option>
             <option value="BONOU_N">BONOU_N</option>
-            <option value="	GALILEY"> GALILEY</option>
+            <option value="GALILEY">GALILEY</option>
           </select>
         </div>
 
         <div className="flex flex-col">
-          <label className="text-sm font-medium mb-1">Age Group</label>
-          <input
-            type="text"
-            placeholder="Search by gender"
-            value={filter.gender}
-            onChange={(e) => {
-              setFilter({ ...filter, gender: e.target.value });
-              setCurrentPage(0);
-            }}
-            className="input"
-          />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium mb-1" htmlFor="">
-            All Ministries
-          </label>
+          <label className="text-sm font-medium mb-1">All Ministries</label>
           <select
             value={filter.ministry}
             onChange={(e) => {
@@ -246,7 +206,7 @@ export default function MemberTable() {
             }}
             className="input"
           >
-            <option value="">All </option>
+            <option value="">All</option>
             <option value="MEN">MEN</option>
             <option value="WOMEN">WOMEN</option>
             <option value="SENIOR_YOUTH">SENIOR_YOUTH</option>
@@ -270,76 +230,113 @@ export default function MemberTable() {
         </div>
       </div>
 
-      <div className="rounded-xl overflow-hidden shadow-md border p-5 bg-white border-gray-200">
-        <div className="flex justify-between items-center p-3 ">
-          <h1 className="ml-5 text-xl font-semibold">Filters</h1>
-          <div className=" bg-blue-700 flex items-center justify-center rounded-md">
-            <button
-              onClick={() => setShowDashboard(true)}
-              className="text-white cursor-pointer p-1  font-medium text-lg  text-center"
-            >
-              View Details
-            </button>
-            <ChevronRight className="text-white text-center ml-2" />
+      {/* Table card */}
+      <div className="rounded-xl border border-gray-200 shadow-md bg-white">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+          <div className="flex items-center gap-2">
+            <h1 className="text-base font-semibold">Members</h1>
+            {!isLoading && (
+              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                {totalElements}
+              </span>
+            )}
           </div>
+          {!isLoading && totalElements > 0 && (
+            <p className="text-xs text-gray-400">
+              Showing {currentPage * pageSize + 1}–
+              {Math.min((currentPage + 1) * pageSize, totalElements)} of{" "}
+              {totalElements}
+            </p>
+          )}
         </div>
 
-        <div className="overflow-x-auto shadow-lg ">
-          <table className="w-full min-w-125 text-sm  whitespace-nowrap ">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-sm whitespace-nowrap border-collapse min-w-[900px]">
             <thead>
-              <tr className="bg-gray-50 text-gray-600">
-                <th className="border px-3 py-2">Full Name</th>
-                <th className="border px-3 py-2">Gender</th>
-                <th className="border px-3 py-2">Date of Birth</th>
-                <th className="border px-3 py-2">Marital Status</th>
-                <th className="border px-3 py-2">Nationality</th>
-                <th className="border px-3 py-2">Region</th>
-                <th className="border px-3 py-2">District</th>
-                <th className="border px-3 py-2">Local Assembly</th>
-                <th className="border px-3 py-2">Language</th>
-                <th className="border px-3 py-2">Ethnicity</th>
-                <th className="border px-3 py-2">Email</th>
-                <th className="border px-3 py-2">Contact Info</th>
-                <th className="border px-3 py-2">Status</th>
-                <th className="border px-3 py-2 sticky right-0 bg-gray-50 z-20">Action</th>
+              <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wide">
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  Full Name
+                </th>
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  Gender
+                </th>
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  Nationality
+                </th>
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  Region
+                </th>
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  District
+                </th>
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  Local Assembly
+                </th>
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  Language
+                </th>
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  Email
+                </th>
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  Contact Info
+                </th>
+                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                  Status
+                </th>
+                <th
+                  className="border-b border-gray-200 px-4 py-3 text-left font-semibold sticky right-0 bg-gray-50 z-20"
+                  style={{ boxShadow: "-3px 0 6px -2px rgba(0,0,0,0.08)" }}
+                >
+                  Action
+                </th>
               </tr>
             </thead>
 
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan="100%" className="  text-clip">
+                  <td colSpan="11" className="py-10 text-center">
                     <LoadingSpinner text="Loading members..." />
                   </td>
                 </tr>
               ) : members.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan="100%"
-                    className="py-10 text-center text-xl text-gray-500"
-                  >
+                  <td colSpan="11" className="py-10 text-center text-gray-500">
                     No members found.
                   </td>
                 </tr>
               ) : (
                 sortedMembers.map((m) => (
-                  <tr key={m.id} className="hover:bg-gray-50">
-                    <td className="border px-3 py-2">{m.fullName}</td>
-                    <td className="border px-3 py-2">{m.gender}</td>
-                    <td className="border px-3 py-2">{m.dateOfBirth}</td>
-                    <td className="border px-3 py-2">{m.maritalStatus}</td>
-                    <td className="border px-3 py-2">{m.nationality}</td>
-                    <td className="border px-3 py-2">{m.jurisdiction}</td>
-                    <td className="border px-3 py-2">{m.district}</td>
-                    <td className="border px-3 py-2">{m.assembly}</td>
-                    <td className="border px-3 py-2">{m.preferredLanguages}</td>
-                    <td className="border px-3 py-2">{m.ethnicity}</td>
-                    <td className="border px-3 py-2">{m.email}</td>
-                    <td className="border px-3 py-2">{m.phoneNumber}</td>
-
-                    <td className="border px-3 py-2">
+                  <tr
+                    key={m.id}
+                    className="hover:bg-gray-50 border-b border-gray-100 last:border-0"
+                  >
+                    <td className="px-4 py-2.5 font-medium text-gray-800">
+                      {m.fullName}
+                    </td>
+                    <td className="px-4 py-2.5 text-gray-600">{m.gender}</td>
+                    <td className="px-4 py-2.5 text-gray-600">
+                      {m.nationality}
+                    </td>
+                    <td className="px-4 py-2.5 text-gray-600">
+                      {m.jurisdiction}
+                    </td>
+                    <td className="px-4 py-2.5 text-gray-600">{m.district}</td>
+                    <td className="px-4 py-2.5 text-gray-600">{m.assembly}</td>
+                    <td className="px-4 py-2.5 text-gray-600">
+                      {m.preferredLanguages}
+                    </td>
+                    <td className="px-4 py-2.5 text-gray-600 max-w-[160px] truncate">
+                      {m.email}
+                    </td>
+                    <td className="px-4 py-2.5 text-gray-600">
+                      {m.phoneNumber}
+                    </td>
+                    <td className="px-4 py-2.5">
                       <span
-                        className={`px-1 py-1 rounded text-white ${
+                        className={`px-2 py-0.5 rounded text-white text-xs font-medium ${
                           m.status === "ACTIVE"
                             ? "bg-green-600"
                             : m.status === "VISITOR"
@@ -354,40 +351,34 @@ export default function MemberTable() {
                         {m.status}
                       </span>
                     </td>
-
-                    <td className="border px-3 py-2 sticky right-0 bg-red-50 z-10">
-                      <div className="flex space-x-2">
+                    <td
+                      className="px-4 py-2.5 sticky right-0 bg-white z-10"
+                      style={{ boxShadow: "-3px 0 6px -2px rgba(0,0,0,0.06)" }}
+                    >
+                      <div className="flex items-center space-x-1">
                         {!isAdmin() && (
-                          <>
-                            <button
-                              onClick={() => setEditingMember(m)}
-                              className=" ml-4 hover:cursor-pointer"
-                            >
-                              <Eye className="w-5 h-5 " />
-                            </button>
-                          </>
+                          <button
+                            onClick={() => setEditingMember(m)}
+                            className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-blue-600 cursor-pointer transition-colors"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
                         )}
-
                         {isAdmin() && (
-                          <>
-                            <button
-                              onClick={() => setEditingMember(m)}
-                              className="  hover:cursor-pointer"
-                            >
-                              <Edit className="w-4 h-4 " />
-                            </button>
-                          </>
+                          <button
+                            onClick={() => setEditingMember(m)}
+                            className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-blue-600 cursor-pointer transition-colors"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
                         )}
-
                         {isAdmin() && (
-                          <>
-                            <button
-                              onClick={() => handleDeleteMember(m)}
-                              className="text-red-500 hover:cursor-pointer"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </>
+                          <button
+                            onClick={() => handleDeleteMember(m)}
+                            className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500 cursor-pointer transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         )}
                       </div>
                     </td>
@@ -396,33 +387,48 @@ export default function MemberTable() {
               )}
             </tbody>
           </table>
+        </div>
 
-          {/* Pagination */}
-
-          <div className="flex items-center justify-center gap-6 m-6 text-sm text-gray-600">
-            <span>
-              Page {currentPage + 1} of {totalPages} ({totalElements} members)
-            </span>
-            <div className="flex items-center gap-2">
-              <ChevronsLeft
-                onClick={() => setCurrentPage(0)}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <ChevronLeft
-                onClick={() => setCurrentPage((p) => Math.max(p - 1, 0))}
-                className="w-4 h-4 cursor-pointer"
-              />
-              <ChevronRight
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(p + 1, totalPages - 1))
-                }
-                className="w-4 h-4 cursor-pointer"
-              />
-              <ChevronsRight
-                onClick={() => setCurrentPage(totalPages - 1)}
-                className="w-4 h-4 cursor-pointer"
-              />
-            </div>
+        {/* Pagination */}
+        <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-3.5 border-t border-gray-100">
+          <span className="text-sm text-gray-600">
+            Page {currentPage + 1} of {totalPages} ({totalElements} members)
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCurrentPage(0)}
+              disabled={currentPage === 0}
+              className="w-7 h-7 flex items-center justify-center rounded border border-gray-200
+                         text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronsLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 0))}
+              disabled={currentPage === 0}
+              className="w-7 h-7 flex items-center justify-center rounded border border-gray-200
+                         text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() =>
+                setCurrentPage((p) => Math.min(p + 1, totalPages - 1))
+              }
+              disabled={currentPage >= totalPages - 1}
+              className="w-7 h-7 flex items-center justify-center rounded border border-gray-200
+                         text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages - 1)}
+              disabled={currentPage >= totalPages - 1}
+              className="w-7 h-7 flex items-center justify-center rounded border border-gray-200
+                         text-gray-500 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronsRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
@@ -441,7 +447,6 @@ export default function MemberTable() {
           onConfirm={confirmDelete}
         />
       )}
-
       {successModal && (
         <SuccessModal
           successModal={successModal}
