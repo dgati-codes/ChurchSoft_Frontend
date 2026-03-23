@@ -225,7 +225,7 @@ const Step7ReviewSubmit = () => {
       ],
     },
   ];
-
+// console.log(formData)
   /* ---------------- UI ---------------- */
 
   return (

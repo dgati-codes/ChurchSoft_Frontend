@@ -1,20 +1,11 @@
 import { useState } from "react";
-import {
-  assignImageToUser,
-  uploadImage,
-} from "../../../api/services/userImageService";
-import UserService from "../../../api/services/userService";
-import ErrorModal from "../modals/ErrorModal ";
+import toast from "react-hot-toast";
+import useAddUser from "../../../hooks/user-hooks/useAddUser";
 import InputField from "../modals/InputField";
 import SuccessModal from "../modals/successModal";
 
 const AddUserForm = () => {
-  const [errorModal, setErrorModal] = useState({
-    show: false,
-    message: "",
-  });
-  // const [message, setMessage] = useState("");
-  // const [showSuccessModal, setShowSuccessModal] = useState(false);
+ 
   const [successModal, setSuccessModal] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -33,44 +24,27 @@ const AddUserForm = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const addUserMutation = useAddUser();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.username || !formData.email || !formData.password) {
-      setErrorModal("Please fill all required fields.");
-      setErrorModal(true);
+      toast.error("Please fill all required fields.");
+      
       return;
     }
-
+    
     try {
-      let imageId = null;
+      const user = await addUserMutation.mutateAsync(formData);
 
-      if (formData.image) {
-        const uploadedImage = await uploadImage(formData.image);
-        imageId = uploadedImage?.id;
-      }
-
-      const payload = { ...formData, image: undefined };
-      const result = await UserService.registerUser(payload);
-
-      if (!result?.success) {
-        setErrorModal(result?.message || "Failed to add user.");
-        setErrorModal(true);
-        return;
-      }
-
-      const userId = result?.data?.id;
-
-      if (userId && imageId) {
-        await assignImageToUser(userId, imageId);
-      }
-
-      // ✅ Show success modal
+      // ✅ Success modal
       setSuccessModal({
-        name: `${result.data.firstName} ${result.data.lastName}`,
+        name: `${user.firstName} ${user.lastName}`,
         action: "added",
       });
-      // Reset form
+
+      // ✅ Reset form
       setFormData({
         firstName: "",
         lastName: "",
@@ -83,13 +57,9 @@ const AddUserForm = () => {
         image: null,
       });
     } catch (error) {
-      setErrorModal({
-        show: true,
-        message: error.message || "Failed to add user.",
-      });
+      toast.error(error?.response?.data?.message || "Failed to add user.");
     }
   };
-
   return (
     <div className="min-h-screen font-[DM Sans] bg-gray-50 flex flex-col items-center justify-center p-6">
       <div className="w-full max-w-4xl bg-white rounded-xl p-10 border border-gray-100">
@@ -187,9 +157,17 @@ const AddUserForm = () => {
           <div className="col-span-2 flex justify-end mt-6">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-500 transition"
+              disabled={addUserMutation.isPending}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
             >
-              Add User
+              {addUserMutation.isPending ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  Adding...
+                </>
+              ) : (
+                "Add User"
+              )}
             </button>
           </div>
         </form>
@@ -202,8 +180,7 @@ const AddUserForm = () => {
         setSuccessModal={setSuccessModal}
       />
 
-      {/* ERROR MODAL */}
-      <ErrorModal errorModal={errorModal} setErrorModal={setErrorModal} />
+    
     </div>
   );
 };

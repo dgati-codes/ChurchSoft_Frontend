@@ -1,137 +1,19 @@
 import axiosInstance from "../axiosInstance";
-const BASE_URL = "https://churchsoft-backend.onrender.com/church-soft/v1.0";
+/* ===================== HELPERS ===================== */
 
+const extractData = (res) => {
+  const payload = res?.data;
 
-/**
- * ✅ Register user (optional, if used elsewhere)
- */
+  if (payload?.data) return payload.data;
+  if (payload?.content) return payload;
+  if (payload?.data?.content) return payload.data;
 
-
-const UserService = {
-
-  registerUser : async (userData) => {
-  try {
-    const response = await axiosInstance.post("/users/register", userData, {
-      headers: { "Content-Type": "application/json" },
-    });
-
-    return { success: true, data: response.data };
-  } catch (error) {
-    console.error("Register user error:", error);
-    const message =
-      error.response?.data?.message || "Failed to add user. Please try again.";
-    return { success: false, message };
-  }
-},
-  getAllUsers: async (page = 0, size = 10, filters = {}) => {
-    try {
-      const res = await axiosInstance.get("/users/all", {
-        params: {
-          page,
-          size,
-          search: filters.search,
-          assembly: filters.assembly !== "ALL" ? filters.assembly : undefined,
-        },
-      });
-
-      const payload = res?.data;
-
-      // ✅ normalize response
-      if (payload?.data) return payload.data;
-      if (payload?.content) return payload;
-      if (payload?.data?.content) return payload.data;
-
-      return normalizeUsers(payload);
-    } catch (error) {
-      console.error("Error fetching users:", error.response || error);
-      throw error;
-    }
-  },
-
-  searchUsers: async (page = 0, size = 10, name = "") => {
-    try {
-      const res = await axiosInstance.get("/users/search", {
-        params: {
-          name,
-          page,
-          size,
-        },
-      });
-
-      const payload = res?.data;
-
-      if (payload?.data) return payload.data;
-      if (payload?.content) return payload;
-      if (payload?.data?.content) return payload.data;
-
-      return normalizeUsers(payload);
-    } catch (error) {
-      console.error("Error searching users:", error.response || error);
-      throw error;
-    }
-  },
-
-  getUsersByAssembly: async (page = 0, size = 10, assembly) => {
-    try {
-      const res = await axiosInstance.get(`/users/assembly/${assembly}`, {
-        params: { page, size },
-      });
-
-      const payload = res?.data;
-
-      if (payload?.content) return payload;
-      if (payload?.data?.content) return payload.data;
-      if (payload?.data?.content === 0) return "No users found";
-
-      return normalizeUsers(payload);
-    } catch (error) {
-      console.error(
-        "Error fetching users by assembly:",
-        error.response || error,
-      );
-      throw error;
-    }
-  },
-
-  // Delete a user by ID
-  deleteUser: async (id) => {
-    try {
-      return await axiosInstance.delete(`/users/${id}`);
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      throw error;
-    }
-  },
-
-  
-  updateUser: async (data) => {
-    try {
-      const res = await axiosInstance.put("/users", data);
-
-      return {
-        success: true,
-        data: res.data,
-        message: res.data?.message || "Profile updated",
-      };
-    } catch (error) {
-      console.error("Error updating user:", error);
-
-      return {
-        success: false,
-        message:
-          error.response?.data?.message ||
-          "Failed to update profile. Please try again.",
-      };
-    }
-  },
+  return normalizeUsers(payload);
 };
 
-export default UserService;
-
-// ✅ Get currently logged-in user
-export const getCurrentUser = async () => {
-  const res = await axiosInstance.get("/users/me");
-  return res.data;
+const handleError = (error, label) => {
+  console.error(`${label}:`, error.response || error);
+  throw error;
 };
 
 const normalizeUsers = (payload) => {
@@ -145,4 +27,103 @@ const normalizeUsers = (payload) => {
         user.localAssemblyName || user.localAssembly?.name || "",
     })),
   };
+};
+
+/* ===================== SERVICE ===================== */
+
+const UserService = {
+  /* ---------- GET USERS ---------- */
+
+  getAllUsers: async (page = 0, size = 10, filters = {}) => {
+    try {
+      const res = await axiosInstance.get("/users/all", {
+        params: {
+          page,
+          size,
+          search: filters.search || undefined,
+          assembly:
+            filters.localAssemblyName && filters.localAssemblyName !== "ALL"
+              ? filters.localAssemblyName
+              : undefined,
+        },
+      });
+      return extractData(res);
+    } catch (error) {
+      handleError(error, "Error fetching users");
+    }
+  },
+
+  searchUsers: async (page = 0, size = 10, name = "") => {
+    try {
+      const res = await axiosInstance.get("/users/search", {
+        params: { name, page, size },
+      });
+
+      return extractData(res);
+    } catch (error) {
+      handleError(error, "Error searching users");
+    }
+  },
+
+  getUsersByAssembly: async (page = 0, size = 10, assembly) => {
+    try {
+      const res = await axiosInstance.get(`/users/assembly/${assembly}`, {
+        params: { page, size },
+      });
+
+      return extractData(res);
+    } catch (error) {
+      handleError(error, "Error fetching users by assembly");
+    }
+  },
+
+  /* ---------- UPDATE USER ---------- */
+
+  updateUser: async (data) => {
+    try {
+      const res = await axiosInstance.put("/users", data);
+      return res.data; // ✅ return raw data only
+    } catch (error) {
+      handleError(error, "Error updating user");
+    }
+  },
+
+  /* ---------- DELETE USER ---------- */
+
+  deleteUser: async (id) => {
+    try {
+      const res = await axiosInstance.delete(`/users/${id}`);
+      return res.data; // ✅ return response
+    } catch (error) {
+      handleError(error, "Error deleting user");
+    }
+  },
+
+  /* ---------- REGISTER ----------*/
+
+  registerUser: async (userData) => {
+    try {
+      const res = await axiosInstance.post("/users/register", userData, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      return res.data;
+    } catch (error) {
+      handleError(error, "Register user error");
+    }
+  },
+};
+
+export default UserService;
+
+/* ===================== EXTRA ===================== */
+
+export const getCurrentUser = async () => {
+  const res = await axiosInstance.get("/users/me");
+  return res.data;
+};
+
+export const getUserById = async (id) => {
+  const res = await axiosInstance.get(`/users/${id}`);
+  return res.data;
 };

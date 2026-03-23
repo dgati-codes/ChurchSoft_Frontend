@@ -1,7 +1,6 @@
-import {  useState } from "react";
-
 import { User } from "lucide-react";
-import { useHierarchy } from "../../../../../api/services/locationService";
+import { useState,useEffect } from "react";
+import { useHierarchy } from "../../../../../api/services/hierarchyService";
 import InputField from "../../../modals/InputField";
 import { useRegistration } from "../../registration-context/RegistrationContext";
 
@@ -29,14 +28,18 @@ const idTypeMap = {
 
 const Step1PersonalInfo = () => {
   const { formData, updateForm, nextStep } = useRegistration();
+ const [languagesInput, setLanguagesInput] = useState("");
   // Generic input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateForm({ [name]: value });
   };
 
-  // const selectedCountry = "Ghana"; // or from formData later
-
+useEffect(() => {
+  if (formData.preferredLanguages) {
+    setLanguagesInput(formData.preferredLanguages.join(", "));
+  }
+}, [formData.preferredLanguages]);
   const {
     nationalities,
     regions,
@@ -49,14 +52,6 @@ const Step1PersonalInfo = () => {
     district: formData.district,
   });
 
-  // regions.map((r) => ({
-  //   ...r,
-  //   parentName: formatName(r.parentName),
-  // }));
-
-
-
-
   // Special mapped fields
   const handleGenderChange = (e) =>
     updateForm({ gender: genderMap[e.target.value] || "" });
@@ -68,15 +63,19 @@ const Step1PersonalInfo = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const languagesArray = languagesInput
+      .split(", ")
+      .map((l) => l.trim().toUpperCase())
+      .filter(Boolean);
+
     updateForm({
       ...formData,
-      preferredLanguages: Array.isArray(formData.preferredLanguages)
-        ? formData.preferredLanguages
-        : [],
+      preferredLanguages: languagesArray,
     });
 
     nextStep();
     // console.log(formData);
+    // console.log(languagesArray);
   };
   return (
     <>
@@ -392,19 +391,10 @@ const Step1PersonalInfo = () => {
             <InputField
               type="text"
               label="Preferred Languages"
-              placeholder="Enter language"
+              placeholder="Enter language (e.g. English, French)"
               className="input"
-              // Join array into a string separated by comma and space
-              value={formData.preferredLanguages?.join(", ") || ""}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                const languagesArray = inputValue
-                  .split(",")
-                  .map((l) => l.trim()) // trim spaces
-                  .filter(Boolean); // remove empty strings
-
-                updateForm({ preferredLanguages: languagesArray });
-              }}
+              value={languagesInput}
+              onChange={(e) => setLanguagesInput(e.target.value)}
             />
           </div>
         </div>

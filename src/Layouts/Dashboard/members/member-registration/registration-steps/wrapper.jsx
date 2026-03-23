@@ -16,7 +16,6 @@ import Step6HealthWelfareInfo from "./Step6";
 import Step7ReviewSubmit from "./Step7";
 
 const RegistrationFormWrapper = () => {
-  // const { step } = useRegistration();
   const { step, loadMemberData, setStep } = useRegistration();
   const { id } = useParams();
   const [submitted, setSubmitted] = useState(false);
@@ -82,7 +81,7 @@ const RegistrationFormWrapper = () => {
       case 6:
         return <Step6HealthWelfareInfo />;
       case 7:
-        return <Step7ReviewSubmit onSuccess={() => setSubmitted(true)} />; // 👈 pass success handler
+        return <Step7ReviewSubmit onSuccess={() => setSubmitted(true)} />; // pass success handler
       default:
         return <div>Unknown Step</div>;
     }

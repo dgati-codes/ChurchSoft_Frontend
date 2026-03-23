@@ -1,4 +1,3 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,8 +8,10 @@ import {
   Trash2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import memberService from "../../../api/services/memberService";
 import { useAuth } from "../../../context/AuthContext.jsx";
+import { useGetMembers } from "../../../hooks/member-hooks/useGetMembers.js";
+import { useDeleteMember } from "../../../hooks/member-hooks/useDeleteMember.js";
+import { useUpdateMember } from "../../../hooks/member-hooks/useUpdateMember.js";
 import DeleteModal from "../modals/DeleteModal";
 import LoadingSpinner from "../modals/LoadingSpinner";
 import SuccessModal from "../modals/successModal.jsx";
@@ -18,17 +19,7 @@ import EditMemberModal from "./EditMember";
 import MemberFullView from "./MemberFullView";
 
 export default function MemberTable() {
-  const [filter, setFilter] = useState({
-    jurisdiction: "",
-    district: "",
-    maritalStatus: "",
-    ministry: "",
-    assembly: "",
-    gender: "",
-    nationality: "",
-    ageGroup: "",
-    search: "",
-  });
+  const [filter, setFilter] = useState({ ministry: "", assembly: "" });
   const [showDashboard, setShowDashboard] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
@@ -36,41 +27,10 @@ export default function MemberTable() {
   const [currentPage, setCurrentPage] = useState(0);
   const [searchName, setSearchName] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const queryClient = useQueryClient();
   const { isAdmin } = useAuth();
   const pageSize = 10;
 
-  const { data: membersData, isLoading } = useQuery({
-    queryKey: [
-      "members",
-      currentPage,
-      debouncedSearch,
-      filter.ministry,
-      filter.assembly,
-    ],
-    queryFn: () => {
-      if (debouncedSearch) {
-        return memberService.searchMembers(
-          currentPage,
-          pageSize,
-          debouncedSearch,
-        );
-      }
-      if (filter.ministry) {
-        return memberService.getMembersByMinistry(
-          filter.ministry,
-          currentPage,
-          pageSize,
-        );
-      }
-      return memberService.getAllMembers(currentPage, pageSize);
-    },
-    keepPreviousData: true,
-    staleTime: 3 * 60 * 1000,
-    refetchInterval: 3 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
-
+  // Debounce search
   useEffect(() => {
     const timeout = setTimeout(() => {
       setDebouncedSearch(searchName.trim());
@@ -79,61 +39,31 @@ export default function MemberTable() {
     return () => clearTimeout(timeout);
   }, [searchName]);
 
+  // Hooks
+  const { data: membersData, isLoading } = useGetMembers(currentPage, debouncedSearch, filter);
+  const { deleteMember } = useDeleteMember();
+  const { updateMember } = useUpdateMember();
+
   const members = membersData?.content ?? [];
   const totalPages = membersData?.totalPages ?? 0;
   const totalElements = membersData?.totalElements ?? 0;
 
-  const sortedMembers = [...members].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-  );
+  const sortedMembers = [...members].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  const handleDeleteMember = (member) =>
-    setDeleteModal({ id: member.id, name: member.fullName });
-
-  const deleteMutation = useMutation({
-    mutationFn: memberService.deleteMember,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["members"] });
-    },
-  });
-
+  const handleDeleteMember = (member) => setDeleteModal({ id: member.id, name: member.fullName });
   const confirmDelete = (id) => {
     setDeleteModal(null);
-    deleteMutation.mutate(id);
+    deleteMember(id);
   };
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, payload }) => memberService.updateMember(id, payload),
-    onSuccess: (_, { payload }) => {
-      queryClient.invalidateQueries({ queryKey: ["members"] });
-      setSuccessModal({ name: payload.fullName, action: "updated" });
-      setEditingMember(null);
-    },
-  });
-
   const saveEdit = (payload) => {
-    const finalPayload = {
-      ...payload,
-      preferredLanguages: Array.isArray(payload.preferredLanguages)
-        ? payload.preferredLanguages
-        : [payload.preferredLanguages].filter(Boolean),
-      ministries: payload.ministries || [],
-      skillsTalents: payload.skillsTalents || [],
-      spiritualGifts: payload.spiritualGifts || [],
-      nextOfKin: payload.nextOfKin || {
-        name: "",
-        relationship: "",
-        contactInformation: "",
-      },
-      consentForCommunication: payload.consentForCommunication ?? false,
-      whatsappAvailable: payload.whatsappAvailable ?? false,
-      hasHealthIssues: payload.hasHealthIssues ?? false,
-    };
-    updateMutation.mutate({ id: finalPayload.id, payload: finalPayload });
+    updateMember(payload);
+    setSuccessModal({ name: payload.fullName, action: "updated" });
+    setEditingMember(null);
   };
 
-  if (showDashboard)
-    return <MemberFullView onBack={() => setShowDashboard(false)} />;
+  if (showDashboard) return <MemberFullView onBack={() => setShowDashboard(false)} />;
+
+ 
 
   return (
     <div className="w-full font-[DM_Sans] bg-gray-100 px-5 py-6">
@@ -326,7 +256,7 @@ export default function MemberTable() {
                     <td className="px-4 py-2.5 text-gray-600">{m.district}</td>
                     <td className="px-4 py-2.5 text-gray-600">{m.assembly}</td>
                     <td className="px-4 py-2.5 text-gray-600">
-                      {m.preferredLanguages}
+                      {m.preferredLanguages?.join(", ")}
                     </td>
                     <td className="px-4 py-2.5 text-gray-600 max-w-[160px] truncate">
                       {m.email}

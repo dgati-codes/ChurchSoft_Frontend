@@ -24,12 +24,10 @@ export const useHierarchy = ({ nationality, region, district }) => {
   const regions = selectedNationality?.parents || [];
 
   // 🔹 Districts exactly as backend
-  const districts =
-    regions.find((r) => r.parentName === region)?.children || [];
+  const districts = regions.find((r) => r.parentName === region)?.children || [];
 
   // 🔹 Assemblies exactly as backend
-  const assemblies =
-    districts.find((d) => d.childName === district)?.grandChildren || [];
+  const assemblies = districts.find((d) => d.childName === district)?.grandChildren || [];
 
   return {
     nationalities,

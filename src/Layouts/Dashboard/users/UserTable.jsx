@@ -1,4 +1,3 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronLeft,
   ChevronRight,
@@ -8,12 +7,15 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
-import UserService from "../../../api/services/userService.js";
 import useDebounce from "../../../hooks/useDebounce";
+import useDeleteUser from "../../../hooks/user-hooks/useDeleteUser.js";
+import useUpdateUser from "../../../hooks/user-hooks/useUpdateUser.js";
+import useGetUsers from "../../../hooks/user-hooks/useGetUsers.js";
 import DeleteModal from "../modals/DeleteModal.jsx";
 import LoadingSpinner from "../modals/LoadingSpinner.jsx";
 import SuccessModal from "../modals/successModal.jsx";
 import EditUserModal from "./EditUser.jsx";
+
 const PAGE_SIZE = 10;
 
 const UserTable = () => {
@@ -41,35 +43,14 @@ const UserTable = () => {
     status: "",
     roleName: "",
   });
+  const updateUserMutation = useUpdateUser();
+  const deleteUserMutation = useDeleteUser();
 
-  const queryClient = useQueryClient();
-
-  /* ===================== DERIVED FLAGS ===================== */
-  const isSearching = debouncedSearch.trim().length > 0;
-  const hasAssembly = filters.localAssemblyName !== "";
-
-  /* ===================== DATA FETCH ===================== */
-  const { data, isFetching, isError, error } = useQuery({
-    queryKey: ["users", page, filters.localAssemblyName, debouncedSearch],
-    queryFn: () => {
-      if (isSearching) {
-        return UserService.searchUsers(page, PAGE_SIZE, debouncedSearch);
-      }
-      if (hasAssembly) {
-        return UserService.getUsersByAssembly(
-          page,
-          PAGE_SIZE,
-          filters.localAssemblyName,
-        );
-      }
-      return UserService.getAllUsers(page, PAGE_SIZE, filters);
-    },
-
-    keepPreviousData: true,
-    staleTime: 3 * 60 * 1000,
-    refetchInterval: 3 * 60 * 1000,
-    refetchOnWindowFocus: false,
-  });
+  const { data, isFetching, isError, error } = useGetUsers(
+    page,
+    filters,
+    debouncedSearch,
+  );
 
   /* ===================== NORMALIZED DATA ===================== */
   const users = Array.isArray(data?.content)
@@ -100,14 +81,18 @@ const UserTable = () => {
   };
 
   const handleUpdate = async () => {
-    await UserService.updateUser(formData);
-    setEditingUser(null);
-    setSuccessModal({
-      name: `${formData.firstName} ${formData.lastName}`,
-      lastName: formData.lastName,
-      action: "updated",
-    });
-    queryClient.invalidateQueries(["users"]);
+    try {
+      await updateUserMutation.mutateAsync(formData);
+
+      setEditingUser(null);
+
+      setSuccessModal({
+        name: `${formData.firstName} ${formData.lastName}`,
+        action: "updated",
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleDeleteUser = (user) =>
@@ -120,16 +105,19 @@ const UserTable = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const confirmDelete = async () => {
-    await UserService.deleteUser(deleteModal.id);
-    setSuccessModal({
-      name: `${formData.firstName} ${formData.lastName}`,
-      action: "deleted",
-    });
-    setSuccessModal(null);
-    setDeleteModal(null);
-    queryClient.invalidateQueries(["users"]);
-  };
+    try {
+      await deleteUserMutation.mutateAsync(deleteModal.id);
 
+      setDeleteModal(null);
+
+      setSuccessModal({
+        name: deleteModal.name,
+        action: "deleted",
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   /* ===================== ERROR ===================== */
   if (isError) {
     return (
@@ -183,7 +171,9 @@ const UserTable = () => {
                 <th className="border border-gray-500 px-3 py-2">Assembly</th>
                 <th className="border border-gray-500 px-3 py-2">Status</th>
                 <th className="border border-gray-500 px-3 py-2">Role</th>
-                <th className="border border-gray-500 px-3 py-2 text-center">Actions</th>
+                <th className="border border-gray-500 px-3 py-2 text-center">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -205,12 +195,18 @@ const UserTable = () => {
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="border border-gray-300 px-3 py-2">{user.id}</td>
+                    <td className="border border-gray-300 px-3 py-2">
+                      {user.id}
+                    </td>
                     <td className="border border-gray-300 px-3 py-2">
                       {capitalize(user.firstName)} {capitalize(user.lastName)}
                     </td>
-                    <td className="border border-gray-300 px-3 py-2">{user.email}</td>
-                    <td className="border border-gray-300 px-3 py-2">{user.phoneNumber}</td>
+                    <td className="border border-gray-300 px-3 py-2">
+                      {user.email}
+                    </td>
+                    <td className="border border-gray-300 px-3 py-2">
+                      {user.phoneNumber}
+                    </td>
                     <td className="border border-gray-300 px-3 py-2">
                       {capitalize(user.localAssemblyName)}
                     </td>

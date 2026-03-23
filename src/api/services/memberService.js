@@ -199,7 +199,7 @@ const memberService = {
       return null;
     } catch (error) {
       if (error.response?.status === 400) {
-        console.log("User is not registered as a member.");
+        // console.log("User is not registered as a member.");
         return null;
       }
       console.error("Error fetching member by userId:", error);
@@ -251,7 +251,7 @@ export const getBirthdaysThisWeek = async () => {
 export const getTotalMembers = async () => {
   const response = await axiosInstance.get("/members/total-members");
   return response.data;
-};
+}; 
 export const getNewMembers = async () => {
   const response = await axiosInstance.get("/members/new-members");
   return response.data;

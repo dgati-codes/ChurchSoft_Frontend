@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useHierarchy } from "../../../api/services/locationService.js";
+import { useHierarchy } from "../../../api/services/hierarchyService.js";
 import { useAuth } from "../../../context/AuthContext.jsx";
 
 export default function EditMemberModal({ member, onClose, onSave }) {
