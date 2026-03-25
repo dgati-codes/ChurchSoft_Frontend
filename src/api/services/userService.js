@@ -12,6 +12,10 @@ const extractData = (res) => {
 };
 
 const handleError = (error, label) => {
+  if (error.code === "ECONNABORTED") {
+    error.message = "Request timed out. Please try again.";
+  }
+
   console.error(`${label}:`, error.response || error);
   throw error;
 };

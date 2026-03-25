@@ -7,7 +7,6 @@ const useGetUsers = (page, filters, debouncedSearch) => {
   const isSearching = debouncedSearch.trim().length > 0;
   const hasAssembly = filters.localAssemblyName !== "";
 
-  
   let queryKey;
   if (isSearching) {
     queryKey = ["users", "search", page, debouncedSearch];
@@ -17,7 +16,7 @@ const useGetUsers = (page, filters, debouncedSearch) => {
     queryKey = ["users", "all", page];
   }
 
-  return useQuery({
+  const query = useQuery({
     queryKey,
     queryFn: () => {
       if (isSearching) {
@@ -37,6 +36,12 @@ const useGetUsers = (page, filters, debouncedSearch) => {
     keepPreviousData: true,
     staleTime: 1000 * 60 * 30, // 30 min
   });
+
+  // Explicitly return refetch along with other query info
+  return {
+    ...query,
+    refetch: query.refetch,
+  };
 };
 
 export default useGetUsers;

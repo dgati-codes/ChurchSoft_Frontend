@@ -1,5 +1,3 @@
-import React from "react";
-
 const LoadingSpinner = ({ text = "Loading..." }) => {
   return (
     <div className="flex font-[DM Sans] flex-col items-center justify-center py-10">

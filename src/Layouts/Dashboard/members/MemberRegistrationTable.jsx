@@ -9,8 +9,8 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext.jsx";
-import { useGetMembers } from "../../../hooks/member-hooks/useGetMembers.js";
 import { useDeleteMember } from "../../../hooks/member-hooks/useDeleteMember.js";
+import { useGetMembers } from "../../../hooks/member-hooks/useGetMembers.js";
 import { useUpdateMember } from "../../../hooks/member-hooks/useUpdateMember.js";
 import DeleteModal from "../modals/DeleteModal";
 import LoadingSpinner from "../modals/LoadingSpinner";
@@ -40,7 +40,11 @@ export default function MemberTable() {
   }, [searchName]);
 
   // Hooks
-  const { data: membersData, isLoading } = useGetMembers(currentPage, debouncedSearch, filter);
+  const { data: membersData, isLoading, refetch } = useGetMembers(
+    currentPage,
+    debouncedSearch,
+    filter,
+  );
   const { deleteMember } = useDeleteMember();
   const { updateMember } = useUpdateMember();
 
@@ -48,9 +52,12 @@ export default function MemberTable() {
   const totalPages = membersData?.totalPages ?? 0;
   const totalElements = membersData?.totalElements ?? 0;
 
-  const sortedMembers = [...members].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const sortedMembers = [...members].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+  );
 
-  const handleDeleteMember = (member) => setDeleteModal({ id: member.id, name: member.fullName });
+  const handleDeleteMember = (member) =>
+    setDeleteModal({ id: member.id, name: member.fullName });
   const confirmDelete = (id) => {
     setDeleteModal(null);
     deleteMember(id);
@@ -61,9 +68,8 @@ export default function MemberTable() {
     setEditingMember(null);
   };
 
-  if (showDashboard) return <MemberFullView onBack={() => setShowDashboard(false)} />;
-
- 
+  if (showDashboard)
+    return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
   return (
     <div className="w-full font-[DM_Sans] bg-gray-100 px-5 py-6">
@@ -234,7 +240,13 @@ export default function MemberTable() {
               ) : members.length === 0 ? (
                 <tr>
                   <td colSpan="11" className="py-10 text-center text-gray-500">
-                    No members found.
+                    No member found.
+                    <span
+                      className="text-blue-600 ml-2 cursor-pointer"
+                      onClick={refetch}
+                    >
+                      Try Again
+                    </span>
                   </td>
                 </tr>
               ) : (

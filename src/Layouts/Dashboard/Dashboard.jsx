@@ -35,6 +35,7 @@ export default function Dashboard() {
     data: birthdaysData,
     isLoading: birthdaysLoading,
     isError: birthdaysError,
+    refetch: birthdaysRefetch,
   } = useQuery({
     queryKey: ["birthdays-this-week"],
     queryFn: getBirthdaysThisWeek,
@@ -43,7 +44,6 @@ export default function Dashboard() {
   const newMembers = newMembersData?.content || newMembersData || [];
   const birthdays = birthdaysData?.content || birthdaysData || [];
   // console.log(newMembers);
-  const hasBirthdays = birthdays.length > 0;
   const birthdayRef = useRef(null);
   const scrollLeft = () => {
     birthdayRef.current.scrollBy({
@@ -101,67 +101,73 @@ export default function Dashboard() {
         {/* BIRTHDAYS + EVENTS */}
         <div className="grid grid-cols-[1.3fr_1fr] gap-6 mb-4">
           <div
-            className={`rounded-2xl p-6 border ${
-              hasBirthdays
-                ? "bg-white border-gray-100"
-                : "bg-orange-50 border-orange-100"
-            }`}
-          >
-            {birthdaysLoading && (
-              <p className="text-sm text-gray-400">Loading birthdays...</p>
-            )}
+  className={`rounded-2xl p-6 border ${
+    birthdays.length > 0
+      ? "bg-white border-gray-100"
+      : "bg-orange-50 border-orange-100"
+  }`}
+>
+  {birthdaysLoading && (
+    <p className="text-sm text-gray-400">Loading birthdays...</p>
+  )}
 
-            {birthdaysError && (
-              <p className="text-sm text-red-400">Failed to load birthdays</p>
-            )}
+  {!birthdaysLoading && birthdaysError && (
+    <p className="text-sm text-center text-red-400">
+      Failed to load birthdays{" "}
+      <span
+        className="text-blue-600 font-bold text-md cursor-pointer"
+        onClick={birthdaysRefetch}
+      >
+        Try again
+      </span>
+    </p>
+  )}
 
-            {hasBirthdays && (
-              <div className="flex relative w-full gap-2">
-                <button
-                  onClick={scrollLeft}
-                  className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 top-30"
-                >
-                  <ChevronLeft size={16} />
-                </button>
+  {!birthdaysLoading && !birthdaysError && birthdays.length === 0 && (
+    <p className="text-center text-xl mt-20 text-gray-400 w-full py-10">
+      No birthdays today{" "}
+      <span className="inline-block animate-bounce text-4xl">🎉</span>
+    </p>
+  )}
 
-                <button
-                  onClick={scrollRight}
-                  className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 right-0 top-30"
-                >
-                  <ChevronRight size={16} />
-                </button>
-              </div>
-            )}
+  {!birthdaysLoading && !birthdaysError && birthdays.length > 0 && (
+    <div className="flex relative w-full gap-2">
+      <button
+        onClick={scrollLeft}
+        className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 top-30"
+      >
+        <ChevronLeft size={16} />
+      </button>
 
-            <div className="flex gap-4 overflow-hidden w-125" ref={birthdayRef}>
-              {birthdays.length > 0 ? (
-                birthdays.map((member, index) => (
-                  <div key={index} className="min-w-45 overflow-hidden">
-                    <BirthdayCard
-                      name={member.fullName}
-                      age={member.ageTurning}
-                      role={member.ministries?.[0] || "Member"}
-                      daysRemaining={member.daysRemaining}
-                      image={
-                        member.imageId
-                          ? `https://churchsoft-backend.onrender.com/church-soft/v1.0/images/${member.imageId}`
-                          : member.gender === "MALE"
-                            ? "https://www.parentlocker.com/go/img/flat-icons/17.png"
-                            : "https://tse1.mm.bing.net/th/id/OIP.Kmc5cF6jKK_ibabYDDLyywHaHa?rs=1&pid=ImgDetMain&o=7&rm=3"
-                      }
-                    />
-                  </div>
-                ))
-              ) : (
-                <p className="text-center text-xl mt-20 text-md text-gray-400 w-full py-10">
-                  No birthdays today{" "}
-                  <span className="inline-block animate-bounce text-4xl">
-                    🎉
-                  </span>
-                </p>
-              )}
-            </div>
+      <button
+        onClick={scrollRight}
+        className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 right-0 top-30"
+      >
+        <ChevronRight size={16} />
+      </button>
+
+      <div className="flex gap-4 overflow-hidden w-125" ref={birthdayRef}>
+        {birthdays.map((member, index) => (
+          <div key={index} className="min-w-45 overflow-hidden">
+            <BirthdayCard
+              name={member.fullName}
+              age={member.ageTurning}
+              role={member.ministries?.[0] || "Member"}
+              daysRemaining={member.daysRemaining}
+              image={
+                member.imageId
+                  ? `https://churchsoft-backend.onrender.com/church-soft/v1.0/images/${member.imageId}`
+                  : member.gender === "MALE"
+                  ? "https://www.parentlocker.com/go/img/flat-icons/17.png"
+                  : "https://tse1.mm.bing.net/th/id/OIP.Kmc5cF6jKK_ibabYDDLyywHaHa?rs=1&pid=ImgDetMain&o=7&rm=3"
+              }
+            />
           </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
 
           {/* EVENTS */}
           <div className="bg-white rounded-2xl p-6">

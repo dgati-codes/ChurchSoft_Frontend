@@ -4,7 +4,7 @@ import memberService from "../../api/services/memberService";
 const PAGE_SIZE = 10;
 
 export const useGetMembers = (currentPage, debouncedSearch, filter) => {
-  return useQuery({
+  const query = useQuery({
     queryKey: [
       "members",
       currentPage,
@@ -21,5 +21,12 @@ export const useGetMembers = (currentPage, debouncedSearch, filter) => {
       }
       return memberService.getAllMembers(currentPage, PAGE_SIZE);
     },
+    keepPreviousData: true, // optional: keeps old data while fetching new page
   });
+
+  // expose refetch along with other query states
+  return {
+    ...query,  // includes data, isLoading, isError, error
+    refetch: query.refetch, // you can call this manually
+  };
 };

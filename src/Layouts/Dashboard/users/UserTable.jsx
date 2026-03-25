@@ -9,8 +9,8 @@ import {
 import { useState } from "react";
 import useDebounce from "../../../hooks/useDebounce";
 import useDeleteUser from "../../../hooks/user-hooks/useDeleteUser.js";
-import useUpdateUser from "../../../hooks/user-hooks/useUpdateUser.js";
 import useGetUsers from "../../../hooks/user-hooks/useGetUsers.js";
+import useUpdateUser from "../../../hooks/user-hooks/useUpdateUser.js";
 import DeleteModal from "../modals/DeleteModal.jsx";
 import LoadingSpinner from "../modals/LoadingSpinner.jsx";
 import SuccessModal from "../modals/successModal.jsx";
@@ -46,7 +46,7 @@ const UserTable = () => {
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
 
-  const { data, isFetching, isError, error } = useGetUsers(
+  const { data, isFetching, refetch } = useGetUsers(
     page,
     filters,
     debouncedSearch,
@@ -61,7 +61,6 @@ const UserTable = () => {
 
   const totalPages = data?.totalPages || 1;
   const totalElements = data?.totalElements || 0;
-
   /* ===================== HANDLERS ===================== */
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -118,16 +117,7 @@ const UserTable = () => {
       console.error(error);
     }
   };
-  /* ===================== ERROR ===================== */
-  if (isError) {
-    return (
-      <div className="p-4 text-center text-red-500">
-        {error?.message || "Failed to load users"}
-      </div>
-    );
-  }
 
-  /* ===================== UI ===================== */
   return (
     <div className="mt-8 w-full font-[DM_Sans] text-gray-800">
       {/* HEADER */}
@@ -187,9 +177,15 @@ const UserTable = () => {
                 <tr>
                   <td
                     colSpan="100%"
-                    className="py-10 text-center text-xl text-gray-500"
+                    className="py-10 text-center  text-gray-500"
                   >
-                    No members found.
+                    No User found.{" "}
+                    <span
+                      onClick={refetch}
+                      className="text-blue-600 text-lg cursor-pointer"
+                    >
+                      Try Again
+                    </span>
                   </td>
                 </tr>
               ) : (
