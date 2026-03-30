@@ -6,7 +6,7 @@ import { getCurrentUser } from "../api/services/userService.js";
 
 const AuthContext = createContext(null);
 
-// ✅ Role constants (prevents typo bugs)
+// Role constants (prevents typo bugs)
 export const ROLES = {
   ADMIN: "ADMIN",
   FINANCE: "FINANCE",
@@ -97,9 +97,9 @@ localStorage.removeItem("member");
     // setMembers([]);
   };
 
-  /* =========================
-     Role Helpers (RBAC Core)
-  ========================== */
+  
+    //  Role Helpers (RBAC Core)
+ 
 
   const hasRole = (allowedRoles = []) => {
     if (!user?.role) return false;

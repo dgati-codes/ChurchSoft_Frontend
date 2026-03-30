@@ -1,11 +1,12 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../context/AuthContext.jsx";
+import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
 import useAddUser from "../../../hooks/user-hooks/useAddUser";
 import InputField from "../modals/InputField";
 import SuccessModal from "../modals/successModal";
 
 const AddUserForm = () => {
- 
   const [successModal, setSuccessModal] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -19,6 +20,19 @@ const AddUserForm = () => {
     roleName: "",
     image: null,
   });
+  const { member } = useAuth();
+  const country = member?.nationality;
+  // console.log(member);
+  const {
+    data: assemblies,
+    isLoading,
+    error,
+  } = useAssembliesByCountry(country);
+
+  console.log("country:", country);
+  console.log("loading:", isLoading);
+  console.log("assemblies:", assemblies);
+  console.log("error:", error);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,10 +45,10 @@ const AddUserForm = () => {
 
     if (!formData.username || !formData.email || !formData.password) {
       toast.error("Please fill all required fields.");
-      
+
       return;
     }
-    
+
     try {
       const user = await addUserMutation.mutateAsync(formData);
 
@@ -122,16 +136,26 @@ const AddUserForm = () => {
             value={formData.phoneNumber}
             onChange={handleChange}
           />
-
-          <InputField
-            label="Local Assembly"
-            name="localAssemblyName"
-            value={formData.localAssemblyName}
-            onChange={handleChange}
-          />
-
           <div>
-            <label className="block text-gray-700 text-sm mb-1">
+            <label className="block text-gray-700 font-bold text-sm mb-1">
+              Local Assembly<span className="text-red-500">*</span>
+            </label>
+            <select
+              name="localAssemblyName"
+              value={formData.localAssemblyName}
+              onChange={handleChange}
+              className="w-full border p-2 rounded-md bg-gray-100 border-gray-100"
+            >
+              <option value="">Select Assembly</option>
+              {assemblies?.map((assembly) => (
+                <option key={assembly.id} value={assembly}>
+                  {assembly}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-gray-700 font-bold text-sm mb-1">
               Role<span className="text-red-500">*</span>
             </label>
 
@@ -179,8 +203,6 @@ const AddUserForm = () => {
         successModal={successModal}
         setSuccessModal={setSuccessModal}
       />
-
-    
     </div>
   );
 };

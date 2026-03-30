@@ -18,10 +18,26 @@ import {
   getNewMembers,
   getTotalMembers,
 } from "../../api/services/memberService.js";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useAssembliesByCountry } from "../../hooks/useAssembliesByCountry.js";
 import { BirthdayCard } from "./birthday-card/BirthdayCard.jsx";
 import StatCard from "./modals/StatCard.jsx";
 
 export default function Dashboard() {
+  const { member } = useAuth();
+  const country = member?.nationality;
+  // console.log(member);
+  const {
+    data: assemblies,
+    isLoading,
+    error,
+  } = useAssembliesByCountry(country);
+
+  console.log("country:", country);
+  console.log("loading:", isLoading);
+  console.log("assemblies:", assemblies);
+  console.log("error:", error);
+
   const { data: totalMembers } = useQuery({
     queryKey: ["total-members"],
     queryFn: getTotalMembers,
@@ -60,7 +76,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className=" min-h-screen bg-[#F6F8FC] font-[DM Sans]">
+    <div className=" min-h-screen bg-[#F6F8FC] font-[DM Sans]  ">
       <main className="flex-1 mt-10">
         <div className="grid grid-cols-4 gap-6 mb-4">
           <StatCard
@@ -101,73 +117,76 @@ export default function Dashboard() {
         {/* BIRTHDAYS + EVENTS */}
         <div className="grid grid-cols-[1.3fr_1fr] gap-6 mb-4">
           <div
-  className={`rounded-2xl p-6 border ${
-    birthdays.length > 0
-      ? "bg-white border-gray-100"
-      : "bg-orange-50 border-orange-100"
-  }`}
->
-  {birthdaysLoading && (
-    <p className="text-sm text-gray-400">Loading birthdays...</p>
-  )}
+            className={`rounded-2xl p-6 border ${
+              birthdays.length > 0
+                ? "bg-white border-gray-100"
+                : "bg-orange-50 border-orange-100"
+            }`}
+          >
+            {birthdaysLoading && (
+              <p className="text-sm text-gray-400">Loading birthdays...</p>
+            )}
 
-  {!birthdaysLoading && birthdaysError && (
-    <p className="text-sm text-center text-red-400">
-      Failed to load birthdays{" "}
-      <span
-        className="text-blue-600 font-bold text-md cursor-pointer"
-        onClick={birthdaysRefetch}
-      >
-        Try again
-      </span>
-    </p>
-  )}
+            {!birthdaysLoading && birthdaysError && (
+              <p className="text-sm text-center text-red-400">
+                Failed to load birthdays{" "}
+                <span
+                  className="text-blue-600 font-bold text-md cursor-pointer"
+                  onClick={birthdaysRefetch}
+                >
+                  Try again
+                </span>
+              </p>
+            )}
 
-  {!birthdaysLoading && !birthdaysError && birthdays.length === 0 && (
-    <p className="text-center text-xl mt-20 text-gray-400 w-full py-10">
-      No birthdays today{" "}
-      <span className="inline-block animate-bounce text-4xl">🎉</span>
-    </p>
-  )}
+            {!birthdaysLoading && !birthdaysError && birthdays.length === 0 && (
+              <p className="text-center text-xl mt-20 text-gray-400 w-full py-10">
+                No birthdays today{" "}
+                <span className="inline-block animate-bounce text-4xl">🎉</span>
+              </p>
+            )}
 
-  {!birthdaysLoading && !birthdaysError && birthdays.length > 0 && (
-    <div className="flex relative w-full gap-2">
-      <button
-        onClick={scrollLeft}
-        className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 top-30"
-      >
-        <ChevronLeft size={16} />
-      </button>
+            {!birthdaysLoading && !birthdaysError && birthdays.length > 0 && (
+              <div className="flex relative w-full gap-2">
+                <button
+                  onClick={scrollLeft}
+                  className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 top-30"
+                >
+                  <ChevronLeft size={16} />
+                </button>
 
-      <button
-        onClick={scrollRight}
-        className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 right-0 top-30"
-      >
-        <ChevronRight size={16} />
-      </button>
+                <button
+                  onClick={scrollRight}
+                  className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 right-0 top-30"
+                >
+                  <ChevronRight size={16} />
+                </button>
 
-      <div className="flex gap-4 overflow-hidden w-125" ref={birthdayRef}>
-        {birthdays.map((member, index) => (
-          <div key={index} className="min-w-45 overflow-hidden">
-            <BirthdayCard
-              name={member.fullName}
-              age={member.ageTurning}
-              role={member.ministries?.[0] || "Member"}
-              daysRemaining={member.daysRemaining}
-              image={
-                member.imageId
-                  ? `https://churchsoft-backend.onrender.com/church-soft/v1.0/images/${member.imageId}`
-                  : member.gender === "MALE"
-                  ? "https://www.parentlocker.com/go/img/flat-icons/17.png"
-                  : "https://tse1.mm.bing.net/th/id/OIP.Kmc5cF6jKK_ibabYDDLyywHaHa?rs=1&pid=ImgDetMain&o=7&rm=3"
-              }
-            />
+                <div
+                  className="flex gap-4 overflow-hidden w-125"
+                  ref={birthdayRef}
+                >
+                  {birthdays.map((member, index) => (
+                    <div key={index} className="min-w-45 overflow-hidden">
+                      <BirthdayCard
+                        name={member.fullName}
+                        age={member.ageTurning}
+                        role={member.ministries?.[0] || "Member"}
+                        daysRemaining={member.daysRemaining}
+                        image={
+                          member.imageId
+                            ? `https://churchsoft-backend.onrender.com/church-soft/v1.0/images/${member.imageId}`
+                            : member.gender === "MALE"
+                              ? "https://www.parentlocker.com/go/img/flat-icons/17.png"
+                              : "https://tse1.mm.bing.net/th/id/OIP.Kmc5cF6jKK_ibabYDDLyywHaHa?rs=1&pid=ImgDetMain&o=7&rm=3"
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        ))}
-      </div>
-    </div>
-  )}
-</div>
 
           {/* EVENTS */}
           <div className="bg-white rounded-2xl p-6">
@@ -232,11 +251,16 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[18px] font-semibold">Ministry Groups</h2>
-              <select className="border rounded-full px-3 py-1 text-[13px]">
-                <option>Bride Assembly</option>
+              <select className="border border-gray-300 rounded-md text-center py-2 text-black text-sm w-40 bg-white relative z-50">
+                {" "}
+                <option value="All">All Assemblies</option>
+                {assemblies?.map((assembly) => (
+                  <option key={assembly.id} value={assembly}>
+                    {assembly}
+                  </option>
+                ))}
               </select>
             </div>
-
             <div className="space-y-4">
               <Ministry title="Worship Team" leader="Sarah Mensah" count="24" />
               <Ministry
@@ -316,9 +340,3 @@ function Ministry({ title, leader, count }) {
     </div>
   );
 }
-
-
-
-
-
-

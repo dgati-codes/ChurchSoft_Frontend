@@ -191,3 +191,10 @@ export const getMemberByMemberId = async (id) => {
   const response = await axiosInstance.get(`/members/${id}`);
   return response.data;
 };
+export const getAssembliesByCountry = (country) => {
+  return axiosInstance.get(
+    `/country-setup/local-assemblies-by/${country}`
+  );
+};
+
+ 

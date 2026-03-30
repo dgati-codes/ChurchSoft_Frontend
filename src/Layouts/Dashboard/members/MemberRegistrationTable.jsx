@@ -72,7 +72,7 @@ export default function MemberTable() {
     return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
   return (
-    <div className="w-full font-[DM_Sans] bg-gray-100 px-5 py-6">
+    <div className=" font-[DM_Sans] bg-gray-100 ">
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -194,15 +194,15 @@ export default function MemberTable() {
                 <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
                   Full Name
                 </th>
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                {/* <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
                   Gender
-                </th>
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                </th> */}
+                {/* <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
                   Nationality
                 </th>
                 <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
                   Region
-                </th>
+                </th> */}
                 <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
                   District
                 </th>
@@ -258,13 +258,13 @@ export default function MemberTable() {
                     <td className="px-4 py-2.5 font-medium text-gray-800">
                       {m.fullName}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-600">{m.gender}</td>
-                    <td className="px-4 py-2.5 text-gray-600">
+                    {/* <td className="px-4 py-2.5 text-gray-600">{m.gender}</td> */}
+                    {/* <td className="px-4 py-2.5 text-gray-600">
                       {m.nationality}
                     </td>
                     <td className="px-4 py-2.5 text-gray-600">
                       {m.jurisdiction}
-                    </td>
+                    </td> */}
                     <td className="px-4 py-2.5 text-gray-600">{m.district}</td>
                     <td className="px-4 py-2.5 text-gray-600">{m.assembly}</td>
                     <td className="px-4 py-2.5 text-gray-600">
