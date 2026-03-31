@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import {
   Banknote,
   BookOpen,
@@ -12,19 +11,18 @@ import {
   Users,
 } from "lucide-react";
 
-import { useRef } from "react";
-import {
-  getBirthdaysThisWeek,
-  getNewMembers,
-  getTotalMembers,
-} from "../../api/services/memberService.js";
+import { useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { useAssembliesByCountry } from "../../hooks/useAssembliesByCountry.js";
+import { useDashboardData } from "../../hooks/useDashboard.js";
+import { useMinistryLeadersByAssembly } from "../../hooks/useMinistryLeadersByAssembly.js";
 import { BirthdayCard } from "./birthday-card/BirthdayCard.jsx";
 import StatCard from "./modals/StatCard.jsx";
 
 export default function Dashboard() {
+  const [formData, setFormData] = useState({});
   const { member } = useAuth();
+
   const country = member?.nationality;
   // console.log(member);
   const {
@@ -32,34 +30,35 @@ export default function Dashboard() {
     isLoading,
     error,
   } = useAssembliesByCountry(country);
+  console.log(isLoading)
+console.log(error)
 
-  console.log("country:", country);
-  console.log("loading:", isLoading);
-  console.log("assemblies:", assemblies);
-  console.log("error:", error);
+  const selectedAssembly = formData?.localAssemblyName || "";
 
-  const { data: totalMembers } = useQuery({
-    queryKey: ["total-members"],
-    queryFn: getTotalMembers,
-  });
-  const { data: newMembersData } = useQuery({
-    queryKey: ["new-members"],
-    queryFn: getNewMembers,
-  });
+  const { data, isLoading: leadersLoading } =
+    useMinistryLeadersByAssembly(selectedAssembly);
+  const leaders = data?.leaders || [];
+  console.log(leadersLoading);
+
+  const isAllAssemblies =
+    !selectedAssembly || selectedAssembly === "All Assemblies";
+
+  const defaultMinistries = [
+    { leadershipRole: "Worship Team" },
+    { leadershipRole: "Children Ministry" },
+    { leadershipRole: "Junior Youth" },
+    { leadershipRole: "Prayer Ministry" },
+  ];
 
   const {
-    data: birthdaysData,
-    isLoading: birthdaysLoading,
-    isError: birthdaysError,
-    refetch: birthdaysRefetch,
-  } = useQuery({
-    queryKey: ["birthdays-this-week"],
-    queryFn: getBirthdaysThisWeek,
-  });
+    totalMembers,
+    newMembers,
+    birthdays,
+    isLoading: dashboardLoading,
+    isError: dashboardError,
+    refetchBirthdays,
+  } = useDashboardData();
 
-  const newMembers = newMembersData?.content || newMembersData || [];
-  const birthdays = birthdaysData?.content || birthdaysData || [];
-  // console.log(newMembers);
   const birthdayRef = useRef(null);
   const scrollLeft = () => {
     birthdayRef.current.scrollBy({
@@ -123,30 +122,30 @@ export default function Dashboard() {
                 : "bg-orange-50 border-orange-100"
             }`}
           >
-            {birthdaysLoading && (
+            {dashboardLoading && (
               <p className="text-sm text-gray-400">Loading birthdays...</p>
             )}
 
-            {!birthdaysLoading && birthdaysError && (
-              <p className="text-sm text-center text-red-400">
+            {!dashboardLoading && dashboardError && (
+              <p className="text-sm text-center text-gray-400">
                 Failed to load birthdays{" "}
                 <span
                   className="text-blue-600 font-bold text-md cursor-pointer"
-                  onClick={birthdaysRefetch}
+                  onClick={refetchBirthdays}
                 >
                   Try again
                 </span>
               </p>
             )}
 
-            {!birthdaysLoading && !birthdaysError && birthdays.length === 0 && (
+            {!dashboardLoading && !dashboardError && birthdays.length === 0 && (
               <p className="text-center text-xl mt-20 text-gray-400 w-full py-10">
                 No birthdays today{" "}
                 <span className="inline-block animate-bounce text-4xl">🎉</span>
               </p>
             )}
 
-            {!birthdaysLoading && !birthdaysError && birthdays.length > 0 && (
+            {!dashboardLoading && !dashboardError && birthdays.length > 0 && (
               <div className="flex relative w-full gap-2">
                 <button
                   onClick={scrollLeft}
@@ -251,33 +250,39 @@ export default function Dashboard() {
           <div className="bg-white rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[18px] font-semibold">Ministry Groups</h2>
-              <select className="border border-gray-300 rounded-md text-center py-2 text-black text-sm w-40 bg-white relative z-50">
-                {" "}
-                <option value="All">All Assemblies</option>
+              <select
+                value={formData.localAssemblyName || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    localAssemblyName: e.target.value,
+                  }))
+                }
+                className="border border-gray-300 rounded-md mr-2 text-center py-2 text-black text-sm w-40 bg-white relative "
+              >
+                <option value="">All Assemblies</option>
+
                 {assemblies?.map((assembly) => (
-                  <option key={assembly.id} value={assembly}>
+                  <option key={assembly} value={assembly}>
                     {assembly}
                   </option>
                 ))}
               </select>
             </div>
             <div className="space-y-4">
-              <Ministry title="Worship Team" leader="Sarah Mensah" count="24" />
-              <Ministry
-                title="Children Ministry"
-                leader="Celine Abbie"
-                count="50"
-              />
-              <Ministry
-                title="Junior Youth"
-                leader="James Allortey"
-                count="40"
-              />
-              <Ministry
-                title="Prayer Ministry"
-                leader="James Allortey"
-                count="40"
-              />
+              {(isAllAssemblies
+                ? defaultMinistries
+                : leaders?.length > 0
+                  ? leaders
+                  : [{ name: "----", leadershipRole: "Ministry" }]
+              ).map((item) => (
+                <Ministry
+                  key={item.leadershipRole}
+                  title={item.leadershipRole}
+                  leader={isAllAssemblies ? "----" : item.name}
+                  count="-"
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -331,7 +336,9 @@ function Ministry({ title, leader, count }) {
       {<Heart color={"#9810FA"} size={16} />}
       <div>
         <h4 className="text-[15px] font-semibold">{title}</h4>
-        <p className="text-[12px] text-gray-500">Led by {leader}</p>
+        <p className="text-[12px] text-gray-500">
+          Led by : <span className=" text-black">{leader}</span>
+        </p>
       </div>
       <div className="flex items-center gap-2 text-[14px]">
         {" "}

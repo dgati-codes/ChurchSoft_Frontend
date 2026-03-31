@@ -6,9 +6,9 @@ import { useRegistration } from "../../registration-context/RegistrationContext"
 const ministryMap = {
   CHOIR: "CHOIR",
   EVANGELISM: "EVANGELISM",
-  "PRAYER WARRIOR": "PRAYER_WARRIOR",
+  PRAYER_WARRIOR: "PRAYER_WARRIOR",
   USHER: "USHER",
-  "SUNDAY TEACHER": "SUNDAY_TEACHER",
+  SUNDAY_TEACHER: "SUNDAY_TEACHER",
   MEDIA: "MEDIA",
   WELFARE: "WELFARE",
   OTHER: "OTHER",
@@ -68,31 +68,22 @@ const Step5SkillsInfo = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Map ministries to backend enums
-    const mappedMinistries = localData.ministries.map(
-      (item) => ministryMap[item]
-    );
+  const mappedMinistries = localData.ministries.map(
+    (item) => ministryMap[item]
+  );
 
-    updateForm({
-      ...localData,
-      ministries: mappedMinistries,
-    });
-    const cleanedSkills = [...localData.skillsTalents];
+  updateForm({
+    ...localData,
+    ministries: mappedMinistries,
+    skillsTalents: [...localData.skillsTalents],
+    spiritualGifts: [...localData.spiritualGifts],
+    leadershipRole: localData.leadershipRole || null,
+  });
 
-    updateForm({
-      ...localData,
-      skillsTalents: cleanedSkills,
-    });
-    const cleanedGifts = [...localData.spiritualGifts];
-
-    updateForm({
-      ...localData,
-      spiritualGifts: cleanedGifts,
-    });
-    nextStep();
-  };
+  nextStep();
+};
 
   return (
     <>

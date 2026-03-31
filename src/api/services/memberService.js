@@ -174,27 +174,11 @@ export const getIncompleteMembers = async (userId) => {
 // console.log(response.data); 
   return response.data;
 };
-export const getBirthdaysThisWeek = async () => {
-  const response = await axiosInstance.get("/members/birthdays-this-week");
-  return response.data;
-};
 
-export const getTotalMembers = async () => {
-  const response = await axiosInstance.get("/members/total-members");
-  return response.data;
-}; 
-export const getNewMembers = async () => {
-  const response = await axiosInstance.get("/members/new-members");
-  return response.data;
-};
 export const getMemberByMemberId = async (id) => {
   const response = await axiosInstance.get(`/members/${id}`);
   return response.data;
 };
-export const getAssembliesByCountry = (country) => {
-  return axiosInstance.get(
-    `/country-setup/local-assemblies-by/${country}`
-  );
-};
+
 
  
