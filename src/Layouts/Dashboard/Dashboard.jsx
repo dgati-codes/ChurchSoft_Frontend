@@ -274,7 +274,7 @@ console.log(error)
                 ? defaultMinistries
                 : leaders?.length > 0
                   ? leaders
-                  : [{ name: "----", leadershipRole: "Ministry" }]
+                  : [{ name: "----", leadershipRole: "Ministry Group" }]
               ).map((item) => (
                 <Ministry
                   key={item.leadershipRole}

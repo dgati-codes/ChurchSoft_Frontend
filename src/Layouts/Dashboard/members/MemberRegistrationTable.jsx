@@ -17,6 +17,7 @@ import LoadingSpinner from "../modals/LoadingSpinner";
 import SuccessModal from "../modals/successModal.jsx";
 import EditMemberModal from "./EditMember";
 import MemberFullView from "./MemberFullView";
+import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
 
 export default function MemberTable() {
   const [filter, setFilter] = useState({ ministry: "", assembly: "" });
@@ -68,11 +69,27 @@ export default function MemberTable() {
     setEditingMember(null);
   };
 
+ const { member } = useAuth();
+  const country = member?.nationality;
+  // console.log(member);
+  const {
+    data: assemblies,
+    isLoading: assembliesisLoading,
+    error,
+  } = useAssembliesByCountry(country);
+
+  console.log("country:", country);
+  console.log("loading:", assembliesisLoading);
+  console.log("assemblies:", assemblies);
+  console.log("error:", error);
+
+
+
   if (showDashboard)
     return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
   return (
-    <div className=" font-[DM_Sans] bg-gray-100 ">
+    <div className=" font-[DM_Sans] bg-gray-100 mt-10 ">
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -124,11 +141,12 @@ export default function MemberTable() {
             }}
             className="input"
           >
-            <option value="">All</option>
-            <option value="PEACE_TEMPLE">PEACE Temple</option>
-            <option value="TEMA">TEMA</option>
-            <option value="BONOU_N">BONOU_N</option>
-            <option value="GALILEY">GALILEY</option>
+             <option value="">Select Assembly</option>
+              {assemblies?.map((assembly) => (
+                <option key={assembly.id} value={assembly}>
+                  {assembly}
+                </option>
+              ))}
           </select>
         </div>
 
@@ -187,42 +205,33 @@ export default function MemberTable() {
           )}
         </div>
 
-        <div className="overflow-x-auto w-full">
-          <table className="w-full text-sm whitespace-nowrap border-collapse min-w-[900px]">
+        <div className="overflow-x-auto ">
+          <table className="w-full text-xs text-center border-collapse">
             <thead>
-              <tr className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wide">
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+              <tr className="bg-gray-50 text-gray-600">
+                <th className="border border-gray-400 px-4 py-3 text-left font-semibold whitespace-normal">
                   Full Name
                 </th>
-                {/* <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
-                  Gender
-                </th> */}
-                {/* <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
-                  Nationality
-                </th>
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
-                  Region
-                </th> */}
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                <th className="border border-gray-400 px-4 py-3 text-left font-semibold whitespace-normal">
                   District
                 </th>
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                <th className="border border-gray-400 px-4 py-3 text-left font-semibold whitespace-normal">
                   Local Assembly
                 </th>
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                <th className="border border-gray-400 px-4 py-3 text-left font-semibold whitespace-normal">
                   Language
                 </th>
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                <th className="border border-gray-400 px-4 py-3 text-left font-semibold whitespace-normal">
                   Email
                 </th>
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                <th className="border border-gray-400 px-4 py-3 text-left font-semibold whitespace-normal">
                   Contact Info
                 </th>
-                <th className="border-b border-gray-200 px-4 py-3 text-left font-semibold">
+                <th className="border border-gray-400 px-4 py-3 text-left font-semibold">
                   Status
                 </th>
                 <th
-                  className="border-b border-gray-200 px-4 py-3 text-left font-semibold sticky right-0 bg-gray-50 z-20"
+                  className="border border-gray-400 px-4 py-3 text-left font-semibold sticky right-0 bg-gray-50 z-20"
                   style={{ boxShadow: "-3px 0 6px -2px rgba(0,0,0,0.08)" }}
                 >
                   Action
@@ -253,30 +262,24 @@ export default function MemberTable() {
                 sortedMembers.map((m) => (
                   <tr
                     key={m.id}
-                    className="hover:bg-gray-50 border-b border-gray-100 last:border-0"
+                    className="hover:bg-gray-50 border border-gray-200 last:border-0"
                   >
-                    <td className="px-4 py-2.5 font-medium text-gray-800">
+                    <td className="px-3 py-2 border border-gray-200 font-medium text-black whitespace-nowrap">
                       {m.fullName}
                     </td>
-                    {/* <td className="px-4 py-2.5 text-gray-600">{m.gender}</td> */}
-                    {/* <td className="px-4 py-2.5 text-gray-600">
-                      {m.nationality}
-                    </td>
-                    <td className="px-4 py-2.5 text-gray-600">
-                      {m.jurisdiction}
-                    </td> */}
-                    <td className="px-4 py-2.5 text-gray-600">{m.district}</td>
-                    <td className="px-4 py-2.5 text-gray-600">{m.assembly}</td>
-                    <td className="px-4 py-2.5 text-gray-600">
+                    
+                    <td className="px-3 py-2 border border-gray-200 text-gray-600 text-sx whitespace-normal">{m.district}</td>
+                    <td className="px-3 py-2 border border-gray-200 text-gray-600 whitespace-normal">{m.assembly}</td>
+                    <td className="px-3 py-2 border border-gray-200 text-gray-600 whitespace-normal">
                       {m.preferredLanguages?.join(", ")}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-600 max-w-[160px] truncate">
+                    <td className="px-3 py-2 border border-gray-200 text-gray-600 text-xs truncate whitespace-normal">
                       {m.email}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-600">
+                    <td className="px-3 py-2 border border-gray-200 text-gray-600">
                       {m.phoneNumber}
                     </td>
-                    <td className="px-4 py-2.5">
+                    <td className="px-3 py-2 border border-gray-200">
                       <span
                         className={`px-2 py-0.5 rounded text-white text-xs font-medium ${
                           m.status === "ACTIVE"
@@ -294,14 +297,14 @@ export default function MemberTable() {
                       </span>
                     </td>
                     <td
-                      className="px-4 py-2.5 sticky right-0 bg-white z-10"
+                      className="px-3 py-2 border border-gray-200 sticky right-0 bg-white z-10"
                       style={{ boxShadow: "-3px 0 6px -2px rgba(0,0,0,0.06)" }}
                     >
                       <div className="flex items-center space-x-1">
                         {!isAdmin() && (
                           <button
                             onClick={() => setEditingMember(m)}
-                            className="p-1 rounded hover:bg-gray-100 text-gray-500 hover:text-blue-600 cursor-pointer transition-colors"
+                            className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-blue-600 cursor-pointer transition-colors"
                           >
                             <Eye className="w-4 h-4" />
                           </button>
