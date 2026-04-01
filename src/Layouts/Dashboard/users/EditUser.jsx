@@ -1,3 +1,6 @@
+import { useAuth } from "../../../context/AuthContext.jsx";
+import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
+
 const UserEditModal = ({
   editingUser,
   formData,
@@ -5,6 +8,9 @@ const UserEditModal = ({
   handleUpdate,
   setEditingUser,
 }) => {
+  const { member } = useAuth();
+  const country = member?.nationality;
+  const { data: assemblies } = useAssembliesByCountry(country);
   if (!editingUser) return null;
 
   return (
@@ -74,17 +80,25 @@ const UserEditModal = ({
             />
           </div>
 
-          <div className="flex align-center justify-between">
+           <div className="flex align-center justify-between">
             <label className="font-semibold whitespace-nowrap">
-              Local Assembly :
+              Local Assembly<span className="text-red-500">*</span>
             </label>
             <input
-              type="text"
+              list="assemblies-list"
               name="localAssemblyName"
               value={formData.localAssemblyName}
               onChange={handleFormChange}
               className="w-130 border text-gr-600 border-gray-100 p-2 rounded"
+              placeholder="Start typing assembly name..."
+              autoComplete="off"
+              required
             />
+            <datalist id="assemblies-list">
+              {assemblies?.map((assembly) => (
+                <option key={assembly.id} value={assembly.name || assembly} />
+              ))}
+            </datalist>
           </div>
 
           <div className="flex align-center justify-between">
@@ -107,9 +121,7 @@ const UserEditModal = ({
           </div>
 
           <div className="flex align-center justify-between">
-            <label className="font-semibold whitespace-nowrap">
-              Role :
-            </label>
+            <label className="font-semibold whitespace-nowrap">Role :</label>
 
             <input
               readOnly

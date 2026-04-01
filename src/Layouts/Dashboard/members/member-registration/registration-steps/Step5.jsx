@@ -13,6 +13,16 @@ const ministryMap = {
   WELFARE: "WELFARE",
   OTHER: "OTHER",
 };
+const leadershipRoleOptions = [
+  "Children Ministry",
+  "Worship Team",
+  "Junior Youth",
+  "Senior Youth",
+  "Men Ministry",
+  "Women Ministry",
+  "Tech Team",
+  "media Team",
+];
 
 // Frontend display list
 const ministryOptions = Object.keys(ministryMap);
@@ -38,7 +48,7 @@ const Step5SkillsInfo = () => {
     setLocalData((prev) => ({
       ...prev,
       ministries: checked
-        ? [...prev.ministries, value]
+        ? [value]
         : prev.ministries.filter((item) => item !== value),
     }));
   };
@@ -68,22 +78,22 @@ const Step5SkillsInfo = () => {
   };
 
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const mappedMinistries = localData.ministries.map(
-    (item) => ministryMap[item]
-  );
+    const mappedMinistries = localData.ministries.map(
+      (item) => ministryMap[item],
+    );
 
-  updateForm({
-    ...localData,
-    ministries: mappedMinistries,
-    skillsTalents: [...localData.skillsTalents],
-    spiritualGifts: [...localData.spiritualGifts],
-    leadershipRole: localData.leadershipRole || null,
-  });
+    updateForm({
+      ...localData,
+      ministries: mappedMinistries,
+      skillsTalents: [...localData.skillsTalents],
+      spiritualGifts: [...localData.spiritualGifts],
+      leadershipRole: localData.leadershipRole || null,
+    });
 
-  nextStep();
-};
+    nextStep();
+  };
 
   return (
     <>
@@ -120,9 +130,22 @@ const Step5SkillsInfo = () => {
                 value={ministry}
                 checked={localData.ministries.includes(ministry)}
                 onChange={handleCheckboxChange}
-                className="form-checkbox h-4 w-4 text-blue-600"
+                disabled={
+                  localData.ministries.length > 0 &&
+                  !localData.ministries.includes(ministry)
+                }
+                className="form-checkbox h-4 w-4 text-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
               />
-              <span>{ministry}</span>
+              <span
+                className={
+                  localData.ministries.length > 0 &&
+                  !localData.ministries.includes(ministry)
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }
+              >
+                {ministry}
+              </span>
             </label>
           ))}
         </div>
@@ -151,14 +174,19 @@ const Step5SkillsInfo = () => {
           <label className="block text-sm font-medium mb-1">
             Leadership Role (optional)
           </label>
-          <input
-            type="text"
+          <select
             name="leadershipRole"
             value={localData.leadershipRole}
             onChange={handleChange}
-            placeholder="Please type here"
             className="w-full bg-gray-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          >
+            <option value="">Select a role</option>
+            {leadershipRoleOptions.map((role) => (
+              <option key={role} value={role}>
+                {role}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Skills / Talents */}

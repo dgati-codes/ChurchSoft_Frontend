@@ -22,17 +22,8 @@ const AddUserForm = () => {
   });
   const { member } = useAuth();
   const country = member?.nationality;
-  // console.log(member);
-  const {
-    data: assemblies,
-    isLoading,
-    error,
-  } = useAssembliesByCountry(country);
 
-  console.log("country:", country);
-  console.log("loading:", isLoading);
-  console.log("assemblies:", assemblies);
-  console.log("error:", error);
+  const { data: assemblies } = useAssembliesByCountry(country);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -140,20 +131,23 @@ const AddUserForm = () => {
             <label className="block text-gray-700 font-bold text-sm mb-1">
               Local Assembly<span className="text-red-500">*</span>
             </label>
-            <select
+            <input
+              list="assemblies-list"
               name="localAssemblyName"
               value={formData.localAssemblyName}
               onChange={handleChange}
               className="w-full border p-2 rounded-md bg-gray-100 border-gray-100"
-            >
-              <option value="">Select Assembly</option>
+              placeholder="Start typing assembly name..."
+              autoComplete="off"
+              required
+            />
+            <datalist id="assemblies-list">
               {assemblies?.map((assembly) => (
-                <option key={assembly.id} value={assembly}>
-                  {assembly}
-                </option>
+                <option key={assembly.id} value={assembly.name || assembly} />
               ))}
-            </select>
+            </datalist>
           </div>
+
           <div>
             <label className="block text-gray-700 font-bold text-sm mb-1">
               Role<span className="text-red-500">*</span>

@@ -24,14 +24,11 @@ export default function Dashboard() {
   const { member } = useAuth();
 
   const country = member?.nationality;
-  // console.log(member);
   const {
     data: assemblies,
-    isLoading,
-    error,
+    // isLoading: assembliesLoading,
+    // error: assembliesError,
   } = useAssembliesByCountry(country);
-  console.log(isLoading)
-console.log(error)
 
   const selectedAssembly = formData?.localAssemblyName || "";
 
@@ -72,6 +69,14 @@ console.log(error)
       left: 250,
       behavior: "smooth",
     });
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
@@ -250,25 +255,23 @@ console.log(error)
           <div className="bg-white rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[18px] font-semibold">Ministry Groups</h2>
-              <select
-                value={formData.localAssemblyName || ""}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    localAssemblyName: e.target.value,
-                  }))
-                }
-                className="border border-gray-300 rounded-md mr-2 text-center py-2 text-black text-sm w-40 bg-white relative "
-              >
-                <option value="">All Assemblies</option>
-
+              <input
+                list="assemblies-list"
+                name="localAssemblyName"
+                value={formData.localAssemblyName}
+                onChange={handleFormChange}
+                className="w-40 ml-3 border text-gr-600 border-gray-200 p-2 rounded"
+                placeholder="Start typing assembly name..."
+                autoComplete="off"
+                required
+              />
+              <datalist id="assemblies-list">
                 {assemblies?.map((assembly) => (
-                  <option key={assembly} value={assembly}>
-                    {assembly}
-                  </option>
+                  <option key={assembly.id} value={assembly.name || assembly} />
                 ))}
-              </select>
+              </datalist>
             </div>
+
             <div className="space-y-4">
               {(isAllAssemblies
                 ? defaultMinistries

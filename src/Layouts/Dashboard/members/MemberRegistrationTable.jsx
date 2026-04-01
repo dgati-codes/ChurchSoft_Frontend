@@ -12,12 +12,12 @@ import { useAuth } from "../../../context/AuthContext.jsx";
 import { useDeleteMember } from "../../../hooks/member-hooks/useDeleteMember.js";
 import { useGetMembers } from "../../../hooks/member-hooks/useGetMembers.js";
 import { useUpdateMember } from "../../../hooks/member-hooks/useUpdateMember.js";
+import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
 import DeleteModal from "../modals/DeleteModal";
 import LoadingSpinner from "../modals/LoadingSpinner";
 import SuccessModal from "../modals/successModal.jsx";
 import EditMemberModal from "./EditMember";
 import MemberFullView from "./MemberFullView";
-import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
 
 export default function MemberTable() {
   const [filter, setFilter] = useState({ ministry: "", assembly: "" });
@@ -41,11 +41,11 @@ export default function MemberTable() {
   }, [searchName]);
 
   // Hooks
-  const { data: membersData, isLoading, refetch } = useGetMembers(
-    currentPage,
-    debouncedSearch,
-    filter,
-  );
+  const {
+    data: membersData,
+    isLoading,
+    refetch,
+  } = useGetMembers(currentPage, debouncedSearch, filter);
   const { deleteMember } = useDeleteMember();
   const { updateMember } = useUpdateMember();
 
@@ -69,7 +69,7 @@ export default function MemberTable() {
     setEditingMember(null);
   };
 
- const { member } = useAuth();
+  const { member } = useAuth();
   const country = member?.nationality;
   // console.log(member);
   const {
@@ -82,8 +82,24 @@ export default function MemberTable() {
   console.log("loading:", assembliesisLoading);
   console.log("assemblies:", assemblies);
   console.log("error:", error);
+  const toTitleCase = (value) => {
+    if (!value && value !== 0) return "";
+    if (Array.isArray(value)) {
+      return value.map((item) => toTitleCase(item)).join(", ");
+    }
+    const text = `${value}`.trim().toLowerCase();
+    return text
+      .split(/\s+/)
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
-
+  const formatMemberValue = (value) => {
+    if (!value && value !== 0) return "";
+    if (Array.isArray(value)) return toTitleCase(value);
+    return toTitleCase(value);
+  };
 
   if (showDashboard)
     return <MemberFullView onBack={() => setShowDashboard(false)} />;
@@ -141,12 +157,12 @@ export default function MemberTable() {
             }}
             className="input"
           >
-             <option value="">Select Assembly</option>
-              {assemblies?.map((assembly) => (
-                <option key={assembly.id} value={assembly}>
-                  {assembly}
-                </option>
-              ))}
+            <option value="">Select Assembly</option>
+            {assemblies?.map((assembly) => (
+              <option key={assembly.id} value={assembly}>
+                {assembly}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -206,7 +222,7 @@ export default function MemberTable() {
         </div>
 
         <div className="overflow-x-auto ">
-          <table className="w-full text-xs text-center border-collapse">
+          <table className="w-full text-sm text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 text-gray-600">
                 <th className="border border-gray-400 px-4 py-3 text-left font-semibold whitespace-normal">
@@ -265,19 +281,22 @@ export default function MemberTable() {
                     className="hover:bg-gray-50 border border-gray-200 last:border-0"
                   >
                     <td className="px-3 py-2 border border-gray-200 font-medium text-black whitespace-nowrap">
-                      {m.fullName}
+                      {formatMemberValue(m.fullName)}
                     </td>
-                    
-                    <td className="px-3 py-2 border border-gray-200 text-gray-600 text-sx whitespace-normal">{m.district}</td>
-                    <td className="px-3 py-2 border border-gray-200 text-gray-600 whitespace-normal">{m.assembly}</td>
+                    <td className="px-3 py-2 border border-gray-200 text-gray-600 text-sx whitespace-normal">
+                      {formatMemberValue(m.district)}
+                    </td>
                     <td className="px-3 py-2 border border-gray-200 text-gray-600 whitespace-normal">
-                      {m.preferredLanguages?.join(", ")}
+                      {formatMemberValue(m.assembly)}
+                    </td>
+                    <td className="px-3 py-2 border border-gray-200 text-gray-600 whitespace-normal">
+                      {formatMemberValue(m.preferredLanguages)}
                     </td>
                     <td className="px-3 py-2 border border-gray-200 text-gray-600 text-xs truncate whitespace-normal">
-                      {m.email}
+                      {formatMemberValue(m.email)}
                     </td>
                     <td className="px-3 py-2 border border-gray-200 text-gray-600">
-                      {m.phoneNumber}
+                      {formatMemberValue(m.phoneNumber)}
                     </td>
                     <td className="px-3 py-2 border border-gray-200">
                       <span
@@ -293,7 +312,7 @@ export default function MemberTable() {
                                   : "bg-gray-500"
                         }`}
                       >
-                        {m.status}
+                        {formatMemberValue(m.status)}
                       </span>
                     </td>
                     <td
@@ -304,7 +323,7 @@ export default function MemberTable() {
                         {!isAdmin() && (
                           <button
                             onClick={() => setEditingMember(m)}
-                            className="p-1 rounded hover:bg-gray-200 text-gray-500 hover:text-blue-600 cursor-pointer transition-colors"
+                            className="p-1 m-auto rounded hover:bg-gray-200 text-gray-500 hover:text-blue-600 cursor-pointer transition-colors"
                           >
                             <Eye className="w-4 h-4" />
                           </button>

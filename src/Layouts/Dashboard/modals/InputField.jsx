@@ -1,4 +1,3 @@
-/** Reusable Input Component */
 const InputField = ({
   label,
   name,
@@ -6,9 +5,10 @@ const InputField = ({
   onChange,
   type = "text",
   required = false,
+  labelClassName = "block text-gray-700 font-bold", // default
 }) => (
   <div>
-    <label className="block text-gray-700 font-bold">
+    <label className={labelClassName}>
       {label}
       {required && <span className="text-red-500">*</span>}
     </label>

@@ -7,6 +7,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../../../context/AuthContext.jsx";
+import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
 import useDebounce from "../../../hooks/useDebounce";
 import useDeleteUser from "../../../hooks/user-hooks/useDeleteUser.js";
 import useGetUsers from "../../../hooks/user-hooks/useGetUsers.js";
@@ -28,6 +30,7 @@ const UserTable = () => {
   });
 
   const debouncedSearch = useDebounce(filters.search, 300);
+  const debouncedAssembly = useDebounce(filters.localAssemblyName, 800);
   const [successModal, setSuccessModal] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
@@ -42,16 +45,16 @@ const UserTable = () => {
     localAssemblyName: "",
     status: "",
     roleName: "",
+    image: null,
   });
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
 
   const { data, isFetching, refetch } = useGetUsers(
     page,
-    filters,
+    { ...filters, localAssemblyName: debouncedAssembly },
     debouncedSearch,
   );
-
   /* ===================== NORMALIZED DATA ===================== */
   const users = Array.isArray(data?.content)
     ? data.content
@@ -61,6 +64,13 @@ const UserTable = () => {
 
   const totalPages = data?.totalPages || 1;
   const totalElements = data?.totalElements || 0;
+
+  /* ===================== get all assemblies ===================== */
+
+  const { member } = useAuth();
+  const country = member?.nationality;
+  const { data: assemblies } = useAssembliesByCountry(country);
+
   /* ===================== HANDLERS ===================== */
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -131,13 +141,25 @@ const UserTable = () => {
       <div className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
         <h3 className="text-sm font-semibold mb-4">Filters</h3>
         <div className="flex justify-end gap-5 min-w-full">
-          <input
-            name="localAssemblyName"
-            value={filters.localAssemblyName}
-            onChange={handleFilterChange}
-            placeholder="Search by Assembly"
-            className="border w-70 rounded-lg px-3 py-2 text-sm bg-gray-50"
-          />
+          <div>
+            
+            <input
+              list="assemblies-list"
+              name="localAssemblyName"
+              value={filters.localAssemblyName}
+              onChange={handleFilterChange}
+              className="border w-70 rounded-lg px-3 py-2 text-sm bg-gray-50"
+              placeholder="Start typing assembly name..."
+              autoComplete="off"
+              required
+            />
+            <datalist id="assemblies-list">
+              {assemblies?.map((assembly) => (
+                <option key={assembly.id} value={assembly.name || assembly} />
+              ))}
+            </datalist>
+          </div>
+
           <input
             name="search"
             value={filters.search}
