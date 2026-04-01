@@ -121,7 +121,7 @@ export default function Dashboard() {
         {/* BIRTHDAYS + EVENTS */}
         <div className="grid grid-cols-[1.3fr_1fr] gap-6 mb-4">
           <div
-            className={`rounded-2xl p-6 border ${
+            className={`rounded-2xl p-12 border ${
               birthdays.length > 0
                 ? "bg-white border-gray-100"
                 : "bg-orange-50 border-orange-100"
@@ -151,7 +151,7 @@ export default function Dashboard() {
             )}
 
             {!dashboardLoading && !dashboardError && birthdays.length > 0 && (
-              <div className="flex relative w-full gap-2">
+              <div className="flex relative w-full gap-2 ">
                 <button
                   onClick={scrollLeft}
                   className="absolute w-8 h-8 rounded-full bg-[#EEF2FF] flex items-center justify-center z-10 top-30"
@@ -221,18 +221,13 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
+        <div className="flex gap-6  mb-4">
           {/* ATTENDANCE */}
-          <div className="bg-white rounded-2xl p-6">
-            <h2 className="text-[18px] font-semibold">Attendance Trend</h2>
-            <p className="text-[13px] text-gray-500 mb-4">
-              Monthly attendance growth over the year
-            </p>
-            <div className="h-65 bg-linear-to-b from-purple-100 to-transparent rounded-xl" />
-          </div>
+         
 
-          {/* NEWS */}
-          <div className="bg-white  rounded-2xl p-6">
+          
+            {/* NEWS */}
+          <div className="bg-white  rounded-2xl p-12">
             <h2 className="text-[20px] font-semibold mb-4">News</h2>
             <NewsItem
               title="GCCI has a new President!"
@@ -252,7 +247,7 @@ export default function Dashboard() {
           </div>
 
           {/* MINISTRY */}
-          <div className="bg-white rounded-2xl p-6">
+          <div className="bg-white rounded-2xl p-13">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-[18px] font-semibold">Ministry Groups</h2>
               <input
@@ -287,8 +282,17 @@ export default function Dashboard() {
                 />
               ))}
             </div>
+          
           </div>
+          
         </div>
+         <div className="bg-white rounded-2xl p-6">
+            <h2 className="text-[18px] font-semibold">Attendance Trend</h2>
+            <p className="text-[13px] text-gray-500 mb-4">
+              Monthly attendance growth over the year
+            </p>
+            <div className=" h-65 bg-linear-to-b from-purple-100 to-transparent rounded-xl" />
+          </div>
       </main>
     </div>
   );

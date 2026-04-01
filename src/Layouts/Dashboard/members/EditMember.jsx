@@ -9,6 +9,9 @@ const leadershipRoleOptions = [
   "Junior Youth",
   "Senior Youth",
   "Men Ministry",
+  "Women Ministry",
+  "Tech Team",
+  "media Team",
 ];
 export default function EditMemberModal({ member, onClose, onSave }) {
   const { isAdmin } = useAuth();

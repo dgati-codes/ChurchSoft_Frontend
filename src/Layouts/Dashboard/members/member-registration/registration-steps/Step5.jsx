@@ -59,23 +59,6 @@ const Step5SkillsInfo = () => {
     setLocalData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Add item to array fields (skillsTalents / spiritualGifts)
-  const handleAddItem = (field, value) => {
-    if (value.trim() && !localData[field].includes(value.trim())) {
-      setLocalData((prev) => ({
-        ...prev,
-        [field]: [...prev[field], value.trim()],
-      }));
-    }
-  };
-
-  // Remove item from array fields
-  const handleRemoveItem = (field, item) => {
-    setLocalData((prev) => ({
-      ...prev,
-      [field]: prev[field].filter((i) => i !== item),
-    }));
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
