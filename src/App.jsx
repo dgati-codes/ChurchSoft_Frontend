@@ -29,6 +29,8 @@ import Welfare from "./Layouts/profiles/member-profile/Welfare";
 import UserProfile from "./Layouts/profiles/user-profile/UserProfile";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
+import Events from "./Layouts/Dashboard/events-news/Events";
+import News from "./Layouts/Dashboard/events-news/News";
 
 function App() {
   return (
@@ -108,7 +110,8 @@ function App() {
             <Route path="attendance" element={<AttendanceTracking />} />
             <Route path="countries" element={<CountriesOverview />} />
             <Route path="configuration" element={<Configuration />} />
-            {/* <Route path="new-registration" element={<Register />} /> */}
+            <Route path="events" element={<Events/>} />
+            <Route path="news" element={<News/>} />
             <Route
               path="/dashboard/new-registration/:id"
               element={<Register />}

@@ -143,7 +143,7 @@ export default function CountriesOverview() {
   const { hasRole } = useAuth();
   const isAdmin = hasRole([ROLES.ADMIN]);
 
-  // ✅ FETCH (SOURCE OF TRUTH)
+  // FETCH (SOURCE OF TRUTH)
   const { data: tableData = [], isLoading, refetch } = useAllHierarchies();
   const safeTableData = useMemo(
     () => (Array.isArray(tableData) ? tableData : []),
@@ -152,7 +152,7 @@ export default function CountriesOverview() {
 
   const deleteMutation = useDeleteCountry();
 
-  // ✅ DELETE MUTATION
+  //  DELETE MUTATION
   const handleDeleteFromTable = () => {
     if (!deleteTarget) return;
     deleteMutation.mutate(deleteTarget, {
@@ -166,7 +166,7 @@ export default function CountriesOverview() {
     });
   };
 
-  // ✅ DERIVED STATS (NO STATE)
+  // DERIVED STATS (NO STATE)
   const stats = useMemo(() => {
     const totalParents = safeTableData.reduce(
       (s, h) => s + (h.parents?.length ?? 0),
@@ -181,7 +181,7 @@ export default function CountriesOverview() {
     };
   }, [safeTableData]);
 
-  // ✅ FILTERED DATA
+  //  FILTERED DATA
   const filteredRows = useMemo(() => {
     return safeTableData.filter((h) => {
       if (
@@ -198,7 +198,7 @@ export default function CountriesOverview() {
     });
   }, [safeTableData, tableSearch, tableStatus]);
 
-  // ✅ EXPORT (UNCHANGED)
+  //  EXPORT (UNCHANGED)
   const exportCSV = () => {
     const headers = [
       "Country Name",
@@ -246,7 +246,7 @@ export default function CountriesOverview() {
     URL.revokeObjectURL(url);
   };
 
-  // ✅ STAT CARDS (UNCHANGED UI)
+  //  STAT CARDS (UNCHANGED UI)
   const statCards = [
     {
       label: "Total Countries",
@@ -280,7 +280,7 @@ export default function CountriesOverview() {
     },
   ];
 
-  // 👉 RETURN YOUR UI (UNCHANGED)
+  //  RETURN YOUR UI (UNCHANGED)
 
   return (
     <div className="w-full font-[DM_Sans,sans-serif] mt-10 bg-gray-50 min-h-screen px-6 pb-10">

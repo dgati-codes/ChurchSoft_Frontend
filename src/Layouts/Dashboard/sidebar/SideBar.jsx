@@ -1,13 +1,12 @@
 import {
+  BookOpenText,
   ChevronDown,
   ChevronRight,
   Globe,
   LayoutDashboard,
-  Settings,
   UserCheck,
   UserRoundPlus,
   Users,
-  User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -19,39 +18,41 @@ const Sidebar = () => {
   const [openDropdown, setOpenDropdown] = useState(null);
 
   // Determine activeView based on current route
- const getActiveView = () => {
-  const path = location.pathname;
+  const getActiveView = () => {
+    const path = location.pathname;
 
-  if (path === "/dashboard") return "dashboard";
-  if (path === "/dashboard/add-user") return "addUser";
-  if (path === "/dashboard/user-table") return "userTable";
+    if (path === "/dashboard") return "dashboard";
+    if (path === "/dashboard/add-user") return "addUser";
+    if (path === "/dashboard/user-table") return "userTable";
+    if (path === "/dashboard/events") return "events";
+    if (path === "/dashboard/news") return "news";
 
-  // Member routes
-  if (path === "/dashboard/register") return "addMember"; 
-  if (path.startsWith("/dashboard/new-registration")) return "addMember" ;  // Continuation or member table
-  if (path === "/dashboard/members")
-    return "viewMembers";
-  if (path === "/dashboard/attendance") return "attendance";
-  if (path === "/dashboard/countries") return "countries";
-  if (path === "/dashboard/configuration") return "configuration";
-  if (path.startsWith("/memberProfile")) return "my-profile";
+    // Member routes
+    if (path === "/dashboard/register") return "addMember";
+    if (path.startsWith("/dashboard/new-registration")) return "addMember";
+    if (path === "/dashboard/members") return "viewMembers";
+    if (path === "/dashboard/attendance") return "attendance";
+    if (path === "/dashboard/countries") return "countries";
+    if (path === "/dashboard/configuration") return "configuration";
+    if (path.startsWith("/memberProfile")) return "my-profile";
 
-  return "dashboard";
-};
+    return "dashboard";
+  };
   const activeView = getActiveView();
   const { hasRole } = useAuth();
 
   const isAdmin = hasRole([ROLES.ADMIN]);
- 
+
   useEffect(() => {
     if (activeView === "addMember" || activeView === "viewMembers") {
       setOpenDropdown("members");
     } else if (activeView === "addUser" || activeView === "userTable") {
       setOpenDropdown("users");
-    } else if(activeView === "configuration" || activeView === "my-profile"){
+    } else if (activeView === "configuration" || activeView === "my-profile") {
       setOpenDropdown("memberProfile");
-    }
-    else{
+    } else if (activeView === "news" || activeView === "events") {
+      setOpenDropdown("events");
+    } else {
       setOpenDropdown(null);
     }
   }, [activeView]);
@@ -63,19 +64,22 @@ const Sidebar = () => {
     } else if (view === "users") {
       setOpenDropdown("users");
       navigate("/dashboard/add-user");
-    }else if (view === "memberProfile") {
+    } else if (view === "memberProfile") {
       setOpenDropdown("memberProfile");
       navigate("/dashboard/configuration");
+    } else if (view === "events") {
+      setOpenDropdown("events");
+      navigate("/dashboard/events");
     } else {
       setOpenDropdown(null);
       navigate(route);
     }
   };
 
- const handleChildClick = (childView, route) => {
-  navigate(route);
-  setOpenDropdown("members"); 
-};
+  const handleChildClick = (childView, route) => {
+    navigate(route);
+    setOpenDropdown("members");
+  };
 
   const linkClasses = (isActive) =>
     `block w-full text-left px-2 py-1 rounded ${
@@ -190,41 +194,43 @@ const Sidebar = () => {
               </>
             )}
 
-            {/* Members Dropdown */}
-           
+            {/* events dropdown */}
+
+            {hasRole([ROLES.ADMIN]) && (
+              <>
                 <li
-                  onClick={() => handleParentClick("members")}
+                  onClick={() => handleParentClick("events")}
                   className={`${
-                    activeView === "members" ||
-                    activeView === "addMember" ||
-                    activeView === "viewMembers"
+                    activeView === "events" ||
+                    activeView === "events" ||
+                    activeView === "news"
                       ? "text-yellow-500 border-l-4 border-yellow-500"
                       : "text-white hover:text-yellow-400"
                   }`}
                 >
                   <button
                     className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
-                      openDropdown === "members"
+                      openDropdown === "events"
                         ? "text-blue-900 rounded-lg bg-amber-300"
                         : "text-white hover:text-yellow-400"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Users className="w-5 h-5" />
+                      <BookOpenText className="w-5 h-5" />
                       <span className="font-semibold family-DM-Sans">
-                        Members
+                        Events
                       </span>
                     </div>
-                    
-                      {openDropdown === "members" ? (
+                    {isAdmin &&
+                      (openDropdown === "events" ? (
                         <ChevronDown className="w-4 h-4" />
                       ) : (
                         <ChevronRight className="w-4 h-4" />
-                      )}
+                      ))}
                   </button>
                 </li>
 
-                {openDropdown === "members" && (
+                {isAdmin && openDropdown === "events" && (
                   <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
                     <span className="absolute -left-0.5 top-1/6 w-4 h-9 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
 
@@ -233,11 +239,11 @@ const Sidebar = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleChildClick("addMember", "/dashboard/register");
+                          handleChildClick("events", "/dashboard/events");
                         }}
-                        className={linkClasses(activeView === "addMember")}
+                        className={linkClasses(activeView === "events")}
                       >
-                        Add Members
+                        Events
                       </button>
                     </li>
 
@@ -245,16 +251,81 @@ const Sidebar = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleChildClick("viewMembers", "/dashboard/members");
+                          handleChildClick("news", "/dashboard/news");
                         }}
-                        className={linkClasses(activeView === "viewMembers")}
+                        className={linkClasses(activeView === "news")}
                       >
-                        View Members
+                        News
                       </button>
                     </li>
                   </ul>
                 )}
-              
+              </>
+            )}
+
+            {/* Members Dropdown */}
+
+            <li
+              onClick={() => handleParentClick("members")}
+              className={`${
+                activeView === "members" ||
+                activeView === "addMember" ||
+                activeView === "viewMembers"
+                  ? "text-yellow-500 border-l-4 border-yellow-500"
+                  : "text-white hover:text-yellow-400"
+              }`}
+            >
+              <button
+                className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
+                  openDropdown === "members"
+                    ? "text-blue-900 rounded-lg bg-amber-300"
+                    : "text-white hover:text-yellow-400"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Users className="w-5 h-5" />
+                  <span className="font-semibold family-DM-Sans">Members</span>
+                </div>
+
+                {openDropdown === "members" ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
+            </li>
+
+            {openDropdown === "members" && (
+              <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
+                <span className="absolute -left-0.5 top-1/6 w-4 h-9 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
+
+                <li className="relative">
+                  <span className="absolute -left-3.5 top-1/9 w-4 h-3 border-l border-b border-yellow-300/60 rounded-bl-md"></span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleChildClick("addMember", "/dashboard/register");
+                    }}
+                    className={linkClasses(activeView === "addMember")}
+                  >
+                    Add Members
+                  </button>
+                </li>
+
+                <li>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleChildClick("viewMembers", "/dashboard/members");
+                    }}
+                    className={linkClasses(activeView === "viewMembers")}
+                  >
+                    View Members
+                  </button>
+                </li>
+              </ul>
+            )}
+
             {/* Attendance */}
             <li
               onClick={() =>
@@ -309,80 +380,71 @@ const Sidebar = () => {
               </button>
             </li>
 
-           
-            
+            <li
+              onClick={() => handleParentClick("memberProfile")}
+              className={`${
+                activeView === "memberProfile" ||
+                activeView === "configuration" ||
+                activeView === "my-profile"
+                  ? "text-yellow-500 border-l-4 border-yellow-500"
+                  : "text-white hover:text-yellow-400"
+              }`}
+            >
+              <button
+                className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
+                  openDropdown === "memberProfile"
+                    ? "text-blue-900 rounded-lg bg-amber-300"
+                    : "text-white hover:text-yellow-400"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <UserRoundPlus className="w-5 h-5" />
+                  <span className="font-semibold family-DM-Sans">
+                    Configuration
+                  </span>
+                </div>
 
-                
-                <li
-                  onClick={() => handleParentClick("memberProfile")}
-                  className={`${
-                    activeView === "memberProfile" ||
-                    activeView === "configuration" ||
-                    activeView === "my-profile"
-                      ? "text-yellow-500 border-l-4 border-yellow-500"
-                      : "text-white hover:text-yellow-400"
-                  }`}
-                >
+                {openDropdown === "memberProfile" ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
+            </li>
+
+            {openDropdown === "memberProfile" && (
+              <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
+                <span className="absolute -left-0.5 top-1/6 w-4 h-9 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
+
+                <li className="relative">
+                  <span className="absolute -left-3.5 top-1/9 w-4 h-3 border-l border-b border-yellow-300/60 rounded-bl-md"></span>
                   <button
-                    className={`w-full flex items-center ml-2 justify-between text-left text-sm p-4 cursor-pointer ${
-                      openDropdown === "memberProfile"
-                        ? "text-blue-900 rounded-lg bg-amber-300"
-                        : "text-white hover:text-yellow-400"
-                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleChildClick(
+                        "configuration",
+                        "/dashboard/configuration",
+                      );
+                    }}
+                    className={linkClasses(activeView === "configuration")}
                   >
-                    <div className="flex items-center gap-3">
-                      <UserRoundPlus className="w-5 h-5" />
-                      <span className="font-semibold family-DM-Sans">
-                        Configuration
-                      </span>
-                    </div>
-                    
-                      {openDropdown === "memberProfile" ? (
-                        <ChevronDown className="w-4 h-4" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4" />
-                      )}
+                    Configuration
                   </button>
                 </li>
 
-                {openDropdown === "memberProfile" && (
-                  <ul className="relative ml-8 mt-2 text-xs pl-3 space-y-2">
-                    <span className="absolute -left-0.5 top-1/6 w-4 h-9 border-l border-b border-yellow-300/60 rounded-bl-md "></span>
-
-                    <li className="relative">
-                      <span className="absolute -left-3.5 top-1/9 w-4 h-3 border-l border-b border-yellow-300/60 rounded-bl-md"></span>
-                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleChildClick(
-                            "configuration",
-                            "/dashboard/configuration"
-                          );
-                        }}
-                        className={linkClasses(activeView === "configuration")}
-                      >
-                       Configuration
-                      </button>
-                      
-                      
-                    </li>
-
-                    <li>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleChildClick("memberProfile", "/memberProfile");
-                        }}
-                        className={linkClasses(activeView === "memberProfile")}
-                      >
-                        My Profile
-                      </button>
-                    </li>
-                  </ul>
-                )}
-              
-            
-            
+                <li>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleChildClick("memberProfile", "/memberProfile");
+                    }}
+                    className={linkClasses(activeView === "memberProfile")}
+                  >
+                    My Profile
+                  </button>
+                </li>
+              </ul>
+            )}
           </ul>
         </nav>
       </div>

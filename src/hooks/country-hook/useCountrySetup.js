@@ -1,9 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as countrySetupService from "../../api/services/countrySetupService";
-
-// =====================================
-// QUERY HOOKS (GET OPERATIONS)
-// =====================================
+import { STATIC_QUERY_CONFIG } from "../constants/queryConfig.js";
 
 /**
  * Fetch all countries
@@ -11,7 +8,11 @@ import * as countrySetupService from "../../api/services/countrySetupService";
 export const useCountries = () => {
   return useQuery({
     queryKey: ["countries"],
-    queryFn: countrySetupService.fetchCountries,
+    queryFn: async () => {
+      const res = await countrySetupService.fetchCountries();
+      return res?.data || res?.content || res || [];
+    },
+    ...STATIC_QUERY_CONFIG,
   });
 };
 
@@ -21,7 +22,11 @@ export const useCountries = () => {
 export const useAllHierarchies = (options = {}) => {
   return useQuery({
     queryKey: ["hierarchies"],
-    queryFn: countrySetupService.fetchAllHierarchies,
+    queryFn: async () => {
+      const res = await countrySetupService.fetchAllHierarchies();
+      return res?.data || res?.content || res || [];
+    },
+    ...STATIC_QUERY_CONFIG,
     ...options,
   });
 };
@@ -32,8 +37,13 @@ export const useAllHierarchies = (options = {}) => {
 export const useHierarchyByCountry = (countryName, enabled = true) => {
   return useQuery({
     queryKey: ["hierarchy", countryName],
-    queryFn: () => countrySetupService.fetchHierarchyByCountry(countryName),
+    queryFn: async () => {
+      const res =
+        await countrySetupService.fetchHierarchyByCountry(countryName);
+      return res?.data || res?.content || res || [];
+    },
     enabled: !!countryName && enabled,
+    ...STATIC_QUERY_CONFIG,
   });
 };
 
@@ -43,8 +53,13 @@ export const useHierarchyByCountry = (countryName, enabled = true) => {
 export const useParentsByCountry = (countryName, enabled = true) => {
   return useQuery({
     queryKey: ["parents", countryName],
-    queryFn: () => countrySetupService.fetchParentsByCountry(countryName),
+    queryFn: async () => {
+      const res =
+        await countrySetupService.fetchParentsByCountry(countryName);
+      return res?.data || res?.content || res || [];
+    },
     enabled: !!countryName && enabled,
+    ...STATIC_QUERY_CONFIG,
   });
 };
 
@@ -54,8 +69,13 @@ export const useParentsByCountry = (countryName, enabled = true) => {
 export const useChildrenByParent = (parentName, enabled = true) => {
   return useQuery({
     queryKey: ["children", parentName],
-    queryFn: () => countrySetupService.fetchChildrenByParent(parentName),
+    queryFn: async () => {
+      const res =
+        await countrySetupService.fetchChildrenByParent(parentName);
+      return res?.data || res?.content || res || [];
+    },
     enabled: !!parentName && enabled,
+    ...STATIC_QUERY_CONFIG,
   });
 };
 
@@ -65,8 +85,13 @@ export const useChildrenByParent = (parentName, enabled = true) => {
 export const useGrandChildrenByChild = (childName, enabled = true) => {
   return useQuery({
     queryKey: ["grandchildren", childName],
-    queryFn: () => countrySetupService.fetchGrandChildrenByChild(childName),
+    queryFn: async () => {
+      const res =
+        await countrySetupService.fetchGrandChildrenByChild(childName);
+      return res?.data || res?.content || res || [];
+    },
     enabled: !!childName && enabled,
+    ...STATIC_QUERY_CONFIG,
   });
 };
 

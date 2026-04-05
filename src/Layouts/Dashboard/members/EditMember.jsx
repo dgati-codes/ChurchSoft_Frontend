@@ -23,40 +23,14 @@ export default function EditMemberModal({ member, onClose, onSave }) {
   const [form, setForm] = useState({});
 
   // Fetch countries
-  const { data: countriesData = [] } = useCountries();
-  const nationalities = Array.isArray(countriesData?.data)
-    ? countriesData.data
-    : [];
-
-  // Fetch jurisdictions/regions based on selected country
-  const { data: regionsData = [] } = useParentsByCountry(
-    form.nationality,
-    !!form.nationality,
-  );
-  const regions = Array.isArray(regionsData?.data) ? regionsData.data : [];
-
-  // Fetch districts based on selected jurisdiction
-  const { data: districtsData = [] } = useChildrenByParent(
-    form.jurisdiction,
-    !!form.jurisdiction,
-  );
-  const districts = Array.isArray(districtsData?.data)
-    ? districtsData.data
-    : [];
-
-  // Fetch assemblies based on selected district
-  const { data: assembliesData = [] } = useGrandChildrenByChild(
-    form.district,
-    !!form.district,
-  );
-  const assemblies = Array.isArray(assembliesData?.data)
-    ? assembliesData.data
-    : [];
+  const { data: nationalities = [] } = useCountries();
+  const { data: regions = [] } = useParentsByCountry(form.nationality);
+  const { data: districts = [] } = useChildrenByParent(form.jurisdiction);
+  const { data: assemblies = [] } = useGrandChildrenByChild(form.district);
 
   useEffect(() => {
     if (member) {
       setOriginalMember(member);
-
       setForm({
         ...member,
         nationality: member.nationality,

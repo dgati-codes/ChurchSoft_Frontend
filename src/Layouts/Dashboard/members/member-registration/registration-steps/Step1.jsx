@@ -36,36 +36,11 @@ const Step1PersonalInfo = () => {
   const [languagesInput, setLanguagesInput] = useState("");
 
   // Fetch countries
-  const { data: countriesData = [] } = useCountries();
-  const nationalities = Array.isArray(countriesData?.data)
-    ? countriesData.data
-    : [];
-
-  // Fetch jurisdictions/regions based on selected country
-  const { data: regionsData = [] } = useParentsByCountry(
-    formData.nationality,
-    !!formData.nationality,
-  );
-  const regions = Array.isArray(regionsData?.data) ? regionsData.data : [];
-
-  // Fetch districts based on selected jurisdiction
-  const { data: districtsData = [] } = useChildrenByParent(
-    formData.jurisdiction,
-    !!formData.jurisdiction,
-  );
-  const districts = Array.isArray(districtsData?.data)
-    ? districtsData.data
-    : [];
-
-  // Fetch assemblies based on selected district
-  const { data: assembliesData = [] } = useGrandChildrenByChild(
-    formData.district,
-    !!formData.district,
-  );
-  const assemblies = Array.isArray(assembliesData?.data)
-    ? assembliesData.data
-    : [];
-
+  const { data: nationalities = [] } = useCountries();
+  const { data: regions = [] } = useParentsByCountry(formData.nationality);
+  const { data: districts = [] } = useChildrenByParent(formData.jurisdiction);
+  const { data: assemblies = [] } = useGrandChildrenByChild(formData.district);
+  
   // Generic input change
   const handleChange = (e) => {
     const { name, value } = e.target;
