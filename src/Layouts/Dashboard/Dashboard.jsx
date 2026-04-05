@@ -13,9 +13,9 @@ import {
 
 import { useRef, useState } from "react";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { useAssembliesByCountry } from "../../hooks/useAssembliesByCountry.js";
-import { useDashboardData } from "../../hooks/useDashboard.js";
-import { useMinistryLeadersByAssembly } from "../../hooks/useMinistryLeadersByAssembly.js";
+import { useDashboardData } from "../../hooks/dashboad-hooks/useDashboard.js";
+import { useMinistryLeadersByAssembly } from "../../hooks/dashboad-hooks/useMinistryLeadersByAssembly.js";
+import { useAssembliesByCountry } from "../../hooks/country-hook/useAssembliesByCountry.js";
 import { BirthdayCard } from "./birthday-card/BirthdayCard.jsx";
 import StatCard from "./modals/StatCard.jsx";
 
@@ -36,16 +36,21 @@ export default function Dashboard() {
     useMinistryLeadersByAssembly(selectedAssembly);
   const leaders = data?.leaders || [];
   console.log(leadersLoading);
+  console.log(leaders);
+  console.log(data);
 
   const isAllAssemblies =
     !selectedAssembly || selectedAssembly === "All Assemblies";
 
   const defaultMinistries = [
-    { leadershipRole: "Worship Team" },
-    { leadershipRole: "Children Ministry" },
+    { leadershipRole: "Men Ministry" },
+    { leadershipRole: "Women Ministry" },
+    { leadershipRole: "Senior Youth" },
     { leadershipRole: "Junior Youth" },
-    { leadershipRole: "Prayer Ministry" },
+    { leadershipRole: "Children Ministry" },
+    { leadershipRole: "Other" },
   ];
+ 
 
   const {
     totalMembers,
@@ -223,10 +228,8 @@ export default function Dashboard() {
 
         <div className="flex gap-6  mb-4">
           {/* ATTENDANCE */}
-         
 
-          
-            {/* NEWS */}
+          {/* NEWS */}
           <div className="bg-white  rounded-2xl p-12">
             <h2 className="text-[20px] font-semibold mb-4">News</h2>
             <NewsItem
@@ -255,7 +258,7 @@ export default function Dashboard() {
                 name="localAssemblyName"
                 value={formData.localAssemblyName}
                 onChange={handleFormChange}
-                className="w-40 ml-3 border text-gr-600 border-gray-200 p-2 rounded"
+                className="w-48 h-8 border  text-gray-600 border-gray-300  rounded-lg "
                 placeholder="Start typing assembly name..."
                 autoComplete="off"
                 required
@@ -282,17 +285,15 @@ export default function Dashboard() {
                 />
               ))}
             </div>
-          
           </div>
-          
         </div>
-         <div className="bg-white rounded-2xl p-6">
-            <h2 className="text-[18px] font-semibold">Attendance Trend</h2>
-            <p className="text-[13px] text-gray-500 mb-4">
-              Monthly attendance growth over the year
-            </p>
-            <div className=" h-65 bg-linear-to-b from-purple-100 to-transparent rounded-xl" />
-          </div>
+        <div className="bg-white rounded-2xl p-6">
+          <h2 className="text-[18px] font-semibold">Attendance Trend</h2>
+          <p className="text-[13px] text-gray-500 mb-4">
+            Monthly attendance growth over the year
+          </p>
+          <div className=" h-65 bg-linear-to-b from-purple-100 to-transparent rounded-xl" />
+        </div>
       </main>
     </div>
   );

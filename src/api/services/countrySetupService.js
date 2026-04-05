@@ -25,52 +25,55 @@ export const importCountryCsv = async (file) => {
 // FETCH ALL HIERARCHIES
 // ===============================
 export const fetchAllHierarchies = async () => {
-  return await axiosInstance.get("/country-setup/hierarchy");
+  const res = await axiosInstance.get("/country-setup/hierarchy");
+  return res.data;
 };
 
 // ===============================
 // FETCH BY COUNTRY NAME
 // ===============================
 export const fetchHierarchyByCountry = async (countryName) => {
-  return await axiosInstance.get(
-    `/country-setup/hierarchy/${countryName}`
+  const res = await axiosInstance.get(
+    `/country-setup/hierarchy/${countryName}`,
   );
+  return res.data;
 };
 
 // ===============================
 // FETCH COUNTRIES
 // ===============================
 export const fetchCountries = async () => {
-  return await axiosInstance.get("/country-setup/countries");
+  const res = await axiosInstance.get("/country-setup/countries");
+  return res.data;
 };
 
 // ===============================
 // FETCH PARENTS BY COUNTRY
 // ===============================
 export const fetchParentsByCountry = async (countryName) => {
-  return await axiosInstance.get(
-    `/country-setup/countries/parents/${countryName}`
+  const res = await axiosInstance.get(
+    `/country-setup/countries/parents/${countryName}`,
   );
+  return res.data;
 };
 
 // ===============================
 // FETCH CHILDREN BY PARENT
 // ===============================
 export const fetchChildrenByParent = async (parentName) => {
-  return await axiosInstance.get(
-    `/country-setup/children/${parentName}`
-  );
+  const res = await axiosInstance.get(`/country-setup/children/${parentName}`);
+  return res.data;
 };
 
 // ===============================
 // FETCH GRANDCHILDREN BY CHILD
 // ===============================
 export const fetchGrandChildrenByChild = async (childName) => {
-  return await axiosInstance.get(
-    `/country-setup/grandchildren/${childName}`
+  const res = await axiosInstance.get(
+    `/country-setup/grandchildren/${childName}`,
   );
+  return res.data;
 };
-
 
 // ===============================
 // DELETE COUNTRY
@@ -78,8 +81,6 @@ export const fetchGrandChildrenByChild = async (childName) => {
 export const deleteCountry = async (countryName) => {
   return await axiosInstance.delete(`/country-setup/name/${countryName}`);
 };
-
-
 
 // Delete a country
 export const deleteCountryBYId = async (id) => {

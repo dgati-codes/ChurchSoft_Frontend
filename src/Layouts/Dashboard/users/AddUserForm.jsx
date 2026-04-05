@@ -1,7 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../context/AuthContext.jsx";
-import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
+import { useAssembliesByCountry } from "../../../hooks/country-hook/useAssembliesByCountry.js";
 import useAddUser from "../../../hooks/user-hooks/useAddUser";
 import InputField from "../modals/InputField";
 import SuccessModal from "../modals/successModal";
@@ -43,13 +43,13 @@ const AddUserForm = () => {
     try {
       const user = await addUserMutation.mutateAsync(formData);
 
-      // ✅ Success modal
+      //Success modal
       setSuccessModal({
         name: `${user.firstName} ${user.lastName}`,
         action: "added",
       });
 
-      // ✅ Reset form
+      // Reset form
       setFormData({
         firstName: "",
         lastName: "",

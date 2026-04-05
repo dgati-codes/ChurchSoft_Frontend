@@ -11,12 +11,12 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
-  deleteCountry,
-  fetchAllHierarchies,
-} from "../../../api/services/countrySetupService";
+  useAllHierarchies,
+  useDeleteCountry,
+} from "../../../hooks/country-hook/useCountrySetup";
 import { AddContryModal } from "./AddContryModal";
 import { CountryCard } from "./CountryCard";
 
@@ -181,7 +181,11 @@ export function ViewModal({ hierarchy, onClose }) {
                       ? child.grandChildren.map((gc, gi) => (
                           <TreeNode
                             key={gi}
-                            label={gc || "Unnamed"}
+                            label={
+                              typeof gc === "string"
+                                ? gc || "Unnamed"
+                                : gc.name || "Unnamed"
+                            }
                             level={3}
                           />
                         ))
@@ -333,8 +337,6 @@ export default function CountryAdministrativeDivisions({
   onClose,
   onRefreshStats,
 }) {
-  const [hierarchies, setHierarchies] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [filterParentLevel, setFilterParentLevel] = useState("");
   const [formOpen, setFormOpen] = useState(false);
@@ -346,23 +348,18 @@ export default function CountryAdministrativeDivisions({
 
   const showToast = (message, type = "success") => setToast({ message, type });
 
-  const loadHierarchies = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetchAllHierarchies();
-      const data = res.data ?? [];
-      setHierarchies(data);
-      onRefreshStats?.(data);
-    } catch {
-      showToast("Failed to load countries.", "error");
-    } finally {
-      setLoading(false);
-    }
-  }, [onRefreshStats]);
+  const {
+    data: hierarchies = [],
+    isLoading,
+    refetch,
+  } = useAllHierarchies({
+    enabled: isOpen,
+  });
+  const deleteMutation = useDeleteCountry();
 
   useEffect(() => {
-    if (isOpen) loadHierarchies();
-  }, [isOpen, loadHierarchies]);
+    if (!isLoading) onRefreshStats?.(hierarchies);
+  }, [hierarchies, isLoading, onRefreshStats]);
 
   if (!isOpen) return null;
 
@@ -389,21 +386,24 @@ export default function CountryAdministrativeDivisions({
   const onSaved = () => {
     setFormOpen(false);
     setEditingData(null);
-    loadHierarchies();
+    refetch();
   };
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     setDeleteLoading(true);
-    try {
-      await deleteCountry(deleteTarget);
-      showToast(`${deleteTarget} deleted.`);
-      setDeleteTarget(null);
-      loadHierarchies();
-    } catch (err) {
-      showToast(err.response?.data?.message || "Delete failed.", "error");
-    } finally {
-      setDeleteLoading(false);
-    }
+    deleteMutation.mutate(deleteTarget, {
+      onSuccess: () => {
+        showToast(`${deleteTarget} deleted.`);
+        setDeleteTarget(null);
+        refetch();
+      },
+      onError: (err) => {
+        showToast(err.response?.data?.message || "Delete failed.", "error");
+      },
+      onSettled: () => {
+        setDeleteLoading(false);
+      },
+    });
   };
 
   return (
@@ -428,14 +428,16 @@ export default function CountryAdministrativeDivisions({
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={loadHierarchies}
-                disabled={loading}
+                onClick={hierarchies}
+                disabled={isLoading}
                 className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-gray-800 transition"
                 title="Refresh"
+               
               >
                 <RefreshCw
+                 refetch
                   size={15}
-                  className={loading ? "animate-spin" : ""}
+                  className={isLoading ? "animate-spin" : ""}
                 />
               </button>
               <button
@@ -510,7 +512,7 @@ export default function CountryAdministrativeDivisions({
 
           {/* Card grid */}
           <div className="flex-1 overflow-y-auto p-6">
-            {loading ? (
+            {isLoading? (
               <div className="flex items-center justify-center h-48 gap-3 text-gray-400">
                 <RefreshCw size={18} className="animate-spin" />
                 <span className="text-sm">Loading countries...</span>

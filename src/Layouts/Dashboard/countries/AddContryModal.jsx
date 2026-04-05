@@ -1,11 +1,31 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Globe, Layers, MapPin, Plus, Trash2, Upload, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  createOrUpdateCountry,
-  importCountryCsv,
-} from "../../../api/services/countrySetupService";
+  useCreateOrUpdateCountry,
+  useImportCountryCsv,
+} from "../../../hooks/country-hook/useCountrySetup";
 import { TreeNode } from "./CountryAdministrativeDivisions";
+
+const normalizeGrandChildren = (grandChildren = []) =>
+  grandChildren.map((gc) =>
+    typeof gc === "string"
+      ? { name: gc }
+      : { id: gc?.id, name: gc?.name ?? gc },
+  );
+
+const normalizeChildren = (children = []) =>
+  children.map((child) => ({
+    id: child?.id,
+    childName: child?.childName || "",
+    grandChildren: normalizeGrandChildren(child?.grandChildren),
+  }));
+
+const normalizeParents = (parents = []) =>
+  parents.map((parent) => ({
+    id: parent?.id,
+    parentName: parent?.parentName || "",
+    children: normalizeChildren(parent?.children),
+  }));
 
 export function AddContryModal({ editingData, onClose, onSaved, showToast }) {
   const [activeTab, setActiveTab] = useState("manual");
@@ -19,50 +39,37 @@ export function AddContryModal({ editingData, onClose, onSaved, showToast }) {
     editingData?.parentLevel ?? "",
   );
   const [childLevel, setChildLevel] = useState(editingData?.childLevel ?? "");
-  const [parents, setParents] = useState(editingData?.parents ?? []);
+  const [parents, setParents] = useState(
+    normalizeParents(editingData?.parents),
+  );
   // const [loading, setLoading] = useState(false);
   const isEdit = !!editingData;
-  const queryClient = useQueryClient();
   const cls = (...a) => a.filter(Boolean).join(" ");
 
-  const csvMutation = useMutation({
-    mutationFn: importCountryCsv,
+  useEffect(() => {
+    setCountryName(editingData?.countryName ?? "");
+    setDescription(editingData?.description ?? "");
+    setParentLevel(editingData?.parentLevel ?? "");
+    setChildLevel(editingData?.childLevel ?? "");
+    setParents(normalizeParents(editingData?.parents));
+  }, [editingData]);
 
-    onSuccess: () => {
-      queryClient.invalidateQueries(["hierarchies"]);
-      showToast("CSV imported successfully.");
-      onSaved();
-    },
-
-    onError: (err) => {
-      showToast(err.response?.data?.message || "CSV upload failed.", "error");
-    },
-  });
+  const csvMutation = useImportCountryCsv();
 
   const handleFileUpload = (file) => {
     if (!file) return;
-    csvMutation.mutate(file);
+    csvMutation.importCsv(file, {
+      onSuccess: () => {
+        showToast("CSV imported successfully.");
+        onSaved();
+      },
+      onError: (err) => {
+        showToast(err.response?.data?.message || "CSV upload failed.", "error");
+      },
+    });
   };
 
-  const mutation = useMutation({
-    mutationFn: createOrUpdateCountry,
-
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries(["hierarchies"]); // 🔥 refresh ALL UI
-
-      showToast(
-        isEdit
-          ? `${variables.countryName} updated.`
-          : `${variables.countryName} created.`,
-      );
-
-      onSaved(); // close modal AFTER success
-    },
-
-    onError: (err) => {
-      showToast(err.response?.data?.message || "Failed to save.", "error");
-    },
-  });
+  const mutation = useCreateOrUpdateCountry();
 
   const loading = mutation.isPending || csvMutation?.isPending;
 
@@ -72,12 +79,38 @@ export function AddContryModal({ editingData, onClose, onSaved, showToast }) {
       return;
     }
 
-    mutation.mutate({
+    const payload = {
+      ...(isEdit && editingData?.id ? { id: editingData.id } : {}),
       countryName,
       description,
       parentLevel,
       childLevel,
-      parents,
+      parents: parents.map((parent) => ({
+        ...(parent.id ? { id: parent.id } : {}),
+        parentName: parent.parentName,
+        children: parent.children.map((child) => ({
+          ...(child.id ? { id: child.id } : {}),
+          childName: child.childName,
+          grandChildren: child.grandChildren
+            .filter((gc) => gc.name?.trim() || gc.id)
+            .map((gc) => ({
+              ...(gc.id ? { id: gc.id } : {}),
+              name: gc.name,
+            })),
+        })),
+      })),
+    };
+
+    mutation.createOrUpdate(payload, {
+      onSuccess: () => {
+        showToast(
+          isEdit ? `${countryName} updated.` : `${countryName} created.`,
+        );
+        onSaved();
+      },
+      onError: (err) => {
+        showToast(err.response?.data?.message || "Failed to save.", "error");
+      },
     });
   };
   // hierarchy handlers
@@ -90,36 +123,111 @@ export function AddContryModal({ editingData, onClose, onSaved, showToast }) {
   };
   const removeParent = (i) => setParents(parents.filter((_, idx) => idx !== i));
   const addChild = (pi) => {
-    const u = [...parents];
-    u[pi].children.push({ childName: "", grandChildren: [] });
-    setParents(u);
-  };
-  const updateChildName = (pi, ci, v) => {
-    const u = [...parents];
-    u[pi].children[ci].childName = v;
-    setParents(u);
-  };
-  const removeChild = (pi, ci) => {
-    const u = [...parents];
-    u[pi].children = u[pi].children.filter((_, i) => i !== ci);
-    setParents(u);
-  };
-  const addGrandChild = (pi, ci) => {
-    const u = [...parents];
-    u[pi].children[ci].grandChildren.push("");
-    setParents(u);
-  };
-  const updateGrandChild = (pi, ci, gi, v) => {
-    const u = [...parents];
-    u[pi].children[ci].grandChildren[gi] = v;
-    setParents(u);
-  };
-  const removeGrandChild = (pi, ci, gi) => {
-    const u = [...parents];
-    u[pi].children[ci].grandChildren = u[pi].children[ci].grandChildren.filter(
-      (_, i) => i !== gi,
+    setParents((prev) =>
+      prev.map((parent, idx) =>
+        idx !== pi
+          ? parent
+          : {
+              ...parent,
+              children: [
+                ...parent.children,
+                { childName: "", grandChildren: [] },
+              ],
+            },
+      ),
     );
-    setParents(u);
+  };
+
+  const updateChildName = (pi, ci, v) => {
+    setParents((prev) =>
+      prev.map((parent, pIndex) =>
+        pIndex !== pi
+          ? parent
+          : {
+              ...parent,
+              children: parent.children.map((child, cIndex) =>
+                cIndex !== ci ? child : { ...child, childName: v },
+              ),
+            },
+      ),
+    );
+  };
+
+  const removeChild = (pi, ci) => {
+    setParents((prev) =>
+      prev.map((parent, pIndex) =>
+        pIndex !== pi
+          ? parent
+          : {
+              ...parent,
+              children: parent.children.filter((_, cIndex) => cIndex !== ci),
+            },
+      ),
+    );
+  };
+
+  const addGrandChild = (pi, ci) => {
+    setParents((prev) =>
+      prev.map((parent, pIndex) =>
+        pIndex !== pi
+          ? parent
+          : {
+              ...parent,
+              children: parent.children.map((child, cIndex) =>
+                cIndex !== ci
+                  ? child
+                  : {
+                      ...child,
+                      grandChildren: [...child.grandChildren, { name: "" }],
+                    },
+              ),
+            },
+      ),
+    );
+  };
+
+  const updateGrandChild = (pi, ci, gi, v) => {
+    setParents((prev) =>
+      prev.map((parent, pIndex) =>
+        pIndex !== pi
+          ? parent
+          : {
+              ...parent,
+              children: parent.children.map((child, cIndex) =>
+                cIndex !== ci
+                  ? child
+                  : {
+                      ...child,
+                      grandChildren: child.grandChildren.map((gc, gIndex) =>
+                        gIndex !== gi ? gc : { ...gc, name: v },
+                      ),
+                    },
+              ),
+            },
+      ),
+    );
+  };
+
+  const removeGrandChild = (pi, ci, gi) => {
+    setParents((prev) =>
+      prev.map((parent, pIndex) =>
+        pIndex !== pi
+          ? parent
+          : {
+              ...parent,
+              children: parent.children.map((child, cIndex) =>
+                cIndex !== ci
+                  ? child
+                  : {
+                      ...child,
+                      grandChildren: child.grandChildren.filter(
+                        (_, gIndex) => gIndex !== gi,
+                      ),
+                    },
+              ),
+            },
+      ),
+    );
   };
 
   return (
@@ -352,7 +460,7 @@ export function AddContryModal({ editingData, onClose, onSaved, showToast }) {
                                 <input
                                   type="text"
                                   placeholder="Local Assembly name"
-                                  value={gc}
+                                  value={gc.name ?? gc}
                                   onChange={(e) =>
                                     updateGrandChild(pi, ci, gi, e.target.value)
                                   }
@@ -436,7 +544,10 @@ export function AddContryModal({ editingData, onClose, onSaved, showToast }) {
                                         <TreeNode
                                           key={gi}
                                           label={
-                                            gc || `Local Assembly ${gi + 1}`
+                                            typeof gc === "string"
+                                              ? gc || `Local Assembly ${gi + 1}`
+                                              : gc.name ||
+                                                `Local Assembly ${gi + 1}`
                                           }
                                           level={3}
                                         />

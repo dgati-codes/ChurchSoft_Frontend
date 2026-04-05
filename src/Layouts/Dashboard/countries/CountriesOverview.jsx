@@ -21,13 +21,11 @@ import CountryAdministrativeDivisions, {
   ViewModal,
 } from "./CountryAdministrativeDivisions";
 
-import {
-  deleteCountry,
-  fetchAllHierarchies,
-} from "../../../api/services/countrySetupService";
-
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ROLES, useAuth } from "../../../context/AuthContext";
+import {
+  useAllHierarchies,
+  useDeleteCountry,
+} from "../../../hooks/country-hook/useCountrySetup";
 
 const cls = (...a) => a.filter(Boolean).join(" ");
 
@@ -127,8 +125,6 @@ function NamePills({ names = [], color = "bg-gray-100 text-gray-600" }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function CountriesOverview() {
-  const queryClient = useQueryClient();
-
   // UI state (UNCHANGED)
   const [showAddForm, setShowAddForm] = useState(false);
   const [showDivisions, setShowDivisions] = useState(false);
@@ -148,56 +144,46 @@ export default function CountriesOverview() {
   const isAdmin = hasRole([ROLES.ADMIN]);
 
   // ✅ FETCH (SOURCE OF TRUTH)
-  const {
-    data: tableData = [],
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ["hierarchies"],
-    queryFn: async () => {
-      const res = await fetchAllHierarchies();
-      return res.data ?? [];
-    },
-  });
+  const { data: tableData = [], isLoading, refetch } = useAllHierarchies();
+  const safeTableData = useMemo(
+    () => (Array.isArray(tableData) ? tableData : []),
+    [tableData],
+  );
+
+  const deleteMutation = useDeleteCountry();
 
   // ✅ DELETE MUTATION
-  const deleteMutation = useMutation({
-    mutationFn: deleteCountry,
-
-    onSuccess: (_, countryName) => {
-      queryClient.invalidateQueries(["hierarchies"]); // 🔥 auto refresh
-      showToast(`${countryName} deleted.`);
-      setDeleteTarget(null);
-    },
-
-    onError: (err) => {
-      showToast(err.response?.data?.message || "Delete failed.", "error");
-    },
-  });
-
   const handleDeleteFromTable = () => {
-  if (!deleteTarget) return;
-  deleteMutation.mutate(deleteTarget);
-};
+    if (!deleteTarget) return;
+    deleteMutation.mutate(deleteTarget, {
+      onSuccess: () => {
+        showToast(`${deleteTarget} deleted.`);
+        setDeleteTarget(null);
+      },
+      onError: (err) => {
+        showToast(err.response?.data?.message || "Delete failed.", "error");
+      },
+    });
+  };
 
   // ✅ DERIVED STATS (NO STATE)
   const stats = useMemo(() => {
-    const totalParents = tableData.reduce(
+    const totalParents = safeTableData.reduce(
       (s, h) => s + (h.parents?.length ?? 0),
       0,
     );
 
     return {
-      total: tableData.length,
-      active: tableData.filter((h) => h.status !== "Inactive").length,
+      total: safeTableData.length,
+      active: safeTableData.filter((h) => h.status !== "Inactive").length,
       totalParents,
-      lastUpdated: tableData.length > 0 ? new Date() : null,
+      lastUpdated: safeTableData.length > 0 ? new Date() : null,
     };
-  }, [tableData]);
+  }, [safeTableData]);
 
   // ✅ FILTERED DATA
   const filteredRows = useMemo(() => {
-    return tableData.filter((h) => {
+    return safeTableData.filter((h) => {
       if (
         tableSearch &&
         !h.countryName?.toLowerCase().includes(tableSearch.toLowerCase())
@@ -210,7 +196,7 @@ export default function CountriesOverview() {
 
       return true;
     });
-  }, [tableData, tableSearch, tableStatus]);
+  }, [safeTableData, tableSearch, tableStatus]);
 
   // ✅ EXPORT (UNCHANGED)
   const exportCSV = () => {
@@ -223,7 +209,7 @@ export default function CountriesOverview() {
       "Grandchildren",
     ];
 
-    const rows = tableData.map((h) => {
+    const rows = safeTableData.map((h) => {
       const parentNames = h.parents?.map((p) => p.parentName).join("|") ?? "";
 
       const childNames =
@@ -455,7 +441,7 @@ export default function CountriesOverview() {
                     colSpan={7}
                     className="text-center py-12 text-gray-400 text-sm whitespace-nowrap"
                   >
-                    {tableData.length === 0
+                    {safeTableData.length === 0
                       ? "No countries configured yet."
                       : "No results match your filters."}
                   </td>

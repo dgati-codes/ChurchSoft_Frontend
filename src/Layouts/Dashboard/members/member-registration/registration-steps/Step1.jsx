@@ -1,6 +1,11 @@
 import { User } from "lucide-react";
-import { useState,useEffect } from "react";
-import { useHierarchy } from "../../../../../api/services/hierarchyService";
+import { useEffect, useState } from "react";
+import {
+  useChildrenByParent,
+  useCountries,
+  useGrandChildrenByChild,
+  useParentsByCountry,
+} from "../../../../../hooks/country-hook/useCountrySetup";
 import InputField from "../../../modals/InputField";
 import { useRegistration } from "../../registration-context/RegistrationContext";
 
@@ -28,29 +33,50 @@ const idTypeMap = {
 
 const Step1PersonalInfo = () => {
   const { formData, updateForm, nextStep } = useRegistration();
- const [languagesInput, setLanguagesInput] = useState("");
+  const [languagesInput, setLanguagesInput] = useState("");
+
+  // Fetch countries
+  const { data: countriesData = [] } = useCountries();
+  const nationalities = Array.isArray(countriesData?.data)
+    ? countriesData.data
+    : [];
+
+  // Fetch jurisdictions/regions based on selected country
+  const { data: regionsData = [] } = useParentsByCountry(
+    formData.nationality,
+    !!formData.nationality,
+  );
+  const regions = Array.isArray(regionsData?.data) ? regionsData.data : [];
+
+  // Fetch districts based on selected jurisdiction
+  const { data: districtsData = [] } = useChildrenByParent(
+    formData.jurisdiction,
+    !!formData.jurisdiction,
+  );
+  const districts = Array.isArray(districtsData?.data)
+    ? districtsData.data
+    : [];
+
+  // Fetch assemblies based on selected district
+  const { data: assembliesData = [] } = useGrandChildrenByChild(
+    formData.district,
+    !!formData.district,
+  );
+  const assemblies = Array.isArray(assembliesData?.data)
+    ? assembliesData.data
+    : [];
+
   // Generic input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateForm({ [name]: value });
   };
 
-useEffect(() => {
-  if (formData.preferredLanguages) {
-    setLanguagesInput(formData.preferredLanguages.join(", "));
-  }
-}, [formData.preferredLanguages]);
-  const {
-    nationalities,
-    regions,
-    districts,
-    assemblies,
-    // formatName,
-  } = useHierarchy({
-    nationality: formData.nationality,
-    region: formData.jurisdiction,
-    district: formData.district,
-  });
+  useEffect(() => {
+    if (formData.preferredLanguages) {
+      setLanguagesInput(formData.preferredLanguages.join(", "));
+    }
+  }, [formData.preferredLanguages]);
 
   // Special mapped fields
   const handleGenderChange = (e) =>
@@ -197,8 +223,8 @@ useEffect(() => {
               <option value="">Select Country</option>
 
               {nationalities.map((c, i) => (
-                <option key={i} value={c.countryName}>
-                  {c.countryName}
+                <option key={i} value={c?.countryName || c?.name || c}>
+                  {c?.countryName || c?.name || c}
                 </option>
               ))}
             </select>
@@ -225,8 +251,8 @@ useEffect(() => {
               <option value="">Select Region</option>
 
               {regions.map((r, i) => (
-                <option key={i} value={r.parentName}>
-                  {r.parentName}
+                <option key={i} value={r?.parentName || r?.name || r}>
+                  {r?.parentName || r?.name || r}
                 </option>
               ))}
             </select>
@@ -252,8 +278,8 @@ useEffect(() => {
               <option value="">Select District</option>
 
               {districts.map((d, i) => (
-                <option key={i} value={d.childName}>
-                  {d.childName}
+                <option key={i} value={d?.childName || d?.name || d}>
+                  {d?.childName || d?.name || d}
                 </option>
               ))}
             </select>
@@ -274,8 +300,8 @@ useEffect(() => {
               <option value="">Select Assembly</option>
 
               {assemblies.map((a, i) => (
-                <option key={i} value={a}>
-                  {a}
+                <option key={i} value={a?.grandchildName || a?.name || a}>
+                  {a?.grandchildName || a?.name || a}
                 </option>
               ))}
             </select>

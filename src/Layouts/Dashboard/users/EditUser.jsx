@@ -1,5 +1,5 @@
 import { useAuth } from "../../../context/AuthContext.jsx";
-import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
+import { useAssembliesByCountry } from "../../../hooks/country-hook/useAssembliesByCountry.js";
 
 const UserEditModal = ({
   editingUser,
@@ -80,7 +80,7 @@ const UserEditModal = ({
             />
           </div>
 
-           <div className="flex align-center justify-between">
+          <div className="flex align-center justify-between">
             <label className="font-semibold whitespace-nowrap">
               Local Assembly<span className="text-red-500">*</span>
             </label>

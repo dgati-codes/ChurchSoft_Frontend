@@ -9,10 +9,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext.jsx";
+import { useAssembliesByCountry } from "../../../hooks/country-hook/useAssembliesByCountry.js";
 import { useDeleteMember } from "../../../hooks/member-hooks/useDeleteMember.js";
 import { useGetMembers } from "../../../hooks/member-hooks/useGetMembers.js";
 import { useUpdateMember } from "../../../hooks/member-hooks/useUpdateMember.js";
-import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
 import DeleteModal from "../modals/DeleteModal";
 import LoadingSpinner from "../modals/LoadingSpinner";
 import SuccessModal from "../modals/successModal.jsx";
@@ -71,17 +71,11 @@ export default function MemberTable() {
 
   const { member } = useAuth();
   const country = member?.nationality;
-  // console.log(member);
   const {
     data: assemblies,
-    isLoading: assembliesisLoading,
-    error,
   } = useAssembliesByCountry(country);
 
-  console.log("country:", country);
-  console.log("loading:", assembliesisLoading);
-  console.log("assemblies:", assemblies);
-  console.log("error:", error);
+  
   const toTitleCase = (value) => {
     if (!value && value !== 0) return "";
     if (Array.isArray(value)) {

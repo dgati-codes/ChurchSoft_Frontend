@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-    getBirthdaysThisWeek,
-    getNewMembers,
-    getTotalMembers,
-} from "../api/services/dashboardService";
+  getBirthdaysThisWeek,
+  getNewMembers,
+  getTotalMembers,
+} from "../../api/services/dashboardService";
 
 export const useDashboardData = () => {
   const totalMembersQuery = useQuery({
@@ -24,15 +24,9 @@ export const useDashboardData = () => {
   return {
     totalMembers: totalMembersQuery.data,
 
-    newMembers:
-      newMembersQuery.data?.content ||
-      newMembersQuery.data ||
-      [],
+    newMembers: newMembersQuery.data?.content || newMembersQuery.data || [],
 
-    birthdays:
-      birthdaysQuery.data?.content ||
-      birthdaysQuery.data ||
-      [],
+    birthdays: birthdaysQuery.data?.content || birthdaysQuery.data || [],
 
     isLoading:
       totalMembersQuery.isLoading ||

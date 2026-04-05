@@ -15,13 +15,11 @@ const ministryMap = {
 };
 const leadershipRoleOptions = [
   "Children Ministry",
-  "Worship Team",
   "Junior Youth",
   "Senior Youth",
   "Men Ministry",
   "Women Ministry",
-  "Tech Team",
-  "media Team",
+  "Other",
 ];
 
 // Frontend display list

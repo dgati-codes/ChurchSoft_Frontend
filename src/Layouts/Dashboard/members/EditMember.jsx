@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import { useHierarchy } from "../../../api/services/hierarchyService.js";
 import { useAuth } from "../../../context/AuthContext.jsx";
+import {
+  useChildrenByParent,
+  useCountries,
+  useGrandChildrenByChild,
+  useParentsByCountry,
+} from "../../../hooks/country-hook/useCountrySetup";
 import InputField from "../../Dashboard/modals/InputField.jsx";
 
 const leadershipRoleOptions = [
   "Children Ministry",
-  "Worship Team",
   "Junior Youth",
   "Senior Youth",
   "Men Ministry",
   "Women Ministry",
-  "Tech Team",
-  "media Team",
+  "Other",
 ];
 export default function EditMemberModal({ member, onClose, onSave }) {
   const { isAdmin } = useAuth();
@@ -19,12 +22,36 @@ export default function EditMemberModal({ member, onClose, onSave }) {
   const [originalMember, setOriginalMember] = useState({});
   const [form, setForm] = useState({});
 
-  // 🔹 Load hierarchy
-  const { nationalities, regions, districts, assemblies } = useHierarchy({
-    nationality: form.nationality,
-    region: form.jurisdiction,
-    district: form.district,
-  });
+  // Fetch countries
+  const { data: countriesData = [] } = useCountries();
+  const nationalities = Array.isArray(countriesData?.data)
+    ? countriesData.data
+    : [];
+
+  // Fetch jurisdictions/regions based on selected country
+  const { data: regionsData = [] } = useParentsByCountry(
+    form.nationality,
+    !!form.nationality,
+  );
+  const regions = Array.isArray(regionsData?.data) ? regionsData.data : [];
+
+  // Fetch districts based on selected jurisdiction
+  const { data: districtsData = [] } = useChildrenByParent(
+    form.jurisdiction,
+    !!form.jurisdiction,
+  );
+  const districts = Array.isArray(districtsData?.data)
+    ? districtsData.data
+    : [];
+
+  // Fetch assemblies based on selected district
+  const { data: assembliesData = [] } = useGrandChildrenByChild(
+    form.district,
+    !!form.district,
+  );
+  const assemblies = Array.isArray(assembliesData?.data)
+    ? assembliesData.data
+    : [];
 
   useEffect(() => {
     if (member) {
@@ -239,7 +266,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
                 onChange={handleChange}
               />
             </div>
-              {/* Ethnicity */}
+            {/* Ethnicity */}
             <div className="mb-6">
               <label className="text-sm font-medium">Ethnicity</label>
               <input
@@ -265,8 +292,8 @@ export default function EditMemberModal({ member, onClose, onSave }) {
               >
                 <option value="">Select Country</option>
                 {nationalities.map((c, i) => (
-                  <option key={i} value={c.countryName}>
-                    {c.countryName}
+                  <option key={i} value={c?.countryName || c?.name || c}>
+                    {c?.countryName || c?.name || c}
                   </option>
                 ))}
               </select>
@@ -286,14 +313,12 @@ export default function EditMemberModal({ member, onClose, onSave }) {
               >
                 <option value="">Select Region</option>
                 {regions.map((r, i) => (
-                  <option key={i} value={r.parentName}>
-                    {r.parentName}
+                  <option key={i} value={r?.parentName || r?.name || r}>
+                    {r?.parentName || r?.name || r}
                   </option>
                 ))}
               </select>
             </div>
-
-          
           </div>
 
           <div>
@@ -411,8 +436,6 @@ export default function EditMemberModal({ member, onClose, onSave }) {
               </select>
             </div>
 
-           
-
             <div className="mb-6">
               <label className="text-sm font-medium">Physical Address</label>
               <input
@@ -445,7 +468,7 @@ export default function EditMemberModal({ member, onClose, onSave }) {
               </select>
             </div>
 
-             {/* District */}
+            {/* District */}
             <div className="mb-6">
               <label className="text-sm font-medium">
                 District<span className="text-red-600">*</span>
@@ -459,8 +482,8 @@ export default function EditMemberModal({ member, onClose, onSave }) {
               >
                 <option value="">Select District</option>
                 {districts.map((d, i) => (
-                  <option key={i} value={d.childName}>
-                    {d.childName}
+                  <option key={i} value={d?.childName || d?.name || d}>
+                    {d?.childName || d?.name || d}
                   </option>
                 ))}
               </select>
@@ -480,8 +503,8 @@ export default function EditMemberModal({ member, onClose, onSave }) {
               >
                 <option value="">Select Assembly</option>
                 {assemblies.map((a, i) => (
-                  <option key={i} value={a}>
-                    {a}
+                  <option key={i} value={a?.grandchildName || a?.name || a}>
+                    {a?.grandchildName || a?.name || a}
                   </option>
                 ))}
               </select>

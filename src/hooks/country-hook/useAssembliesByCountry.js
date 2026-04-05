@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import {getAssembliesByCountry} from "../api/services/dashboardService.js";
+import { getAssembliesByCountry } from "../../api/services/dashboardService.js";
 
 const fetchAssembliesByCountry = async (country) => {
   const { data } = await getAssembliesByCountry(country);
@@ -10,7 +10,6 @@ export const useAssembliesByCountry = (country) => {
   return useQuery({
     queryKey: ["assemblies-by-country", country],
     queryFn: () => fetchAssembliesByCountry(country),
-    enabled: !!country, 
+    enabled: !!country,
   });
-  
 };

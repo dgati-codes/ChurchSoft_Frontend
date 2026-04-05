@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../../../context/AuthContext.jsx";
-import { useAssembliesByCountry } from "../../../hooks/useAssembliesByCountry.js";
+import { useAssembliesByCountry } from "../../../hooks/country-hook/useAssembliesByCountry.js";
 import useDebounce from "../../../hooks/useDebounce";
 import useDeleteUser from "../../../hooks/user-hooks/useDeleteUser.js";
 import useGetUsers from "../../../hooks/user-hooks/useGetUsers.js";
@@ -142,7 +142,6 @@ const UserTable = () => {
         <h3 className="text-sm font-semibold mb-4">Filters</h3>
         <div className="flex justify-end gap-5 min-w-full">
           <div>
-            
             <input
               list="assemblies-list"
               name="localAssemblyName"
