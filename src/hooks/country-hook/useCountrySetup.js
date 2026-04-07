@@ -5,6 +5,7 @@ import { STATIC_QUERY_CONFIG } from "../constants/queryConfig.js";
 /**
  * Fetch all countries
  */
+
 export const useCountries = () => {
   return useQuery({
     queryKey: ["countries"],

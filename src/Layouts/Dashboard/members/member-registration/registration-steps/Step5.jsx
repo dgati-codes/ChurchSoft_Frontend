@@ -8,7 +8,7 @@ const ministryMap = {
   EVANGELISM: "EVANGELISM",
   PRAYER_WARRIOR: "PRAYER_WARRIOR",
   USHER: "USHER",
-  SUNDAY_TEACHER: "SUNDAY_TEACHER",
+  SUNDAY_TEACHERS: "SUNDAY_TEACHERS",
   MEDIA: "MEDIA",
   WELFARE: "WELFARE",
   OTHER: "OTHER",
@@ -56,7 +56,6 @@ const Step5SkillsInfo = () => {
     const { name, value } = e.target;
     setLocalData((prev) => ({ ...prev, [name]: value }));
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();

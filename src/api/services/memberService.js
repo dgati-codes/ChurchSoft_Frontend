@@ -50,7 +50,7 @@ const memberService = {
       if (payload?.content) return payload;
 
       if (payload?.data?.content) return payload.data;
-      console.log(res.payload);
+      
       // Fallback normalization
       return normalizeResponse(payload);
     } catch (error) {

@@ -95,6 +95,7 @@ export default function MemberTable() {
     return toTitleCase(value);
   };
 
+
   if (showDashboard)
     return <MemberFullView onBack={() => setShowDashboard(false)} />;
 
@@ -153,7 +154,7 @@ export default function MemberTable() {
           >
             <option value="">Select Assembly</option>
             {assemblies?.map((assembly) => (
-              <option key={assembly.id} value={assembly}>
+              <option key={assembly.id} value={assembly.name}>
                 {assembly}
               </option>
             ))}

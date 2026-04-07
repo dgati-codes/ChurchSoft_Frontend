@@ -32,12 +32,12 @@ export default function Dashboard() {
 
   const selectedAssembly = formData?.localAssemblyName || "";
 
-  const { data, isLoading: leadersLoading } =
+  const { data } =
     useMinistryLeadersByAssembly(selectedAssembly);
   const leaders = data?.leaders || [];
-  console.log(leadersLoading);
-  console.log(leaders);
-  console.log(data);
+  // console.log(leadersLoading);
+  // console.log(leaders);
+  // console.log(data);
 
   const isAllAssemblies =
     !selectedAssembly || selectedAssembly === "All Assemblies";

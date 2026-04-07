@@ -24,7 +24,7 @@ export default function IncompleteRegistrations() {
 
   // console.log("registrations:", registrations);
 
-  // ✅ Filtered registrations based on search term
+  // Filtered registrations based on search term
   const filteredRegistrations = useMemo(() => {
     if (!searchTerm) return registrations;
     const term = searchTerm.toLowerCase();
@@ -37,7 +37,7 @@ export default function IncompleteRegistrations() {
   }, [searchTerm, registrations]);
 
   if (isError) {
-    return <div className="p-6 text-red-500">Failed to load data</div>;
+    return <div className="p-6 text-gray-500">Failed to load data <span className="text-blue-500">Try again</span></div>;
   }
 
   return (

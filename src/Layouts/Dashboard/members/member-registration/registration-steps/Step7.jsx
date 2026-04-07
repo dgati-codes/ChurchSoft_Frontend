@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import {
   Book,
   Church,
@@ -11,7 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
-import memberService from "../../../../../api/services/memberService";
+import { useCreateMember } from "../../../../../hooks/member-hooks/useCreateMember";
 import SuccessModal from "../../../modals/successModal";
 import { useRegistration } from "../../registration-context/RegistrationContext";
 
@@ -19,9 +18,7 @@ const Step7ReviewSubmit = () => {
   const { formData, updateForm, resetForm } = useRegistration();
   const [editingSection, setEditingSection] = useState(null);
   const [localData, setLocalData] = useState(formData || {});
-  const [loading, setLoading] = useState(false);
   const [successModal, setSuccessModal] = useState(null);
-  const queryClient = useQueryClient();
 
   const ARRAY_FIELDS = [
     "skillsTalents",
@@ -30,8 +27,40 @@ const Step7ReviewSubmit = () => {
     "preferredLanguages",
   ];
 
-  /* ---------------- HANDLE FIELD CHANGE ---------------- */
+  const MINISTRY_ENUM_MAP = {
+    CHOIR: "CHOIR",
+    EVANGELISM: "EVANGELISM",
+    PRAYER_WARRIOR: "PRAYER_WARRIOR",
+    USHER: "USHER",
+    SUNDAY_TEACHERS: "SUNDAY_TEACHERS",
+    MEDIA: "MEDIA",
+    WELFARE: "WELFARE",
+    OTHER: "OTHER",
+  };
 
+  const normalizeEnum = (value, map) => {
+    if (!value) return null;
+
+    const key = value.toString().trim().toLowerCase();
+    return map[key] || value;
+  };
+  /* ---------------- HANDLE FIELD CHANGE ---------------- */
+ 
+  const { mutate: createMember, isPending: loading } = useCreateMember({
+    onSuccess: () => {
+      setSuccessModal({
+        name: localData.fullName || "Member",
+        action: "registered",
+      });
+
+      // resetForm(); // optional
+    },
+
+    onError: (error) => {
+      console.error("Backend error:", error?.response?.data || error);
+      alert("Error creating member. Please try again.");
+    },
+  });
   const handleFieldChange = (key, value, subObject = null) => {
     const normalizeArray = (val) => {
       if (typeof val === "string") {
@@ -78,51 +107,52 @@ const Step7ReviewSubmit = () => {
 
   /* ---------------- FINAL SUBMIT ---------------- */
 
-  const handleFinalSubmit = async (e) => {
+  const handleFinalSubmit = (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
       const payload = JSON.parse(JSON.stringify(localData));
 
+      // Boolean normalization
       payload.hasHealthIssues =
         payload?.hasHealthIssues === "YES" || payload?.hasHealthIssues === true;
 
       payload.healthCondition =
         payload?.healthCondition === "YES" || payload?.healthCondition === true;
 
+      // Array + ENUM normalization
       ARRAY_FIELDS.forEach((field) => {
         if (!Array.isArray(payload[field])) payload[field] = [];
 
         payload[field] = payload[field]
           .map((v) => {
-            if (typeof v === "string") return v.trim();
-            if (typeof v === "object") return v?.ministryName || v?.name;
-            return null;
+            let value =
+              typeof v === "string"
+                ? v.trim()
+                : typeof v === "object"
+                  ? v?.ministryName || v?.name
+                  : null;
+
+            if (field === "ministries") {
+              value = normalizeEnum(value, MINISTRY_ENUM_MAP);
+            }
+
+            return value;
           })
           .filter(Boolean);
       });
 
+      // Empty string → null
       Object.keys(payload).forEach((key) => {
         if (payload[key] === "") payload[key] = null;
       });
 
       console.log("FINAL PAYLOAD:", payload);
 
-      const newMember = await memberService.createMember(payload);
-
-      queryClient.setQueryData(["members"], (old = []) => [newMember, ...old]);
-      // alert("Member created successfully");
-      setSuccessModal({
-        name: payload.fullName || "Member",
-        action: "registered",
-      });
-      // resetForm();
+      // React Query mutation
+      createMember(payload);
     } catch (error) {
-      console.error("Backend error:", error?.response?.data || error);
-      alert("Error creating member. Please try again.");
-    } finally {
-      setLoading(false);
+      console.error("Processing error:", error);
     }
   };
 
@@ -221,11 +251,11 @@ const Step7ReviewSubmit = () => {
         "createdDate",
         "hasHealthIssues",
         "specialNeedsOrMedicalConditions",
-        "leadershipRole",
       ],
     },
   ];
-// console.log(formData)
+
+  // console.log(formData)
   /* ---------------- UI ---------------- */
 
   return (
