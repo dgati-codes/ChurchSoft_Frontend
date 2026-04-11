@@ -218,3 +218,17 @@ export const createMemberQueued = (data) => {
     processQueue();
   });
 };
+
+
+// Fetch jurisdictions distribution by country
+export const getJurisdictionsDistribution = async (country) => {
+  if (!country) {
+    throw new Error("Country is required"); // Input validation
+  }
+
+  const response = await axiosInstance.get(
+    `/members/summary/distribution/${country}`
+  );
+
+  return response.data;
+};
