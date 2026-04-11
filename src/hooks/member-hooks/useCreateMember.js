@@ -1,60 +1,88 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import memberService from "../../api/services/memberService";
+import { createMemberQueued } from "../../api/services/memberService";
 
-export const useCreateMember = (options = {}) => {
+export const useCreateMember = ({
+  country,
+  assembly,
+  ...options
+} = {}) => {
   const queryClient = useQueryClient();
 
+  const queryKey = ["members", country, assembly];
+
   return useMutation({
-    mutationFn: memberService.createMember,
+    mutationFn: createMemberQueued,
 
-    //  Optimistic Update
     onMutate: async (newMember) => {
-      await queryClient.cancelQueries({ queryKey: ["members"] });
+      await queryClient.cancelQueries({ queryKey });
 
-      const previousMembers = queryClient.getQueryData(["members"]);
+      const previousData = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData(["members"], (old = []) => [
-        {
-          ...newMember,
-          id: Date.now(), // temporary ID
-          isOptimistic: true,
-        },
-        ...old,
-      ]);
+      // Temporary ID to track optimistic item
+      const optimisticMember = {
+        ...newMember,
+        id: `temp-${Date.now()}`,
+        __optimistic: true,
+      };
 
-      return { previousMembers };
+      queryClient.setQueryData(queryKey, (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          data: [optimisticMember, ...(oldData.data || [])],
+        };
+      });
+
+      return { previousData, optimisticId: optimisticMember.id };
     },
 
-    // error handling
-    onError: (error, newMember, context) => {
-      if (context?.previousMembers) {
-        queryClient.setQueryData(["members"], context.previousMembers);
-      }
-
+    onError: (error, _newMember, context) => {
       console.error("Create Member Error:", error);
 
-      if (options.onError) {
-        options.onError(error);
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
       }
+
+      options.onError?.(error);
     },
 
-    onSuccess: (data) => {
-      queryClient.setQueryData(["members"], (old = []) =>
-        old.map((member) =>
-          member.isOptimistic && member.fullName === data.fullName
-            ? data
-            : member,
-        ),
-      );
+    onSuccess: (serverData, _newMember, context) => {
+      queryClient.setQueryData(queryKey, (oldData) => {
+        if (!oldData) return oldData;
 
-      if (options.onSuccess) {
-        options.onSuccess(data);
-      }
+        return {
+          ...oldData,
+          data: (oldData.data || []).map((item) =>
+            item.id === context.optimisticId ? serverData : item
+          ),
+        };
+      });
+
+      options.onSuccess?.(serverData);
     },
 
-    // 🔄 Final sync
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["members"] });
+      queryClient.invalidateQueries({
+        queryKey,
+        refetchType: "active",
+      });
+    },
+
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 429) return failureCount < 5;
+      if (error?.code === "ECONNABORTED") return failureCount < 3;
+      if (!error?.response) return failureCount < 3;
+
+      return false;
+    },
+
+    retryDelay: (attempt, error) => {
+      if (error?.response?.status === 429) {
+        return Math.min(2000 * 2 ** attempt, 10000);
+      }
+
+      return Math.min(1000 * 2 ** attempt, 5000);
     },
 
     ...options,

@@ -1,9 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, Mail, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getIncompleteMembers } from "../../../../api/services/memberService";
 import { useAuth } from "../../../../context/AuthContext";
+import { useIncompleteMembers } from "../../../../hooks/member-hooks/useIncompleteMembers";
 import LoadingSpinner from "../../modals/LoadingSpinner";
 
 export default function IncompleteRegistrations() {
@@ -15,12 +14,7 @@ export default function IncompleteRegistrations() {
     data: registrations = [],
     isLoading,
     isError,
-  } = useQuery({
-    queryKey: ["incompleteMembers", user.id],
-    queryFn: () => getIncompleteMembers(user.id),
-    enabled: !!user?.id,
-    keepPreviousData: true,
-  });
+  } = useIncompleteMembers(user?.id);
 
   // console.log("registrations:", registrations);
 
@@ -37,7 +31,11 @@ export default function IncompleteRegistrations() {
   }, [searchTerm, registrations]);
 
   if (isError) {
-    return <div className="p-6 text-gray-500">Failed to load data <span className="text-blue-500">Try again</span></div>;
+    return (
+      <div className="p-6 text-gray-500">
+        Failed to load data <span className="text-blue-500">Try again</span>
+      </div>
+    );
   }
 
   return (
@@ -147,7 +145,7 @@ export default function IncompleteRegistrations() {
                         day: "2-digit",
                         hour: "2-digit",
                         minute: "2-digit",
-                        hour12: false, 
+                        hour12: false,
                       })}
                     </div>
                   </div>

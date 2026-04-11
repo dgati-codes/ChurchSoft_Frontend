@@ -17,7 +17,7 @@ import DeleteModal from "../modals/DeleteModal";
 import LoadingSpinner from "../modals/LoadingSpinner";
 import SuccessModal from "../modals/successModal.jsx";
 import EditMemberModal from "./EditMember";
-import MemberFullView from "./MemberFullView";
+import MemberFullView from "./MembersViewDetails.jsx";
 
 export default function MemberTable() {
   const [filter, setFilter] = useState({ ministry: "", assembly: "" });

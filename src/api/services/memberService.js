@@ -159,10 +159,7 @@ const memberService = {
   },
 
   // 🔹 Create Member
-  createMember: async (memberData) => {
-    const res = await axiosInstance.post("/members", memberData);
-    return res.data;
-  },
+ 
 };
 
 export default memberService;
@@ -181,4 +178,43 @@ export const getMemberByMemberId = async (id) => {
 };
 
 
- 
+
+// Advanced Queue System
+
+const MAX_CONCURRENT = 3; // allow 3 parallel requests
+let activeRequests = 0;
+
+const queue = [];
+
+// 🔥 Process Queue
+const processQueue = () => {
+  // Run while we have capacity
+  while (activeRequests < MAX_CONCURRENT && queue.length > 0) {
+    const { data, resolve, reject } = queue.shift();
+
+    activeRequests++;
+
+    axiosInstance
+      .post("/members", data, {
+        timeout: 10000, // timeout protection (10s)
+      })
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        reject(error);
+      })
+      .finally(() => {
+        activeRequests--;
+        processQueue(); // keep draining queue
+      });
+  }
+};
+
+// Public function used by hook
+export const createMemberQueued = (data) => {
+  return new Promise((resolve, reject) => {
+    queue.push({ data, resolve, reject });
+    processQueue();
+  });
+};
