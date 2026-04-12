@@ -1,22 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 import { getJurisdictionsDistribution } from "../../api/services/memberService";
 
-export const useJurisdictionsDistribution = (country, options = {}) => {
+export const useJurisdictionsDistribution = (
+  country,
+  options = {}
+) => {
   return useQuery({
     queryKey: ["jurisdictions-distribution", country],
 
+    // Prevent invalid API calls
+    enabled: !!country,
+
+    // Safe query function
     queryFn: () => getJurisdictionsDistribution(country),
 
-    enabled: !!country, 
+    //  Caching strategy (good for dashboard data)
+    staleTime: 1000 * 60 * 5,
 
-    staleTime: 1000 * 60 * 5, 
-
+    // Data Transformation Layer
     select: (data) => {
-      // Data transformation layer (important concept)
       const list = data?.jurisdictionsDistribution || [];
 
-      return list.filter((item) => item.jurisdiction); 
-      
+      // TECHNICAL: Data Sanitization + Filtering
+      return list.filter((item) => item?.jurisdiction);
     },
 
     ...options,

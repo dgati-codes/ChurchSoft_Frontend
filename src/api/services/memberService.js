@@ -232,3 +232,10 @@ export const getJurisdictionsDistribution = async (country) => {
 
   return response.data;
 };
+
+export const getNationalitySummaryByCountry = async (country) => {
+  const response = await axiosInstance.get(
+    `/members/summary/nationality/${country}`
+  );
+  return response.data;
+};

@@ -5,7 +5,7 @@ import {
   ChartLine,
   UsersRound,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -21,7 +21,15 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useAuth } from "../../../context/AuthContext";
+import {
+  useChildrenByParent,
+  useCountries,
+  useGrandChildrenByChild,
+  useParentsByCountry,
+} from "../../../hooks/country-hook/useCountrySetup";
 import { useJurisdictionsDistribution } from "../../../hooks/member-hooks/useJurisdictionsDistribution";
+import { useNationalitySummaryByCountry } from "../../../hooks/member-hooks/useNationalitySummaryByCountry ";
 
 const data = [
   { name: "Group A", value: 400 },
@@ -87,37 +95,109 @@ const barData = [
   { month: "Dec", members: 3600 },
 ];
 
-// const pieData = [
-//   { name: "Children (0-17)", value: 12.3 },
-//   { name: "Youth (18-35)", value: 14.6 },
-//   { name: "Adults (36+)", value: 48.8 },
-//   { name: "Elderly (60+)", value: 24.3 },
-// ];
-
-// const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-
-// ✅ Dashboard Component
 export default function MemberFullView({ onBack }) {
   const [selectedCountry, setSelectedCountry] = useState("");
+  const [selectedJurisdiction, setSelectedJurisdiction] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
 
-  const {
-    data: jurisdictions,
-    isLoading,
-    error,
-  } = useJurisdictionsDistribution(selectedCountry);
+  const [formData, setFormData] = useState({
+    nationality: "",
+    jurisdiction: "",
+    district: "",
+    assembly: "",
+  });
 
-  const getPercentageColor = (percentage) => {
-    if (percentage < 10) return "bg-red-200 text-red-600";
-    if (percentage >= 10 && percentage <= 50)
-      return "bg-yellow-200 text-yellow-700";
-    if (percentage > 50) return "bg-green-200 text-green-700";
+  const { member } = useAuth();
+
+  const effectiveCountry = selectedCountry || member?.nationality;
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (name === "nationality") {
+      setSelectedCountry(value);
+    }
   };
 
+  // FETCH DATA
+  const {
+    data: jurisdictions = [],
+    isLoading: isJurisdictionsLoading,
+    isError: isJurisdictionsError,
+  } = useJurisdictionsDistribution(effectiveCountry);
+
+  const { data: nationalities = [] } = useCountries();
+
+  const { data: regions = [] } = useParentsByCountry(formData.nationality);
+
+  const { data: districts = [] } = useChildrenByParent(formData.jurisdiction);
+
+  const { data: assemblies = [] } = useGrandChildrenByChild(formData.district);
+
+  const { data: nationalityData } = useNationalitySummaryByCountry(
+    effectiveCountry,
+    {
+      enabled: !!effectiveCountry,
+    },
+  );
+
+  // Data Normalization
+  const ministryMap = (nationalityData?.ministryAffiliationCounts || []).reduce(
+    (acc, item) => {
+      const [key, value] = Object.entries(item)[0];
+      acc[key] = value;
+      return acc;
+    },
+    {},
+  );
+
+  useEffect(() => {
+    if (member?.nationality && !selectedCountry) {
+      setSelectedCountry(member.nationality);
+    }
+  }, [member, selectedCountry]);
+
+  const total = nationalityData?.totalMembers || 0;
+
+  /**
+   *  PERCENTAGE CALCULATION
+   */
+  const getPercentage = (value) => {
+    if (!total) return 0;
+    return ((value / total) * 100).toFixed(1);
+  };
+
+  const getColorClass = (percentage) => {
+    const value = Number(percentage);
+
+    if (value < 10) return "text-red-600 bg-red-100";
+    if (value <= 50) return "text-yellow-600 bg-yellow-100";
+    return "text-green-600 bg-green-100";
+  };
+
+  const getPercentageColor = (percentage) => {
+    const value = Number(percentage);
+
+    if (value < 10) return "bg-red-200 text-red-600";
+    if (value <= 50) return "bg-yellow-200 text-yellow-700";
+    return "bg-green-200 text-green-700";
+  };
+
+  console.log({
+    selectedCountry,
+    effectiveCountry,
+    memberCountry: member?.nationality,
+  });
   return (
     <div className=" font-[DM Sans] mt-8 space-y-6  bg-gray-100 min-h-screen">
       <div
         className="flex items-center gap-2 cursor-pointer w-fit text-blue-600 hover:text-blue-800"
-        onClick={onBack} // ✅ use the passed prop
+        onClick={onBack}
       >
         <ArrowLeft className="w-5 h-5" />
         <button className="font-medium">Back</button>
@@ -136,48 +216,167 @@ export default function MemberFullView({ onBack }) {
         <Card>
           <CardContent>
             <div className="flex justify-between">
-              <h2 className="text-lg font-semibold">Children (0-12) </h2>
+              <h2 className="text-lg font-semibold">Children (0-12)</h2>
               <Baby className="text-blue-600" />
             </div>
-            <p className="text-2xl font-bold">45,672</p>
-            <p className="text-green-600">↑ 12.5% from last month</p>
+            {isJurisdictionsLoading ? (
+              <p className="text-sm text-gray-300">Loading...</p>
+            ) : (
+              <div>
+                <p className="text-2xl font-bold">
+                  {ministryMap?.CHILDREN || 0}
+                </p>
+
+                {(() => {
+                  const percentage = getPercentage(ministryMap?.CHILDREN || 0);
+
+                  return (
+                    <span
+                      className={`text-sm font-semibold px-3 py-1 rounded-lg ${getColorClass(
+                        percentage,
+                      )}`}
+                    >
+                      {percentage}%
+                    </span>
+                  );
+                })()}
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardContent>
             <div className="flex justify-between">
-              <h2 className="text-lg font-semibold">Junior Youth (13-21) </h2>
+              <h2 className="text-lg font-semibold">Junior Youth (13-21)</h2>
               <UsersRound className="text-orange-600" />
             </div>
-            <p className="text-2xl font-bold">15,234</p>
-            <p className="text-green-600">↑ 8.3% from last month</p>
+            {isJurisdictionsLoading ? (
+              <p className="text-sm text-gray-300">Loading...</p>
+            ) : (
+              <div>
+                <p className="text-2xl font-bold">
+                  {ministryMap?.JUNIOR_YOUTH || 0}
+                </p>
+
+                {(() => {
+                  const percentage = getPercentage(
+                    ministryMap?.JUNIOR_YOUTH || 0,
+                  );
+                  return (
+                    <span
+                      className={`text-sm font-semibold px-3 py-1 rounded-lg ${getColorClass(
+                        percentage,
+                      )}`}
+                    >
+                      {percentage}%
+                    </span>
+                  );
+                })()}
+              </div>
+            )}
           </CardContent>
         </Card>
 
         <Card>
           <CardContent>
             <div className="flex justify-between">
-              <h2 className="text-lg font-semibold">Senior Youth (22-35) </h2>
+              <h2 className="text-lg font-semibold">Senior Youth (22-35)</h2>
               <UsersRound className="text-yellow-400" />
             </div>
-            <p className="text-2xl font-bold">30,672</p>
-            <p className="text-green-600">↑ 15.5% from last month</p>
+            {isJurisdictionsLoading ? (
+              <p className="text-sm text-gray-300">Loading...</p>
+            ) : (
+              <div>
+                <p className="text-2xl font-bold">
+                  {ministryMap?.SENIOR_YOUTH || 0}
+                </p>
+
+                {(() => {
+                  const percentage = getPercentage(
+                    ministryMap?.SENIOR_YOUTH || 0,
+                  );
+                  return (
+                    <span
+                      className={`text-sm font-semibold px-3 py-1 rounded-lg ${getColorClass(
+                        percentage,
+                      )}`}
+                    >
+                      {percentage}%
+                    </span>
+                  );
+                })()}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <div className="flex justify-between">
+              <h2 className="text-lg font-semibold">MEN</h2>
+              <UsersRound className="text-yellow-400" />
+            </div>
+            {isJurisdictionsLoading ? (
+              <p className="text-sm text-gray-300">Loading...</p>
+            ) : (
+              <div>
+                <p className="text-2xl font-bold">{ministryMap?.MEN || 0}</p>
+
+                {(() => {
+                  const percentage = getPercentage(ministryMap?.MEN || 0);
+                  return (
+                    <span
+                      className={`text-sm font-semibold px-3 py-1 rounded-lg ${getColorClass(
+                        percentage,
+                      )}`}
+                    >
+                      {percentage}%
+                    </span>
+                  );
+                })()}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <div className="flex justify-between">
+              <h2 className="text-lg font-semibold">WOMEN</h2>
+              <UsersRound className="text-yellow-400" />
+            </div>
+            {isJurisdictionsLoading ? (
+              <p className="text-sm text-gray-300">Loading...</p>
+            ) : (
+              <div>
+                <p className="text-2xl font-bold">{ministryMap?.WOMEN || 0}</p>
+
+                {(() => {
+                  const percentage = getPercentage(ministryMap?.WOMEN || 0);
+                  return (
+                    <span
+                      className={`text-sm font-semibold px-3 py-1 rounded-lg ${getColorClass(
+                        percentage,
+                      )}`}
+                    >
+                      {percentage}%
+                    </span>
+                  );
+                })()}
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent>
-            <h2 className="text-lg font-semibold">Adults</h2>
-            <p className="text-2xl font-bold">45,672</p>
-            <p className="text-green-600">↓ 12.5% from last month</p>
-          </CardContent>
-        </Card>
         <Card>
           <CardContent>
             <h2 className="text-lg font-semibold">Total Members</h2>
-            <p className="text-2xl font-bold">45,672</p>
-            <p className="text-red-600">↓ 12.5% from last month</p>
+            {isJurisdictionsLoading ? (
+              <p className="text-sm text-gray-300">Loading...</p>
+            ) : (
+              <div>
+                <p className="text-2xl font-bold">{total}</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -188,44 +387,94 @@ export default function MemberFullView({ onBack }) {
         <div className="flex justify-between space-x-8">
           {/* Region */}
           <div>
-            <div className="flex flex-col mb-4">
-              <label className="text-sm font-medium mb-1" htmlFor="country">
-                Country
+            {/* NATIONALITY */}
+            <div className="mb-4">
+              <label className="text-gray-600 font-bold">
+                Country<span className="text-red-600">*</span>
               </label>
               <select
-                value={selectedCountry}
+                name="nationality"
+                value={effectiveCountry}
                 onChange={(e) => setSelectedCountry(e.target.value)}
-                className="bg-gray-100 rounded-md w-64 p-2 text-sm"
+                className="input"
+                required
               >
-                <option value="">Select country</option>
-                <option value="ghana">Ghana</option>
-                <option value="nigeria">Nigeria</option>
-              </select>
-            </div>
-            <div className="flex flex-col mb-4">
-              <label className="text-sm font-medium mb-1">Region</label>
-              <select className="bg-gray-100 rounded-md w-64 p-2 text-sm">
-                <option>Select region</option>
-                <option>volta region</option>
-                <option>Greater Accra region</option>
+                <option value="">Select Country</option>
+
+                {nationalities.map((c, i) => (
+                  <option key={i} value={c?.countryName || c?.name || c}>
+                    {c?.countryName || c?.name || c}
+                  </option>
+                ))}
               </select>
             </div>
 
-            {/* District */}
+            {/* jurisdiction */}
+            <div>
+              <label className="text-gray-600 font-bold">
+                Region<span className="text-red-600">*</span>
+              </label>
+              <select
+                name="jurisdiction"
+                value={selectedJurisdiction}
+                onChange={(e) => setSelectedJurisdiction(e.target.value)}
+                required
+                className="input"
+              >
+                <option value="">Select Region</option>
+
+                {regions.map((r, i) => (
+                  <option key={i} value={r?.parentName || r?.name || r}>
+                    {r?.parentName || r?.name || r}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Local */}
           <div>
-            <div className="flex flex-col mb-4">
-              <label className="text-sm font-medium mb-1">District</label>
-              <select className="bg-gray-100 rounded-md p-2 text-sm">
-                <option>Select district</option>
+            {/* DISTRICT */}
+            <div className="mb-4">
+              <label className="text-gray-600 font-bold">
+                District<span className="text-red-600">*</span>
+              </label>
+              <select
+                name="district"
+                value={selectedDistrict}
+                onChange={(e) => setSelectedDistrict(e.target.value)}
+                required
+                className="input"
+              >
+                <option value="">Select District</option>
+
+                {districts.map((d, i) => (
+                  <option key={i} value={d?.childName || d?.name || d}>
+                    {d?.childName || d?.name || d}
+                  </option>
+                ))}
               </select>
             </div>
-            <div className="flex mb-4 flex-col">
-              <label className="text-sm font-medium w-64 mb-1">Local</label>
-              <select className="bg-gray-100 rounded-md p-2 text-sm">
-                <option>Select local</option>
+
+            {/* ASSEMBLY */}
+            <div>
+              <label className="text-gray-600 font-bold">
+                Local Assembly<span className="text-red-600">*</span>
+              </label>
+              <select
+                name="assembly"
+                value={formData.assembly}
+                onChange={handleChange}
+                className="input"
+                required
+              >
+                <option value="">Select Assembly</option>
+
+                {assemblies.map((a, i) => (
+                  <option key={i} value={a?.grandchildName || a?.name || a}>
+                    {a?.grandchildName || a?.name || a}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -234,13 +483,13 @@ export default function MemberFullView({ onBack }) {
           <div className="flex mb-4 flex-col">
             {/* Gender */}
             <div className="flex flex-col mb-4">
-              <label className="text-sm font-medium mb-1">Gender</label>
+              <label className="text-gray-600 font-bold">Gender</label>
               <select className="bg-gray-100 rounded-md p-2 text-sm">
                 <option>Select gender</option>
               </select>
             </div>
             <div className="flex flex-col mb-4">
-              <label className="text-sm font-medium w-64 mb-1">Age Group</label>
+              <label className="text-gray-600 font-bold">Age Group</label>
               <select className="bg-gray-100 rounded-md p-2 text-sm">
                 <option>Select age group</option>
               </select>
@@ -350,9 +599,9 @@ export default function MemberFullView({ onBack }) {
           <h2 className="text-lg font-semibold mb-4">Members by Region </h2>
 
           <div className="space-y-3">
-            {isLoading && <p>Loading...</p>}
+            {isJurisdictionsLoading && <p>Loading...</p>}
 
-            {error && <p>Error loading data</p>}
+            {isJurisdictionsError && <p>Error loading data</p>}
 
             {jurisdictions?.map((item, i) => (
               <div
