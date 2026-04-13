@@ -5,10 +5,12 @@ function PersonalInfo() {
   const { member } = useAuth();
 
   return (
-    <div className="bg-[#F9FAFB] border-[#E5E7EB] w-10/10 ml-3 rounded-lg shadow-sm border p-6">
-      <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
-        <User className="h-5 w-5 text-blue-500" />
-        Personal Information
+    <div className=" flex justify-center">
+      <div className="bg-[#F9FAFB] border-[#E5E7EB] w-10/10 ml-3 rounded-lg shadow-sm border p-6">
+        
+        <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+          <User className="h-5 w-5 text-blue-500" />
+          Personal Information
       </h3>
       <hr className="mb-6" />
 
@@ -21,6 +23,7 @@ function PersonalInfo() {
         <Info label="Nationality" value={member.nationality} />
         <Info label="Ethnicity" value={member.ethnicity} />
         <Info label="Identification Type" value={member.identificationType} />
+      </div>
       </div>
     </div>
   );

@@ -26,6 +26,7 @@ import {
   useAllHierarchies,
   useDeleteCountry,
 } from "../../../hooks/country-hook/useCountrySetup";
+import LoadingSpinner from "../modals/LoadingSpinner";
 
 const cls = (...a) => a.filter(Boolean).join(" ");
 
@@ -382,14 +383,21 @@ export default function CountriesOverview() {
               <span className="text-sm text-gray-600">{label}</span>
               {icon}
             </div>
-            <p
-              className={cls(
-                "font-bold leading-tight",
-                isDate ? "text-base text-blue-600" : "text-2xl text-gray-900",
-              )}
-            >
-              {value}
-            </p>
+            {isLoading ? (
+              <div className="flex  items-center">
+                <LoadingSpinner text="" width={12} height={12} thickness={2} />
+              </div>
+            ) : (
+              <p
+                className={cls(
+                  "font-bold leading-tight",
+                  isDate ? "text-base text-blue-600" : "text-2xl text-gray-900",
+                )}
+              >
+                {value}
+              </p>
+            )}
+
             <span className="text-xs text-gray-400">{sub}</span>
           </div>
         ))}
@@ -406,9 +414,6 @@ export default function CountriesOverview() {
               <tr className="bg-gray-50 text-gray-600 text-center whitespace-nowrap">
                 {[
                   "Country Name",
-                  // "Parent Level Name",
-                  // "Child Level Name",
-                  // FIX #3: names, not counts
                   "Parents",
                   "Children",
                   "Grandchildren",
@@ -429,7 +434,9 @@ export default function CountriesOverview() {
                   <td colSpan={7} className="text-center py-12 text-gray-400">
                     <div className="flex items-center justify-center gap-2">
                       <RefreshCw size={15} className="animate-spin" />{" "}
-                      Loading...
+                      <div className="flex justify-center items-center">
+                        <LoadingSpinner className="w-2 h-2" />
+                      </div>
                     </div>
                   </td>
                 </tr>
@@ -483,28 +490,6 @@ export default function CountriesOverview() {
                           </span>
                         </div>
                       </td>
-
-                      {/* Parent Level Name */}
-                      {/* <td className="p-4">
-                        {h.parentLevel ? (
-                          <span className="bg-sky-100 text-red-700 text-xs font-medium px-2 py-0.5 rounded-full">
-                            {h.parentLevel}
-                          </span>
-                        ) : (
-                          <span className="text-gray-300 text-xs">—</span>
-                        )}
-                      </td> */}
-
-                      {/* Child Level Name */}
-                      {/* <td className="p-4">
-                        {h.childLevel ? (
-                          <span className="bg-violet-100 text-violet-700 text-xs font-medium px-2 py-0.5 rounded-full">
-                            {h.childLevel}
-                          </span>
-                        ) : (
-                          <span className="text-gray-300 text-xs">—</span>
-                        )}
-                      </td> */}
 
                       {/* FIX #3: Parent names */}
                       <td className="p-4 border border-gray-300 max-w-40 whitespace-wrap">

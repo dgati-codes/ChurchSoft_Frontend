@@ -8,6 +8,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext.jsx";
 import { useAssembliesByCountry } from "../../../hooks/country-hook/useAssembliesByCountry.js";
 import { useDeleteMember } from "../../../hooks/member-hooks/useDeleteMember.js";
@@ -17,11 +18,10 @@ import DeleteModal from "../modals/DeleteModal";
 import LoadingSpinner from "../modals/LoadingSpinner";
 import SuccessModal from "../modals/successModal.jsx";
 import EditMemberModal from "./EditMember";
-import MemberFullView from "./MembersViewDetails.jsx";
 
 export default function MemberTable() {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({ ministry: "", assembly: "" });
-  const [showDashboard, setShowDashboard] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
   const [successModal, setSuccessModal] = useState(null);
@@ -71,11 +71,8 @@ export default function MemberTable() {
 
   const { member } = useAuth();
   const country = member?.nationality;
-  const {
-    data: assemblies,
-  } = useAssembliesByCountry(country);
+  const { data: assemblies } = useAssembliesByCountry(country);
 
-  
   const toTitleCase = (value) => {
     if (!value && value !== 0) return "";
     if (Array.isArray(value)) {
@@ -95,10 +92,6 @@ export default function MemberTable() {
     return toTitleCase(value);
   };
 
-
-  if (showDashboard)
-    return <MemberFullView onBack={() => setShowDashboard(false)} />;
-
   return (
     <div className=" font-[DM_Sans] bg-gray-100 mt-10 ">
       {/* Header */}
@@ -113,7 +106,7 @@ export default function MemberTable() {
           </p>
         </div>
         <button
-          onClick={() => setShowDashboard(true)}
+          onClick={() => navigate("/dashboard/members-details")}
           className="inline-flex items-center gap-1 bg-blue-700 hover:bg-blue-800
                      text-white text-sm font-medium px-4 py-2 rounded-md cursor-pointer
                      transition-colors duration-150 shrink-0"

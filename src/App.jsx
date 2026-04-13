@@ -12,15 +12,18 @@ import AttendanceTracking from "./Layouts/Dashboard/attendance/Attendance";
 import Configuration from "./Layouts/Dashboard/configuration/Configuration";
 import CountriesOverview from "./Layouts/Dashboard/countries/CountriesOverview";
 import Dashboard from "./Layouts/Dashboard/Dashboard";
+import Events from "./Layouts/Dashboard/events-news/Events";
+import News from "./Layouts/Dashboard/events-news/News";
 import EditMemberModal from "./Layouts/Dashboard/members/EditMember";
 import IncompleteAndNewRegister from "./Layouts/Dashboard/members/member-registration/IncompleteAndNewRegister";
 import Register from "./Layouts/Dashboard/members/member-registration/register";
 import MemberTable from "./Layouts/Dashboard/members/MemberRegistrationTable";
+import MemberFullView from "./Layouts/Dashboard/members/MembersViewDetails";
 import AddUserForm from "./Layouts/Dashboard/users/AddUserForm";
 import UserTable from "./Layouts/Dashboard/users/UserTable";
 import DashboardLayout from "./Layouts/DashboardLayout";
 import Contact from "./Layouts/profiles/member-profile/Contact";
-import EducationWork from "./Layouts/profiles/member-profile/education-work";
+import EducationAndWork from "./Layouts/profiles/member-profile/EducationAndWork";
 import Membership from "./Layouts/profiles/member-profile/Membership";
 import PersonalInfo from "./Layouts/profiles/member-profile/PersonalInfo";
 import ProfileLayout from "./Layouts/profiles/member-profile/ProfileLayout";
@@ -29,8 +32,6 @@ import Welfare from "./Layouts/profiles/member-profile/Welfare";
 import UserProfile from "./Layouts/profiles/user-profile/UserProfile";
 import PageNotFound from "./page-not-found/PageNotFound";
 import PrivateRoute from "./utils/PrivateRoute";
-import Events from "./Layouts/Dashboard/events-news/Events";
-import News from "./Layouts/Dashboard/events-news/News";
 
 function App() {
   return (
@@ -57,7 +58,10 @@ function App() {
             <Route index element={<PersonalInfo />} />
             <Route path="memberProfile-contact" element={<Contact />} />
             <Route path="memberProfile-membership" element={<Membership />} />
-            <Route path="memberProfile-education" element={<EducationWork />} />
+            <Route
+              path="memberProfile-education"
+              element={<EducationAndWork />}
+            />
             <Route path="memberProfile-skills" element={<Skills />} />
             <Route path="memberProfile-welfare" element={<Welfare />} />
           </Route>
@@ -107,11 +111,12 @@ function App() {
                 </PrivateRoute>
               }
             />
+            <Route path="members-details" element={<MemberFullView />} />
             <Route path="attendance" element={<AttendanceTracking />} />
             <Route path="countries" element={<CountriesOverview />} />
             <Route path="configuration" element={<Configuration />} />
-            <Route path="events" element={<Events/>} />
-            <Route path="news" element={<News/>} />
+            <Route path="events" element={<Events />} />
+            <Route path="news" element={<News />} />
             <Route
               path="/dashboard/new-registration/:id"
               element={<Register />}

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState,useEffect } from "react";
 import axiosInstance from "../api/axiosInstance.js";
-import { loginUser } from "../api/services/auth.js";
+import { loginUser } from "../api/services/authService.js";
 import MemberService from "../api/services/memberService.js";
 import { getCurrentUser } from "../api/services/userService.js";
 

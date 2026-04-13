@@ -17,6 +17,7 @@ import { useAssembliesByCountry } from "../../hooks/country-hook/useAssembliesBy
 import { useDashboardData } from "../../hooks/dashboad-hooks/useDashboard.js";
 import { useMinistryLeadersByAssembly } from "../../hooks/dashboad-hooks/useMinistryLeadersByAssembly.js";
 import { BirthdayCard } from "./birthday-card/BirthdayCard.jsx";
+import LoadingSpinner from "./modals/LoadingSpinner.jsx";
 import StatCard from "./modals/StatCard.jsx";
 
 export default function Dashboard() {
@@ -32,8 +33,7 @@ export default function Dashboard() {
 
   const selectedAssembly = formData?.localAssemblyName || "";
 
-  const { data } =
-    useMinistryLeadersByAssembly(selectedAssembly);
+  const { data } = useMinistryLeadersByAssembly(selectedAssembly);
   const leaders = data?.leaders || [];
   // console.log(leadersLoading);
   // console.log(leaders);
@@ -92,7 +92,13 @@ export default function Dashboard() {
               <Users className="w-7 h-7 text-[#43A501] bg-green-100 p-1.5 rounded-lg" />
             }
             title="Total Members"
-            value={totalMembers ?? 0}
+            value={
+              dashboardLoading ? (
+                <LoadingSpinner text="" width={12} height={12} thickness={2} />
+              ) : (
+                (totalMembers ?? 0)
+              )
+            }
             color="green"
           />
 
@@ -101,7 +107,13 @@ export default function Dashboard() {
               <User className="w-7 h-7 text-[#06A6DB] bg-blue-100 p-1.5 rounded-lg" />
             }
             title="New Members"
-            value={newMembers.length}
+            value={
+              dashboardLoading ? (
+                <LoadingSpinner text="" width={12} height={12} thickness={2} />
+              ) : (
+                (newMembers.length)
+              )
+            }
             color="blue"
           />
           <StatCard
@@ -109,7 +121,13 @@ export default function Dashboard() {
               <TrendingUp className="w-7 h-7 text-[#9600D6] bg-violet-100 p-1.5 rounded-lg" />
             }
             title="Average Attendance"
-            value="450"
+             value={
+              dashboardLoading ? (
+                <LoadingSpinner text="" width={12} height={12} thickness={2} />
+              ) : (
+                "---"
+              )
+            }
             color="purple"
           />
           <StatCard
@@ -117,7 +135,13 @@ export default function Dashboard() {
               <Banknote className="w-7 h-7 text-[#FF8605] bg-orange-100 p-1.5 rounded-lg" />
             }
             title="Average Monthly Giving"
-            value="GHS 20K"
+            value={
+              dashboardLoading ? (
+                <LoadingSpinner text="" width={12} height={12} thickness={2} />
+              ) : (
+                "GHS ---"
+              )
+            }
             color="orange"
           />
         </div>
@@ -250,7 +274,7 @@ export default function Dashboard() {
 
           {/* MINISTRY */}
           <div className="bg-white rounded-2xl p-13">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex  justify-between mb-6">
               <h2 className="text-[18px] font-semibold">Ministry Groups</h2>
               <input
                 list="assemblies-list"
@@ -269,7 +293,7 @@ export default function Dashboard() {
               </datalist>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-2 ">
               {(isAllAssemblies
                 ? defaultMinistries
                 : leaders?.length > 0
@@ -286,6 +310,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
         <div className="bg-white rounded-2xl p-6">
           <h2 className="text-[18px] font-semibold">Attendance Trend</h2>
           <p className="text-[13px] text-gray-500 mb-4">
@@ -341,7 +366,7 @@ function Ministry({ title, leader, count }) {
   return (
     <div className="flex items-center justify-between border rounded-xl p-4">
       {<Heart color={"#9810FA"} size={16} />}
-      <div>
+      <div className="flex flex-col justify-self-start   items-start ">
         <h4 className="text-[15px] font-semibold">{title}</h4>
         <p className="text-[12px] text-gray-500">
           Led by : <span className=" text-black">{leader}</span>

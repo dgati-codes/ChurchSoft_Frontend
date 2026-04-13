@@ -21,3 +21,11 @@ export const getTotalMembers = async () => {
   const response = await axiosInstance.get("/members/total-members");
   return response.data;
 }; 
+
+export const getAgeDistribution = async (country) => {
+  const response = await axiosInstance.get(
+    `/members/dashboard/age-distribution?country=${country}`
+  );
+
+  return response.data;
+};

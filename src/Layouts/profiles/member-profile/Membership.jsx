@@ -5,8 +5,8 @@ function Membership() {
   const { member } = useAuth();
 
   return (
-    <div className="min-h-screen fixed ">
-      <div className=" w-20/10 ml-30 border-[#E5E7EB] bg-[#F9FAFB] rounded-lg shadow-sm border p-6">
+    <div className=" flex justify-center">
+      <div className=" w-20/10  border-[#E5E7EB] bg-[#F9FAFB] rounded-lg shadow-sm border p-6">
         <div className="flex gap-1 mb-2">
           <Church className="h-5 w-5 text-blue-500" />
           <h1>Membership</h1>

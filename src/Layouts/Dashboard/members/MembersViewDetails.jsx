@@ -6,6 +6,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Area,
   AreaChart,
@@ -28,17 +29,12 @@ import {
   useGrandChildrenByChild,
   useParentsByCountry,
 } from "../../../hooks/country-hook/useCountrySetup";
+import { useAgeDistribution } from "../../../hooks/dashboad-hooks/useDashboard";
 import { useJurisdictionsDistribution } from "../../../hooks/member-hooks/useJurisdictionsDistribution";
 import { useNationalitySummaryByCountry } from "../../../hooks/member-hooks/useNationalitySummaryByCountry ";
+import LoadingSpinner from "../modals/LoadingSpinner.jsx";
 
-const data = [
-  { name: "Group A", value: 400 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  { name: "Group D", value: 200 },
-];
-
-const COLORS = ["#E9D8FD", "#B794F4", "#805AD5", "#553C9A"];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#A28EFF"];
 const RADIAN = Math.PI / 180;
 
 const renderCustomizedLabel = ({
@@ -95,7 +91,8 @@ const barData = [
   { month: "Dec", members: 3600 },
 ];
 
-export default function MemberFullView({ onBack }) {
+export default function MemberFullView() {
+  const navigate = useNavigate();
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedJurisdiction, setSelectedJurisdiction] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -108,23 +105,9 @@ export default function MemberFullView({ onBack }) {
   });
 
   const { member } = useAuth();
-
   const effectiveCountry = selectedCountry || member?.nationality;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    if (name === "nationality") {
-      setSelectedCountry(value);
-    }
-  };
-
-  // FETCH DATA
+  // fetch jurisdictions by country for filter
   const {
     data: jurisdictions = [],
     isLoading: isJurisdictionsLoading,
@@ -146,6 +129,18 @@ export default function MemberFullView({ onBack }) {
     },
   );
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (name === "nationality") {
+      setSelectedCountry(value);
+    }
+  };
   // Data Normalization
   const ministryMap = (nationalityData?.ministryAffiliationCounts || []).reduce(
     (acc, item) => {
@@ -164,9 +159,18 @@ export default function MemberFullView({ onBack }) {
 
   const total = nationalityData?.totalMembers || 0;
 
-  /**
-   *  PERCENTAGE CALCULATION
-   */
+  // fetch age distribution for pie chart
+  const { data: ageDistributionResponse, isLoading: ageDistributionLoading } =
+    useAgeDistribution(effectiveCountry);
+
+  const ageData =
+    ageDistributionResponse?.data?.map((item) => ({
+      name: item.ageRange,
+      value: item.count,
+    })) || [];
+
+  // console.log("Age Distribution Data:", ageDistributionResponse);
+
   const getPercentage = (value) => {
     if (!total) return 0;
     return ((value / total) * 100).toFixed(1);
@@ -188,16 +192,11 @@ export default function MemberFullView({ onBack }) {
     return "bg-green-200 text-green-700";
   };
 
-  console.log({
-    selectedCountry,
-    effectiveCountry,
-    memberCountry: member?.nationality,
-  });
   return (
     <div className=" font-[DM Sans] mt-8 space-y-6  bg-gray-100 min-h-screen">
       <div
         className="flex items-center gap-2 cursor-pointer w-fit text-blue-600 hover:text-blue-800"
-        onClick={onBack}
+        onClick={() => navigate("/dashboard/members")}
       >
         <ArrowLeft className="w-5 h-5" />
         <button className="font-medium">Back</button>
@@ -220,7 +219,7 @@ export default function MemberFullView({ onBack }) {
               <Baby className="text-blue-600" />
             </div>
             {isJurisdictionsLoading ? (
-              <p className="text-sm text-gray-300">Loading...</p>
+              <LoadingSpinner text="" width={12} height={12} thickness={2} />
             ) : (
               <div>
                 <p className="text-2xl font-bold">
@@ -252,7 +251,7 @@ export default function MemberFullView({ onBack }) {
               <UsersRound className="text-orange-600" />
             </div>
             {isJurisdictionsLoading ? (
-              <p className="text-sm text-gray-300">Loading...</p>
+              <LoadingSpinner text="" width={12} height={12} thickness={2} />
             ) : (
               <div>
                 <p className="text-2xl font-bold">
@@ -285,7 +284,7 @@ export default function MemberFullView({ onBack }) {
               <UsersRound className="text-yellow-400" />
             </div>
             {isJurisdictionsLoading ? (
-              <p className="text-sm text-gray-300">Loading...</p>
+              <LoadingSpinner text="" width={12} height={12} thickness={2} />
             ) : (
               <div>
                 <p className="text-2xl font-bold">
@@ -317,7 +316,7 @@ export default function MemberFullView({ onBack }) {
               <UsersRound className="text-yellow-400" />
             </div>
             {isJurisdictionsLoading ? (
-              <p className="text-sm text-gray-300">Loading...</p>
+              <LoadingSpinner text="" width={12} height={12} thickness={2} />
             ) : (
               <div>
                 <p className="text-2xl font-bold">{ministryMap?.MEN || 0}</p>
@@ -345,7 +344,7 @@ export default function MemberFullView({ onBack }) {
               <UsersRound className="text-yellow-400" />
             </div>
             {isJurisdictionsLoading ? (
-              <p className="text-sm text-gray-300">Loading...</p>
+              <LoadingSpinner text="" width={12} height={12} thickness={2} />
             ) : (
               <div>
                 <p className="text-2xl font-bold">{ministryMap?.WOMEN || 0}</p>
@@ -371,7 +370,7 @@ export default function MemberFullView({ onBack }) {
           <CardContent>
             <h2 className="text-lg font-semibold">Total Members</h2>
             {isJurisdictionsLoading ? (
-              <p className="text-sm text-gray-300">Loading...</p>
+              <LoadingSpinner text="" width={12} height={12} thickness={2} />
             ) : (
               <div>
                 <p className="text-2xl font-bold">{total}</p>
@@ -432,7 +431,6 @@ export default function MemberFullView({ onBack }) {
             </div>
           </div>
 
-          {/* Local */}
           <div>
             {/* DISTRICT */}
             <div className="mb-4">
@@ -503,7 +501,7 @@ export default function MemberFullView({ onBack }) {
         <CardContent>
           <div className="flex justify-between items-center mb-4 -z-1">
             <h2 className="text-lg font-semibold">
-              Registration Trend (12-month view - 2024)
+              Registration Trend (12-month view - 2026)
             </h2>
             <div className="flex items-center">
               <p className="text-gray-500">
@@ -550,27 +548,32 @@ export default function MemberFullView({ onBack }) {
             <h2 className="text-lg font-semibold mb-4">
               Age group distribution
             </h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={renderCustomizedLabel}
-                  outerRadius={100}
-                  dataKey="value"
-                >
-                  {data.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
+
+            {ageDistributionLoading ? (
+              <LoadingSpinner text="" width={22} height={22} thickness={2} />
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={ageDistributionResponse}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={renderCustomizedLabel}
+                    outerRadius={100}
+                    dataKey="value"
+                  >
+                    {ageData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </CardContent>
         </Card>
 
@@ -599,7 +602,9 @@ export default function MemberFullView({ onBack }) {
           <h2 className="text-lg font-semibold mb-4">Members by Region </h2>
 
           <div className="space-y-3">
-            {isJurisdictionsLoading && <p>Loading...</p>}
+            {isJurisdictionsLoading && (
+              <LoadingSpinner text="" width={50} height={50} thickness={2} />
+            )}
 
             {isJurisdictionsError && <p>Error loading data</p>}
 

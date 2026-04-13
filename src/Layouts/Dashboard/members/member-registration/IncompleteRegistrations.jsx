@@ -16,7 +16,6 @@ export default function IncompleteRegistrations() {
     isError,
   } = useIncompleteMembers(user?.id);
 
-  // console.log("registrations:", registrations);
 
   // Filtered registrations based on search term
   const filteredRegistrations = useMemo(() => {
@@ -154,7 +153,7 @@ export default function IncompleteRegistrations() {
                     onClick={() =>
                       navigate(`/dashboard/new-registration/${user.id}`)
                     }
-                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-md"
+                    className="bg-blue-600 hover:bg-blue-700 hover: cursor-pointer text-white text-sm px-4 py-2 rounded-md"
                   >
                     Continue Registration
                   </button>

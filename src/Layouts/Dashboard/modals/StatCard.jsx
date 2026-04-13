@@ -17,7 +17,11 @@ function StatCard({ title, value, subtitle, icon, onClick,color }) {
         {icon && <span className="text-xl">{icon}</span>}
       </div>
 
-      <p className="text-2xl font-bold">{value}</p>
+      {typeof value === "string" || typeof value === "number" ? (
+        <p className="text-2xl font-bold">{value}</p>
+      ) : (
+        <div className="min-h-8 flex items-center">{value}</div>
+      )}
 
       {subtitle && (
         <p className="text-sm text-gray-500">{subtitle}</p>

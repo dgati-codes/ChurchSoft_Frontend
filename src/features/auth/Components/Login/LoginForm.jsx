@@ -1,30 +1,33 @@
 import { KeyRound, User } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import "../../../../App.css";
 import { useAuth } from "../../../../context/AuthContext";
 
 function LoginForm() {
   const { login } = useAuth();
-  // const [showLoginForm, setShowLoginForm] = useState(true);
-  const [credentials, setCredentials] = useState({
-    username: "",
-    password: "",
-  });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm({
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (values) => {
     setError("");
-    setLoading(true);
-
     try {
-      const result = await login(credentials);
-
+      const result = await login(values);
       if (result.success) {
+        reset();
         navigate("/dashboard");
       } else {
         setError(result.message || "Invalid credentials. Please try again.");
@@ -32,17 +35,8 @@ function LoginForm() {
     } catch (err) {
       console.error("Login error:", err);
       setError("Login failed. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
-
-  const handleChange = (e) => {
-    setCredentials({ ...credentials, [e.target.id]: e.target.value });
-    if (error) setError("");
-  };
-
-  
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row font-[DM Sans] bg-slate-50">
@@ -109,7 +103,10 @@ function LoginForm() {
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="w-full space-y-4">
+          <form
+            onSubmit={handleSubmit(handleLogin)}
+            className="w-full space-y-4"
+          >
             <div className="space-y-2">
               <label
                 htmlFor="username"
@@ -124,13 +121,19 @@ function LoginForm() {
                 <input
                   type="text"
                   id="username"
-                  value={credentials.username || ""}
-                  onChange={handleChange}
+                  {...register("username", {
+                    required: "Username is required",
+                  })}
                   placeholder="Enter your user ID"
                   required
                   className="w-full pl-10 pr-3 py-3 border bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
+              {errors.username && (
+                <p className="text-xs text-red-600 mt-1">
+                  {errors.username.message}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -147,25 +150,31 @@ function LoginForm() {
                 <input
                   type="password"
                   id="password"
-                  value={credentials.password || ""}
-                  onChange={handleChange}
+                  {...register("password", {
+                    required: "Password is required",
+                  })}
                   placeholder="Enter your password"
                   required
                   className="w-full pl-10 pr-3 py-3 border bg-gray-100 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
+              {errors.password && (
+                <p className="text-xs text-red-600 mt-1">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting}
               className={`w-full py-3 rounded-xl font-semibold text-white text-sm ${
-                loading
+                isSubmitting
                   ? "bg-blue-400 cursor-not-allowed"
                   : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
-              {loading ? "Logging in..." : "Login"}
+              {isSubmitting ? "Logging in..." : "Login"}
             </button>
 
             <div className="text-center">

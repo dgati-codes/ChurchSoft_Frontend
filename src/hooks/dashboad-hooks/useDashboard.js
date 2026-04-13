@@ -4,6 +4,7 @@ import {
   getNewMembers,
   getTotalMembers,
 } from "../../api/services/dashboardService";
+import { getAgeDistribution } from "../../api/services/dashboardService";
 
 export const useDashboardData = () => {
   const totalMembersQuery = useQuery({
@@ -40,4 +41,14 @@ export const useDashboardData = () => {
 
     refetchBirthdays: birthdaysQuery.refetch,
   };
+};
+
+
+export const useAgeDistribution = (country, options = {}) => {
+  return useQuery({
+    queryKey: ["age-distribution", country],
+    queryFn: () => getAgeDistribution(country),
+    enabled: !!country, // prevents call if no country
+    ...options,
+  });
 };

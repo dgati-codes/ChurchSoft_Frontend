@@ -258,25 +258,49 @@ export default function AttendanceTracking() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <StatCard
           title="Total Attendance"
-          value={metrics.totalAttendance.toLocaleString()}
+          value={
+              isFetching ? (
+                <LoadingSpinner text="" width={12} height={12} thickness={2} />
+              ) : (
+                metrics.totalAttendance.toLocaleString()
+              )
+            }
           subtitle={`Across ${metrics.serviceRecords || 0} services`}
           icon={<Users className="text-[#F49200] p-1 bg-[#FFF1DC]" />}
         />
         <StatCard
           title="Average Attendance"
-          value={metrics.averageAttendance}
+          value={
+              isFetching ? (
+                <LoadingSpinner text="" width={12} height={12} thickness={2} />
+              ) : (
+                metrics.averageAttendance
+              )
+            }
           subtitle="Per Service"
           icon={<TrendingUp className="bg-[#F8FFDC] p-1 text-[#99C000]" />}
         />
         <StatCard
           title="Active Locations"
-          value={metrics.activeLocations}
+          value={
+              isFetching ? (
+                <LoadingSpinner text="" width={12} height={12} thickness={2} />
+              ) : (
+                metrics.activeLocations
+              )
+            }
           subtitle={`${metrics.activeLocations} regions`}
           icon={<MapPin className="bg-[#DEFFDC] p-1 text-[#09B700]" />}
         />
         <StatCard
           title="Service Records"
-          value={metrics.serviceRecords}
+          value={
+              isFetching ? (
+                <LoadingSpinner text="" width={12} height={12} thickness={2} />
+              ) : (
+                metrics.serviceRecords
+              )
+            }
           subtitle="Total entries"
           icon={<BookOpen className="bg-[#DCFAFF] p-1 text-[#007588]" />}
         />
