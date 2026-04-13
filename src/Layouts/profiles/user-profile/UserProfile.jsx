@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import UserService from "../../../api/services/userService";
 import { useAuth } from "../../../context/AuthContext";
+import { useAssembliesByCountry } from "../../../hooks/country-hook/useAssembliesByCountry.js";
 import SuccessModal from "../../Dashboard/modals/successModal.jsx";
 
 function UserProfile() {
@@ -21,7 +22,8 @@ function UserProfile() {
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const country = member?.nationality;
+  const { data: assemblies } = useAssembliesByCountry(country);
   useEffect(() => {
     if (user) {
       setFormData({
@@ -30,7 +32,7 @@ function UserProfile() {
         email: user.email || "",
         phoneNumber: user.phoneNumber || "",
         localAssemblyName: user.localAssemblyName || "",
-         userId: user.id, 
+        userId: user.id,
       });
     }
   }, [user]);
@@ -42,7 +44,7 @@ function UserProfile() {
         email: user.email,
         phoneNumber: user.phoneNumber,
         assembly: user.localAssemblyName,
-         userId: user.id, 
+        userId: user.id,
       },
       // userId: user.id,
     };
@@ -173,15 +175,23 @@ function UserProfile() {
 
           <div>
             <label className="block text-lg font-medium text-gray-800 mb-2">
-              Local Assembly <span className="text-red-500">*</span>
+              Local Assembly<span className="text-red-500">*</span>
             </label>
             <input
+              list="assemblies-list"
               name="localAssemblyName"
               value={formData.localAssemblyName}
               onChange={handleChange}
-              type="text"
               className="w-full border border-gray-300 rounded-md px-4 py-3 text-lg focus:outline-none"
+              placeholder="Start typing assembly name..."
+              autoComplete="off"
+              required
             />
+            <datalist id="assemblies-list">
+              {assemblies?.map((assembly) => (
+                <option key={assembly.id} value={assembly.name || assembly} />
+              ))}
+            </datalist>
           </div>
 
           <div>
