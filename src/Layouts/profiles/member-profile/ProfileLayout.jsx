@@ -8,29 +8,56 @@ import {
   Shield,
   User,
 } from "lucide-react";
+import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { getMemberByMemberId } from "../../../api/services/memberService";
 import { useAuth } from "../../../context/AuthContext";
+import { useUpdateMember } from "../../../hooks/member-hooks/useUpdateMember";
 import { getInitials } from "../../../utils/getInitials";
+import EditMemberModal from "../../Dashboard/members/EditMember";
 
 function ProfileLayout() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { member } = useAuth();
+  const [editingMember, setEditingMember] = useState(null);
+  const [isEditLoading, setIsEditLoading] = useState(false);
+  const { updateMember } = useUpdateMember();
+
+  const handleOpenEditProfile = async () => {
+    const memberId = member?.id;
+    if (!memberId) return;
+
+    try {
+      setIsEditLoading(true);
+      const memberDetails = await getMemberByMemberId(memberId);
+      setEditingMember(memberDetails);
+    } catch (error) {
+      console.error("Failed to fetch member details:", error);
+    } finally {
+      setIsEditLoading(false);
+    }
+  };
+
+  const handleSaveProfile = (payload) => {
+    updateMember(payload);
+    setEditingMember(null);
+  };
+
   if (!member) {
     const handleRegisterClick = () => {
-    const navigationData = {
-      prefill: {
-        fullName: `${user.firstName?.trim() ?? ""} ${user.lastName?.trim() ?? ""}`,
-        email: user.email ?? "",
-        phoneNumber: user.phoneNumber ?? "",
-        assembly: user.localAssemblyName ?? "",
-        userId: user.id,
-      },
-      
-    };
+      const navigationData = {
+        prefill: {
+          fullName: `${user.firstName?.trim() ?? ""} ${user.lastName?.trim() ?? ""}`,
+          email: user.email ?? "",
+          phoneNumber: user.phoneNumber ?? "",
+          assembly: user.localAssemblyName ?? "",
+          userId: user.id,
+        },
+      };
 
-    navigate("/dashboard/register", { state: navigationData });
-  };
+      navigate("/dashboard/register", { state: navigationData });
+    };
 
     return (
       <div className=" bg-white h-screen  border-[#E5E7EB] text-white grid grid-rows-[20%_80%]">
@@ -85,15 +112,24 @@ function ProfileLayout() {
               member
             </p>
             <div className="flex">
-              <p>Joined since  <span className="text-yellow-500 ml-3">{member.dateJoinedChurch}</span></p>
+              <p>
+                Joined since{" "}
+                <span className="text-yellow-500 ml-3">
+                  {member.dateJoinedChurch}
+                </span>
+              </p>
             </div>
           </div>
         </div>
 
         <div className="flex items-center justify-end">
-          <button className="bg-white text-blue-700 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium">
+          <button
+            onClick={handleOpenEditProfile}
+            disabled={isEditLoading}
+            className="bg-white text-blue-700 px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
+          >
             <Pencil size={14} />
-            Edit Profile
+            {isEditLoading ? "Loading..." : "Edit Profile"}
           </button>
         </div>
       </div>
@@ -167,6 +203,14 @@ function ProfileLayout() {
       <div className="px-10 py-10">
         <Outlet />
       </div>
+
+      {editingMember && (
+        <EditMemberModal
+          member={editingMember}
+          onClose={() => setEditingMember(null)}
+          onSave={handleSaveProfile}
+        />
+      )}
     </div>
   );
 }
