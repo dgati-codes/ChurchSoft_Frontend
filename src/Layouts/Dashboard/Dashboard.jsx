@@ -111,7 +111,7 @@ export default function Dashboard() {
               dashboardLoading ? (
                 <LoadingSpinner text="" width={12} height={12} thickness={2} />
               ) : (
-                (newMembers.length)
+                newMembers.length
               )
             }
             color="blue"
@@ -121,7 +121,7 @@ export default function Dashboard() {
               <TrendingUp className="w-7 h-7 text-[#9600D6] bg-violet-100 p-1.5 rounded-lg" />
             }
             title="Average Attendance"
-             value={
+            value={
               dashboardLoading ? (
                 <LoadingSpinner text="" width={12} height={12} thickness={2} />
               ) : (
@@ -288,7 +288,10 @@ export default function Dashboard() {
               />
               <datalist id="assemblies-list">
                 {assemblies?.map((assembly) => (
-                  <option key={assembly.id} value={assembly.name || assembly} />
+                  <option
+                    key={assembly.id ?? assembly.name ?? assembly}
+                    value={assembly.name || assembly}
+                  />
                 ))}
               </datalist>
             </div>
